@@ -44,6 +44,13 @@ public class MainWindow extends JFrame {
 		// add Toolbar
 		this.add(Toolbar.getInstance(), BorderLayout.PAGE_START);
 		
+		// add vertical scrollpane
+		this.add(VerticalScrollPane.getInstance());
+		
+		// add statusbar
+		// TODO: die sollte ich mir nochmal ueberlegen!
+		this.add(StatusBar.getInstance(), BorderLayout.PAGE_END);
+		
 		// show me what u got!
 		setVisible(true);
 	}
