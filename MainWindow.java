@@ -20,7 +20,7 @@ public class MainWindow extends JFrame {
 	}
 
 	MainWindow() {
-		//native look and feel
+		// native look and feel
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
