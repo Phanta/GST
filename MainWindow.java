@@ -5,6 +5,10 @@ import java.awt.BorderLayout;
 import java.awt.Toolkit;	// screenresolution
 import java.awt.Dimension;	// dito
 
+import org.jfree.chart.*;	// just for testing purpose
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.DefaultXYDataset;
+
 
 public class MainWindow extends JFrame {
 
@@ -47,6 +51,8 @@ public class MainWindow extends JFrame {
 		// add vertical scrollpane
 		this.add(VerticalScrollPane.getInstance());
 		
+		this.add(testJFC());
+		
 		// add statusbar
 		// TODO: die sollte ich mir nochmal ueberlegen!
 		this.add(StatusBar.getInstance(), BorderLayout.PAGE_END);
@@ -54,4 +60,18 @@ public class MainWindow extends JFrame {
 		// show me what u got!
 		setVisible(true);
 	}
+	
+	private static ChartPanel testJFC() {
+		// generate dataset
+		final DefaultXYDataset ds = new DefaultXYDataset();
+		ds.addSeries("testSeries", new double[][] {{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8}, {1.0, 1.1, 2.1, 3.1, 3.4, 2.7, 1.6, 1.3, 1.1}});
+		
+		// generate chart
+		JFreeChart theChart = ChartFactory.createXYLineChart("Titel", "XLabel", "YLabel", ds, PlotOrientation.VERTICAL, false, false, false);
+		
+		// generate swing component
+		ChartPanel pan = new ChartPanel(theChart,true);
+		return pan;
+	}
+	
 }
