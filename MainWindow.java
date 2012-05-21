@@ -4,10 +4,17 @@ import javax.swing.UIManager;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;	// screenresolution
 import java.awt.Dimension;	// dito
-
+/*
 import org.jfree.chart.*;	// just for testing purpose
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.DefaultXYDataset;
+*/
+
+import info.monitorenter.gui.chart.Chart2D; // testing JChart2D
+import info.monitorenter.gui.chart.ITrace2D;
+import info.monitorenter.gui.chart.traces.Trace2DSimple;
+import info.monitorenter.gui.chart.views.ChartPanel;
+import java.awt.Color;
 
 
 public class MainWindow extends JFrame {
@@ -51,7 +58,8 @@ public class MainWindow extends JFrame {
 		// add vertical scrollpane
 		this.add(VerticalScrollPane.getInstance());
 		
-		this.add(testJFC());
+//		this.add(testJFC());
+		this.add(testJC2D());
 		
 		// add statusbar
 		// TODO: die sollte ich mir nochmal ueberlegen!
@@ -61,7 +69,7 @@ public class MainWindow extends JFrame {
 		setVisible(true);
 	}
 	
-	private static ChartPanel testJFC() {
+/*	private static ChartPanel testJFC() {
 		// generate dataset
 		final DefaultXYDataset ds = new DefaultXYDataset();
 		ds.addSeries("testSeries", new double[][] {{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8}, {1.0, 1.1, 2.1, 3.1, 3.4, 2.7, 1.6, 1.3, 1.1}});
@@ -72,6 +80,32 @@ public class MainWindow extends JFrame {
 		// generate swing component
 		ChartPanel pan = new ChartPanel(theChart,true);
 		return pan;
+	}
+*/	
+	private static ChartPanel testJC2D() {
+		Chart2D chart = new Chart2D();
+		
+		// Create an ITrace:
+	    // Note that dynamic charts need limited amount of values!!!
+	    // ITrace2D trace = new Trace2DLtd(200);
+	    ITrace2D trace = new Trace2DSimple();
+	    trace.setColor(Color.RED);
+
+	    // Add the trace to the chart:
+	    chart.addTrace(trace);
+
+	    // Add all points, as it is static:
+	    double time = System.currentTimeMillis();
+	    for (int i = 0; i < 120; i++) {
+	      trace.addPoint(time + 1000 * 60 * i * i, i);
+	    }
+
+	    chart.setToolTipType(Chart2D.ToolTipType.VALUE_SNAP_TO_TRACEPOINTS);
+
+	    chart.getAxisY().setPaintScale(false);
+	    chart.getAxisX().setPaintScale(false);		
+		
+		return new ChartPanel(chart);
 	}
 	
 }
