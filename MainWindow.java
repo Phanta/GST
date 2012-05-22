@@ -20,8 +20,7 @@ import java.awt.Color;
 public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static Dimension dimWindow = new Dimension(1024, 768);
-	private static String strTitle = "Signal Display Tool";
+	private static Settings settings = new Settings();
 	
 	/**
 	 * @param args
@@ -41,13 +40,13 @@ public class MainWindow extends JFrame {
 		// put window in the middle of screen with default size
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		Dimension dimScreenResolution = tk.getScreenSize();
-		int x = (dimScreenResolution.width - dimWindow.width) / 2;
-		int y = (dimScreenResolution.height - dimWindow.height) / 2;
-		this.setBounds(x, y, dimWindow.width, dimWindow.height);
+		int x = (dimScreenResolution.width - settings.mainWindowDimension.width) / 2;
+		int y = (dimScreenResolution.height - settings.mainWindowDimension.height) / 2;
+		this.setBounds(x, y, settings.mainWindowDimension.width, settings.mainWindowDimension.height);
 
 		// define default behavior
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setTitle(strTitle);
+		this.setTitle(settings.mainWindowTitle);
 		
 		// add Menus
 		this.setJMenuBar(Menus.getInstance());
@@ -58,7 +57,6 @@ public class MainWindow extends JFrame {
 		// add vertical scrollpane
 		this.add(VerticalScrollPane.getInstance());
 		
-//		this.add(testJFC());
 		this.add(testJC2D());
 		
 		// add statusbar
@@ -69,19 +67,6 @@ public class MainWindow extends JFrame {
 		setVisible(true);
 	}
 	
-/*	private static ChartPanel testJFC() {
-		// generate dataset
-		final DefaultXYDataset ds = new DefaultXYDataset();
-		ds.addSeries("testSeries", new double[][] {{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8}, {1.0, 1.1, 2.1, 3.1, 3.4, 2.7, 1.6, 1.3, 1.1}});
-		
-		// generate chart
-		JFreeChart theChart = ChartFactory.createXYLineChart("Titel", "XLabel", "YLabel", ds, PlotOrientation.VERTICAL, false, false, false);
-		
-		// generate swing component
-		ChartPanel pan = new ChartPanel(theChart,true);
-		return pan;
-	}
-*/	
 	private static ChartPanel testJC2D() {
 		Chart2D chart = new Chart2D();
 		
