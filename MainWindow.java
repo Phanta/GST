@@ -34,7 +34,7 @@ public class MainWindow extends JFrame {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
-			System.out.println("Couldn't set native Look and Feel.");
+			System.out.println("Master, I couldn't activate native Look'n'Feel - I'm unworthy.");
 		}
 		
 		// put window in the middle of screen with default size
@@ -57,6 +57,7 @@ public class MainWindow extends JFrame {
 		// add vertical scrollpane
 		this.add(VerticalScrollPane.getInstance());
 		
+		this.add(Sidebar.getInstance(), BorderLayout.LINE_START);
 		this.add(testJC2D());
 		
 		// add statusbar
