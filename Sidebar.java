@@ -2,7 +2,10 @@
  * Sidebar.java
  */
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 /**
@@ -14,13 +17,21 @@ public class Sidebar extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private static final Sidebar myself = new Sidebar();
-	
+
+	private JButton btnSideSwitch;
 	
 	/**
 	 * Standard Constructor.
 	 */
 	private Sidebar() {
 		super();
+		btnSideSwitch = new JButton(">");
+		btnSideSwitch.addActionListener(new ActionListener() {
+											public void actionPerformed(ActionEvent e) {
+												switchSides();
+											}
+										});
+		this.add(btnSideSwitch);
 		this.setPreferredSize(new Dimension(250, 0));
 	}
 	
@@ -29,6 +40,15 @@ public class Sidebar extends JPanel {
 	 */
 	public static Sidebar getInstance() {
 		return myself;
+	}
+	
+	
+	/**
+	 * Method that is called, when the Side should be diplayed on the other side of the Main Window.
+	 */
+	public void switchSides() {
+		System.out.println("how to do?");
+		return;
 	}
 
 }
