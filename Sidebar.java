@@ -6,7 +6,7 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 
 /**
- * Panel for Information and signal-overview at the side of the Main-Window. Implemented as Singleton.
+ * Panel for Information and Signal-Overview at the side of the Main-Window. Implemented as Singleton.
  * @version 0.1 (22.05.2012)
  * @author Enrico Grunitz
  */

@@ -40,13 +40,13 @@ public class MainWindow extends JFrame {
 		// put window in the middle of screen with default size
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		Dimension dimScreenResolution = tk.getScreenSize();
-		int x = (dimScreenResolution.width - settings.mainWindowDimension.width) / 2;
-		int y = (dimScreenResolution.height - settings.mainWindowDimension.height) / 2;
-		this.setBounds(x, y, settings.mainWindowDimension.width, settings.mainWindowDimension.height);
+		int x = (dimScreenResolution.width - settings.ui.getMainWindowDimension().width) / 2;
+		int y = (dimScreenResolution.height - settings.ui.getMainWindowDimension().height) / 2;
+		this.setBounds(x, y, settings.ui.getMainWindowDimension().width, settings.ui.getMainWindowDimension().height);
 
 		// define default behavior
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setTitle(settings.mainWindowTitle);
+		this.setTitle(settings.ui.getMainWindowTitle());
 		
 		// add Menus
 		this.setJMenuBar(Menus.getInstance());
