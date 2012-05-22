@@ -1,4 +1,4 @@
-/* Class for the (Main-) Menus of the Program.
+/** Class for the (Main-) Menus of the Program.
  * 
  * contains all the menus including:
  * 		naming of the items
@@ -6,21 +6,32 @@
  * 		function calls
  */
 
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.InputEvent;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
+
+/**
+ * Menus represent the Menubar of the Application. Implemented as Singleton.
+ * 
+ * @version 0.1.1 (22.05.2012)
+ * @author Enrico Grunitz
+ */
 public class Menus extends JMenuBar {
 	
 	private static final long serialVersionUID = 1L;
 	private static Menus myself = new Menus();
 	
+	/**
+	 * @return the Instance of the Menubar
+	 */
 	public static JMenuBar getInstance() {
 		return myself;
 	}
@@ -28,6 +39,8 @@ public class Menus extends JMenuBar {
 	protected Menus() {
 		JMenu m;
 		JMenuItem mi;
+		
+		this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		
 		// --- DATEI ----------------------------------------------------------
 		m = new JMenu("Datei");
@@ -68,6 +81,9 @@ public class Menus extends JMenuBar {
 		m.setMnemonic(KeyEvent.VK_A);
 		this.add(m);
 		
+		// --- UNSICHTBARER FILLER ----------------------------------------------------------
+		this.add(Box.createHorizontalGlue());
+		
 		// --- HILFE ----------------------------------------------------------
 		m = new JMenu("Hilfe");
 		m.setMnemonic(KeyEvent.VK_H);
@@ -75,7 +91,6 @@ public class Menus extends JMenuBar {
 		m.add(mi);
 		mi = new JMenuItem("Test 2");
 		m.add(mi);
-		
 		this.add(m);
 	}
 }
