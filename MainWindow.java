@@ -1,20 +1,17 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Toolkit;	// Screenresolution
+import java.awt.Dimension;	// Screenresolution
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JFrame;
 import javax.swing.UIManager;
-
-import java.awt.BorderLayout;
-import java.awt.Toolkit;	// screenresolution
-import java.awt.Dimension;	// dito
-/*
-import org.jfree.chart.*;	// just for testing purpose
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.xy.DefaultXYDataset;
-*/
 
 import info.monitorenter.gui.chart.Chart2D; // testing JChart2D
 import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.traces.Trace2DSimple;
 import info.monitorenter.gui.chart.views.ChartPanel;
-import java.awt.Color;
 
 
 public class MainWindow extends JFrame {
@@ -23,6 +20,8 @@ public class MainWindow extends JFrame {
 	private static Settings settings = new Settings();
 	
 	/**
+	 * The main of our Application. At this time no handling of command line parameters... And I'm not planning to do it in the future.
+	 * @version 0.0.0.1 or lower (23.05.2012)
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -57,7 +56,20 @@ public class MainWindow extends JFrame {
 		// add vertical scrollpane
 		this.add(VerticalScrollPane.getInstance());
 		
-		this.add(Sidebar.getInstance(), BorderLayout.LINE_START);
+		// add Sidebar
+		Sidebar.getInstance().addSideSwitchActionListener(new ActionListener() {
+															  public void actionPerformed(ActionEvent ae) {
+																  alSwitchSidebarSides(ae);
+																  return;
+															  }
+														  });
+		if(Sidebar.getInstance().getAlignment() == Settings.UI.SIDEBAR_LEFT) {
+			this.add(Sidebar.getInstance(), BorderLayout.LINE_START);
+		} else {
+			this.add(Sidebar.getInstance(), BorderLayout.LINE_END);
+		}
+		
+		// testing of JChart2D
 		this.add(testJC2D());
 		
 		// add statusbar
@@ -82,16 +94,31 @@ public class MainWindow extends JFrame {
 
 	    // Add all points, as it is static:
 	    double time = System.currentTimeMillis();
-	    for (int i = 0; i < 120; i++) {
-	      trace.addPoint(time + 1000 * 60 * i * i, i);
+	    for (int i = 0; i < 5000; i++) {
+	      trace.addPoint(time + 1000 * 60 * i, Math.random() * i);
 	    }
 
 	    chart.setToolTipType(Chart2D.ToolTipType.VALUE_SNAP_TO_TRACEPOINTS);
 
 	    chart.getAxisY().setPaintScale(false);
-	    chart.getAxisX().setPaintScale(false);		
+	    chart.getAxisX().setPaintScale(true);		
 		
 		return new ChartPanel(chart);
+	}
+	
+	/**
+	 * ActionListener for side switching Effect of the Sidebar. We have to move it from outside :-/.
+	 * @param ae the ActionEvent
+	 */
+	private void alSwitchSidebarSides(ActionEvent ae) {
+		// I thought remove and invalidate were necessary.
+		//this.remove(Sidebar.getInstance());
+		if(Sidebar.getInstance().getAlignment() == Settings.UI.SIDEBAR_LEFT) {
+			this.add(Sidebar.getInstance(), BorderLayout.LINE_START);
+		} else {
+			this.add(Sidebar.getInstance(), BorderLayout.LINE_END);
+		}
+		//this.invalidate();
 	}
 	
 }
