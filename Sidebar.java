@@ -64,7 +64,7 @@ public class Sidebar extends JPanel {
 		this.add(panCenter, BorderLayout.CENTER);
 
 		// lower panel
-		panSouth = new JPanel();
+		panSouth = SignalOverview.getInstance();
 		this.add(panSouth, BorderLayout.SOUTH);
 		
 		return;
