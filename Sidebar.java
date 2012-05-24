@@ -1,37 +1,72 @@
 /**
  * Sidebar.java
  */
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
  * Panel for Information and Signal-Overview at the side of the Main-Window. Implemented as Singleton.
- * @version 0.1.1 (23.05.2012)
+ * @version 0.1.2 (24.05.2012)
  * @author Enrico Grunitz
  */
 public class Sidebar extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private static final Sidebar myself = new Sidebar();
+	/** Singleton instance of this class*/			private static final Sidebar myself = new Sidebar();
 	
-	private boolean leftAligned;
+	/** the parent component */						private JFrame parent;
+	
+	/** value for left alignment of the Sidebar */	private boolean leftAligned;
 
-	private JButton btnSideSwitch;
+	/** JPanel for top line of buttons*/			private JPanel panNorth;
+	/** JPanel for the main area*/					private JPanel panCenter;
+	/** JPanel for signal overview*/				private JPanel panSouth;
+	/** button for side switching*/					private JButton btnSideSwitch;
+	/** filler for northern button line */			private Component glueNorth;
 	
 	/**
 	 * Standard Constructor.
 	 */
 	private Sidebar() {
 		super();
-		leftAligned = Settings.getDefaults().ui.getSidebarAlignment();
-		btnSideSwitch = new JButton(">");
-		btnSideSwitch.setEnabled(false);	// JComponent.disable() deprecated
-		this.add(btnSideSwitch);
+		this.setLayout(new BorderLayout());
 		this.setPreferredSize(new Dimension(250, 0));
+
+		parent = null;
+		
+		leftAligned = Settings.getDefaults().ui.getSidebarAlignment();
+		
+		// upper panel
+		panNorth = new JPanel();
+		panNorth.setLayout(new BoxLayout(panNorth, BoxLayout.LINE_AXIS));
+		glueNorth = Box.createHorizontalGlue();
+		btnSideSwitch = new JButton();
+		//btnSideSwitch.setEnabled(false);	// JComponent.disable() deprecated
+		btnSideSwitch.addActionListener(new ActionListener() {
+											public void actionPerformed(ActionEvent ae) {
+												alSideSwitch(ae);
+											}
+										});		// Listener for redesigning Sidebar
+		designNorthPanel();
+		this.add(panNorth, BorderLayout.NORTH);
+
+		// center panel
+		panCenter = new JPanel();
+		this.add(panCenter, BorderLayout.CENTER);
+
+		// lower panel
+		panSouth = new JPanel();
+		this.add(panSouth, BorderLayout.SOUTH);
+		
 		return;
 	}
 	
@@ -43,18 +78,19 @@ public class Sidebar extends JPanel {
 	}
 	
 	/**
-	 * Adds an @link java.awt.event#ActionListener ActionListener to the Button for Bar-Side-Switching 
-	 * @param al the ActionListener to add
+	 * Set the parent JFrame. Automatically adds this component to the its parent JFrame based on {@link Sidebar#leftAligned leftAligned} with
+	 * java.awt.BorderLayout.LINE_START or java.awt.BorderLayout.LINE_END LINE_END. Does not call parent.validate().
+	 * @param par the parent JFrame
 	 */
-	public void addSideSwitchActionListener(ActionListener al) {
-		btnSideSwitch.setEnabled(true);
-		btnSideSwitch.addActionListener(al);	// Listener for move the whole Sidebar from outside
-		btnSideSwitch.addActionListener(new ActionListener() {
-											public void actionPerformed(ActionEvent ae) {
-												alSideSwitch(ae);
-											}
-										});		// Listener for redesigning Sidebar
-		return;
+	public void setParent(JFrame par) {
+		parent = par;
+		if(parent != null) {
+			if(leftAligned == true) {
+				parent.add(this, BorderLayout.LINE_START);
+			} else {
+				parent.add(this, BorderLayout.LINE_END);
+			}
+		}
 	}
 	
 	/**
@@ -67,19 +103,41 @@ public class Sidebar extends JPanel {
 	}
 	
 	/**
-	 * Redesignes the Layout of the Sidebar to adapt the it to the new Screenpostion.
+	 * Redesignes the Layout of the Sidebar to adapt the it to the new Screenpostion. Alters the member {@link Sidebar#leftAligned leftAligned}.
 	 * @param ae the ActionEvent fired
 	 */
 	private void alSideSwitch(ActionEvent ae) {
 		leftAligned = !leftAligned;
-		if(leftAligned == Settings.UI.SIDEBAR_LEFT) {
-			// Sidebar on left side
-			btnSideSwitch.setText(">");
+		designNorthPanel();
+		if(parent != null) {
+			if(leftAligned == true) {
+				parent.add(this, BorderLayout.LINE_START);
+			} else {
+				parent.add(this, BorderLayout.LINE_END);
+			}
+			parent.validate();
 		} else {
-			// Sidebar on right side
-			btnSideSwitch.setText("<");
+			this.validate();
 		}
 		return;
+	}
+	
+	/**
+	 * Places the buttons in the top part in order defined by {@link Sidebar#leftAligned leftAligned}.
+	 * Changes text of {@link Sidebar#btnSideSwitch btnSideSwitch}.
+	 */
+	private void designNorthPanel() {
+		if(leftAligned == true) {
+			panNorth.removeAll();
+			panNorth.add(glueNorth);
+			btnSideSwitch.setText(">");
+			panNorth.add(btnSideSwitch);
+		} else {
+			panNorth.removeAll();
+			btnSideSwitch.setText("<");
+			panNorth.add(btnSideSwitch);
+			//panNorth.add(glueNorth); not yet necessary
+		}
 	}
 	
 }
