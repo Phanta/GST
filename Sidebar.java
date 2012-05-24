@@ -39,7 +39,7 @@ public class Sidebar extends JPanel {
 	private Sidebar() {
 		super();
 		this.setLayout(new BorderLayout());
-		this.setPreferredSize(new Dimension(250, 0));
+		//this.setPreferredSize(new Dimension(250, 0));
 
 		parent = null;
 		
