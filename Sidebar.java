@@ -3,6 +3,7 @@
  */
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +11,6 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
@@ -23,7 +23,7 @@ public class Sidebar extends JPanel {
 	private static final long serialVersionUID = 1L;
 	/** Singleton instance of this class*/			private static final Sidebar myself = new Sidebar();
 	
-	/** the parent component */						private JFrame parent;
+	/** the parent container */						private Container parent;
 	
 	/** value for left alignment of the Sidebar */	private boolean leftAligned;
 
@@ -78,11 +78,11 @@ public class Sidebar extends JPanel {
 	}
 	
 	/**
-	 * Set the parent JFrame. Automatically adds this component to the its parent JFrame based on {@link Sidebar#leftAligned leftAligned} with
+	 * Set the parent Container. Automatically adds this component to the its parent based on {@link Sidebar#leftAligned leftAligned} with
 	 * java.awt.BorderLayout.LINE_START or java.awt.BorderLayout.LINE_END LINE_END. Does not call parent.validate().
 	 * @param par the parent JFrame
 	 */
-	public void setParent(JFrame par) {
+	public void setParent(Container par) {
 		parent = par;
 		if(parent != null) {
 			if(leftAligned == true) {
