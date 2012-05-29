@@ -2,26 +2,43 @@
  * SignalOverview.java created 24.05.2012
  */
 
-import info.monitorenter.gui.chart.Chart2D;
-import info.monitorenter.gui.chart.ITrace2D;
-import info.monitorenter.gui.chart.traces.Trace2DSimple;
-
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.LayoutManager;
 
 import javax.swing.JPanel;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 
 
 /**
  * This class represents the Signal-Overview-Panel of the GUI. 
- * @version 0.1 (24.05.2012)
+ * @version 0.2 (29.05.2012)
  * @author Enrico Grunitz
  */
-public class SignalOverview extends Chart2D {
+public class SignalOverview extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	/** Singleton instance of this class*/			private static final SignalOverview myself = new SignalOverview();
+	
+	/** width of panel*/							private int width;
+	/** height of panel*/							private int height;
+	
+	
+	/** timeseries for data */						private TimeSeries ts;
+	/** collection for data */						private TimeSeriesCollection dataset;
+	/** the chart */								private JFreeChart chart;
+	/** panel for the chart */						private ChartPanel panel;
+	
+	/** XYPlot */									private XYPlot plot;
+	/** x-axis */									private ValueAxis xAxis;
+	/** y-axis */									private ValueAxis yAxis;
 
 	public static SignalOverview getInstance() {
 		return myself;
@@ -31,21 +48,59 @@ public class SignalOverview extends Chart2D {
 	 * Standard constructor. 
 	 */
 	private SignalOverview() {
-	    this.setBackground(Color.BLACK);
-	    this.setPreferredSize(new Dimension(250, 80));
+		width = Settings.getDefaults().ui.getSignalOverviewWidth();
+		height = Settings.getDefaults().ui.getSignalOverviewHeight();
+		
+		ts = new TimeSeries("Timeseries Name");
+		dataset = new TimeSeriesCollection(ts);
+		chart = ChartFactory.createTimeSeriesChart(null,	// title
+												   null,	// timeaxis label
+												   null,	// valueaxis label
+												   dataset,	// data collection
+												   false,	// legend on/off
+												   false,	// tooltip on/off
+												   false	// urls on/off
+												  );
+		panel = new ChartPanel(chart,	// chart
+							   width,	// width
+							   height,	// height
+							   0,		// minimum width
+							   0,		// minimum height
+							   1000,	// maximum width
+							   1000,	// maximum height
+							   true,	// use buffer
+							   false,	// enable properties on/off
+							   false,	// save on/off
+							   false,	// print on/off
+							   false,	// zoom on/off
+							   false	// tooltips on/off
+							  );
+		chart.setBackgroundPaint(Color.getColor("control"));
+		System.out.println(chart.getPadding().toString());
+		plot = chart.getXYPlot();
+		plot.setBackgroundPaint(Color.black);
+		plot.setDomainGridlinesVisible(false);
+		plot.setRangeGridlinesVisible(false);
+		
+		plot.setDomainCrosshairPaint(Color.orange);
+		plot.setDomainCrosshairVisible(true);
+		
+		xAxis = plot.getDomainAxis();
+		xAxis.setVisible(false);
+		yAxis = plot.getRangeAxis();
+		yAxis.setVisible(false);
+		
+		// data "creation"
+		int numPoints = width;
+		ts.add(new FixedMillisecond(0), numPoints);
+		for(int i = 1; i < numPoints; i++) {
+			ts.add(new FixedMillisecond(i), i);
+		}
+		ts.add(new FixedMillisecond(numPoints), 0);
 
-	    ITrace2D trace = new Trace2DSimple();
-	    this.addTrace(trace);
-	    trace.setColor(Color.WHITE);
-	    trace.addPoint(0, 250);
-	    for(int i = 1; i < 250; i++) {
-	    	trace.addPoint(i, i);
-	    }
-	    trace.addPoint(250, 0);
-	    trace.setName("");
-	    
-	    System.out.println(this.getSize().toString());
-	    
+		this.add(panel);
+		this.setBackground(Color.getColor("control"));
+	    this.setPreferredSize(new Dimension(width, height));
 	}
-
+	
 }

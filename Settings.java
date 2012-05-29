@@ -30,7 +30,7 @@ public class Settings {
 	
 	/**
 	 * Wrapper class for settings for the User Interface of the application.
-	 * @version 0.1.1 (23.05.2012)
+	 * @version 0.1.2 (29.05.2012)
 	 * @author Enrico Grunitz
 	 */
 	public static class UI {
@@ -43,10 +43,14 @@ public class Settings {
 		 */
 		public static final Boolean SIDEBAR_RIGHT = false;
 		
-		private Dimension dimMainWindow;
-		private String titleMainWindow;
+		/** dimension of the main window */	private Dimension dimMainWindow;
+		/** title string of main window */	private String titleMainWindow;
 		
-		private boolean sidebarAlignment;
+		/** alignment of the sidebar */		private boolean sidebarAlignment;
+		/** width in pixel of sidebar */	private int sidebarWidth;
+		
+		/** width of signaloverview */		private int signalOverviewWidth;
+		/** height of signaloverview */		private int signalOverviewHeight;
 		
 		/**
 		 * Standard Constructor. Initializes UI with default Values.
@@ -64,6 +68,10 @@ public class Settings {
 			titleMainWindow = new String("Signal Display Tool");
 			
 			sidebarAlignment = SIDEBAR_LEFT;
+			sidebarWidth = 250;
+			
+			signalOverviewWidth = sidebarWidth;
+			signalOverviewHeight = 80;
 			return;
 		}
 		
@@ -88,6 +96,27 @@ public class Settings {
 		 */
 		public boolean getSidebarAlignment() {
 			return sidebarAlignment;
+		}
+		
+		/**
+		 * @return Width of the Sidebar Panel
+		 */
+		public int getSidebarWidth() {
+			return sidebarWidth;
+		}
+		
+		/**
+		 * @return Width of the Signaloverview Panel
+		 */
+		public int getSignalOverviewWidth() {
+			return signalOverviewWidth;
+		}
+		
+		/**
+		 * @return Height of Signaloverview Panel
+		 */
+		public int getSignalOverviewHeight() {
+			return signalOverviewHeight;
 		}
 	}
 }
