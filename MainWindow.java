@@ -1,16 +1,16 @@
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Toolkit;	// Screenresolution
 import java.awt.Dimension;	// Screenresolution
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
-import info.monitorenter.gui.chart.Chart2D; // testing JChart2D
-import info.monitorenter.gui.chart.ITrace2D;
-import info.monitorenter.gui.chart.traces.Trace2DSimple;
-import info.monitorenter.gui.chart.views.ChartPanel;
-
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 
 public class MainWindow extends JFrame {
 
@@ -60,8 +60,8 @@ public class MainWindow extends JFrame {
 		// add Sidebar
 		Sidebar.getInstance().setParent(this);
 		
-		// testing of JChart2D
-		this.add(testJC2D());
+		// basic chart of JFreeChart
+		this.add(helpJFreeChart(), BorderLayout.CENTER);
 		
 		// add statusbar
 		// TODO: die sollte ich mir nochmal ueberlegen!
@@ -71,30 +71,16 @@ public class MainWindow extends JFrame {
 		setVisible(true);
 	}
 	
-	private static ChartPanel testJC2D() {
-		Chart2D chart = new Chart2D();
-		
-		// Create an ITrace:
-	    // Note that dynamic charts need limited amount of values!!!
-	    // ITrace2D trace = new Trace2DLtd(200);
-	    ITrace2D trace = new Trace2DSimple();
-	    trace.setColor(Color.RED);
-
-	    // Add the trace to the chart:
-	    chart.addTrace(trace);
-
-	    // Add all points, as it is static:
-	    double time = System.currentTimeMillis();
-	    for (int i = 0; i < 5000; i++) {
-	      trace.addPoint(time + 1000 * 60 * i, Math.random() * i);
-	    }
-
-	    chart.setToolTipType(Chart2D.ToolTipType.VALUE_SNAP_TO_TRACEPOINTS);
-
-	    chart.getAxisY().setPaintScale(false);
-	    chart.getAxisX().setPaintScale(true);		
-		
-		return new ChartPanel(chart);
+	private ChartPanel helpJFreeChart() {
+		TimeSeries ts = new TimeSeries("Series Name");
+		TimeSeriesCollection dataset = new TimeSeriesCollection(ts);
+		// data "creation"
+		for(int i = 0; i < 2000; i++) {
+			ts.add(new FixedMillisecond(i), Math.random());
+		}
+		JFreeChart chart = ChartFactory.createTimeSeriesChart("Testing", null, "Value", dataset, false, false, false);
+		ChartPanel panel = new ChartPanel(chart);
+		return panel;
 	}
 	
 }
