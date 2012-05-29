@@ -4,8 +4,12 @@
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.JPanel;
+import javax.swing.event.MouseInputAdapter;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -70,13 +74,13 @@ public class SignalOverview extends JPanel {
 							   1000,	// maximum height
 							   true,	// use buffer
 							   false,	// enable properties on/off
+							   false,	// copy on/off
 							   false,	// save on/off
 							   false,	// print on/off
 							   false,	// zoom on/off
 							   false	// tooltips on/off
 							  );
 		chart.setBackgroundPaint(Color.getColor("control"));
-		System.out.println(chart.getPadding().toString());
 		plot = chart.getXYPlot();
 		plot.setBackgroundPaint(Color.black);
 		plot.setDomainGridlinesVisible(false);
@@ -84,6 +88,7 @@ public class SignalOverview extends JPanel {
 		
 		plot.setDomainCrosshairPaint(Color.orange);
 		plot.setDomainCrosshairVisible(true);
+		plot.setDomainCrosshairLockedOnData(false);	// for smoother crosshair placement
 		
 		xAxis = plot.getDomainAxis();
 		xAxis.setVisible(false);
@@ -101,6 +106,57 @@ public class SignalOverview extends JPanel {
 		this.add(panel);
 		this.setBackground(Color.getColor("control"));
 	    this.setPreferredSize(new Dimension(width, height));
+
+	    SOMouseAdapter mouseAdapter = new SOMouseAdapter(); 
+	    panel.addMouseListener(mouseAdapter);
+	    panel.addMouseMotionListener(mouseAdapter);
+	    // TODO: looks ugly due to lack of double buffering
+	    panel.setHorizontalAxisTrace(true);
+	    
+	    return;
 	}
 	
+	/**
+	 * Private implementation of the Mouseadapter for SignalOverview Panel.
+	 * @author Enrico Grunitz
+	 * @version 0.1 (29.05.2012)
+	 */
+	private class SOMouseAdapter extends MouseInputAdapter{
+		/** mouse inside data area flag */		private boolean mouseInside;
+		/** location and size of data area */	private Rectangle2D dataArea; 
+		
+		public SOMouseAdapter() {
+			super();
+			mouseInside = false;
+			dataArea = panel.getScreenDataArea();
+		}
+		
+		public void mouseEntered(MouseEvent event) {
+			dataArea = panel.getScreenDataArea();
+			return;
+		}
+		
+		public void mouseExited(MouseEvent event) {
+			return;
+		}
+		
+		public void mouseClicked(MouseEvent event) {
+			if(mouseInside == true) {
+				Point p = event.getPoint();
+				double dataPosition = ( p.getX() - dataArea.getX() ) / dataArea.getWidth() * ( plot.getDomainAxis().getUpperBound() - plot.getDomainAxis().getLowerBound() ) + plot.getDomainAxis().getLowerBound();
+				plot.setDomainCrosshairValue(dataPosition, true);
+			}
+			return;
+		}
+		
+		public void mouseMoved(MouseEvent event) {
+			Point p = event.getPoint();
+			if(dataArea.contains(p)) {
+				mouseInside = true;
+			} else {
+				mouseInside = false;
+			}
+			return;
+		}
+	}
 }
