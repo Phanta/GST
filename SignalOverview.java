@@ -23,14 +23,14 @@ import org.jfree.data.time.TimeSeriesCollection;
 
 /**
  * This class represents the Signal-Overview-Panel of the GUI. 
- * @version 0.2.1 (30.05.2012)
+ * @version 0.2.2 (30.05.2012)
  * @author Enrico Grunitz
  */
 public class SignalOverview extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	/** Singleton instance of this class*/			private static final SignalOverview myself = new SignalOverview();
-	/** instance of the only MouseAdapter */		private final SOMouseAdapter mouseAdapter = new SOMouseAdapter();
+	/** instance of the only MouseAdapter */		private final SOMouseAdapter mouseAdapter;
 	
 	/** width of panel*/							private int width;
 	/** height of panel*/							private int height;
@@ -82,7 +82,8 @@ public class SignalOverview extends JPanel {
 							   false,	// zoom on/off
 							   false	// tooltips on/off
 							  );
-	    panel.addMouseListener(mouseAdapter);
+	    mouseAdapter = new SOMouseAdapter();
+		panel.addMouseListener(mouseAdapter);
 	    panel.addMouseMotionListener(mouseAdapter);
 	    // TODO: looks ugly due to lack of double buffering
 	    panel.setHorizontalAxisTrace(true);
@@ -128,6 +129,7 @@ public class SignalOverview extends JPanel {
 			super();
 			mouseInside = false;
 			dataArea = panel.getScreenDataArea();
+			return;
 		}
 		
 		public void mouseEntered(MouseEvent event) {
