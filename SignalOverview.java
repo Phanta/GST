@@ -23,17 +23,17 @@ import org.jfree.data.time.TimeSeriesCollection;
 
 /**
  * This class represents the Signal-Overview-Panel of the GUI. 
- * @version 0.2 (29.05.2012)
+ * @version 0.2.1 (30.05.2012)
  * @author Enrico Grunitz
  */
 public class SignalOverview extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	/** Singleton instance of this class*/			private static final SignalOverview myself = new SignalOverview();
+	/** instance of the only MouseAdapter */		private final SOMouseAdapter mouseAdapter = new SOMouseAdapter();
 	
 	/** width of panel*/							private int width;
 	/** height of panel*/							private int height;
-	
 	
 	/** timeseries for data */						private TimeSeries ts;
 	/** collection for data */						private TimeSeriesCollection dataset;
@@ -65,6 +65,8 @@ public class SignalOverview extends JPanel {
 												   false,	// tooltip on/off
 												   false	// urls on/off
 												  );
+		chart.setBackgroundPaint(Color.getColor("control"));
+		
 		panel = new ChartPanel(chart,	// chart
 							   width,	// width
 							   height,	// height
@@ -80,12 +82,15 @@ public class SignalOverview extends JPanel {
 							   false,	// zoom on/off
 							   false	// tooltips on/off
 							  );
-		chart.setBackgroundPaint(Color.getColor("control"));
+	    panel.addMouseListener(mouseAdapter);
+	    panel.addMouseMotionListener(mouseAdapter);
+	    // TODO: looks ugly due to lack of double buffering
+	    panel.setHorizontalAxisTrace(true);
+	    
 		plot = chart.getXYPlot();
 		plot.setBackgroundPaint(Color.black);
 		plot.setDomainGridlinesVisible(false);
 		plot.setRangeGridlinesVisible(false);
-		
 		plot.setDomainCrosshairPaint(Color.orange);
 		plot.setDomainCrosshairVisible(true);
 		plot.setDomainCrosshairLockedOnData(false);	// for smoother crosshair placement
@@ -107,12 +112,6 @@ public class SignalOverview extends JPanel {
 		this.setBackground(Color.getColor("control"));
 	    this.setPreferredSize(new Dimension(width, height));
 
-	    SOMouseAdapter mouseAdapter = new SOMouseAdapter(); 
-	    panel.addMouseListener(mouseAdapter);
-	    panel.addMouseMotionListener(mouseAdapter);
-	    // TODO: looks ugly due to lack of double buffering
-	    panel.setHorizontalAxisTrace(true);
-	    
 	    return;
 	}
 	
@@ -132,6 +131,7 @@ public class SignalOverview extends JPanel {
 		}
 		
 		public void mouseEntered(MouseEvent event) {
+			// updating dataArea every time mouse enters this panel
 			dataArea = panel.getScreenDataArea();
 			return;
 		}
