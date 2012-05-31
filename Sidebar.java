@@ -32,6 +32,8 @@ public class Sidebar extends JPanel {
 	/** button for side switching*/					private JButton btnSideSwitch;
 	/** filler for northern button line */			private Component glueNorth;
 	
+	/** testing purpose */							private JButton btnSize;
+	
 	/**
 	 * Standard Constructor.
 	 */
@@ -60,6 +62,8 @@ public class Sidebar extends JPanel {
 
 		// center panel
 		panCenter = new JPanel();
+		btnSize = new JButton("+");
+		panCenter.add(btnSize);
 		this.add(panCenter, BorderLayout.CENTER);
 
 		// lower panel
@@ -99,6 +103,11 @@ public class Sidebar extends JPanel {
 	 */
 	public boolean getAlignment() {
 		return leftAligned;
+	}
+	
+	public void addDbgButtonAL(ActionListener al) {
+		btnSize.addActionListener(al);
+		return;
 	}
 	
 	/**
