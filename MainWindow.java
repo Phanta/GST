@@ -62,7 +62,12 @@ public class MainWindow extends JFrame {
 		Sidebar.getInstance().setParent(this);
 		
 		// basic chart of JFreeChart
-		this.add(helpJFreeChart(), BorderLayout.CENTER);
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		this.add(SignalPanel.getInstance(), BorderLayout.CENTER);
+		//this.add(helpJFreeChart(), BorderLayout.CENTER);
 		
 		// add statusbar
 		// TODO: die sollte ich mir nochmal ueberlegen!
@@ -70,18 +75,6 @@ public class MainWindow extends JFrame {
 		
 		// show me what u got!
 		setVisible(true);
-	}
-	
-	private ChartPanel helpJFreeChart() {
-		TimeSeries ts = new TimeSeries("Series Name");
-		TimeSeriesCollection dataset = new TimeSeriesCollection(ts);
-		// data "creation"
-		for(int i = 0; i < 2000; i++) {
-			ts.add(new FixedMillisecond(i), Math.random());
-		}
-		JFreeChart chart = ChartFactory.createTimeSeriesChart("Testing", null, "Value", dataset, false, false, false);
-		ChartPanel panel = new ChartPanel(chart);
-		return panel;
 	}
 	
 }
