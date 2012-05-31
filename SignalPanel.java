@@ -33,6 +33,7 @@ public class SignalPanel extends JPanel {
 	
 //	/** height of the Panel */					private int height;
 //	/** width of the Panel */					private int width;
+//testcomment
 	
 	/**
 	 * Only used constructor.
