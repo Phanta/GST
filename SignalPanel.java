@@ -36,17 +36,19 @@ public class SignalPanel extends JPanel {
 	 */
 	private SignalPanel() {
 		super();
+		this.addComponentListener(new SignalPanelComponentAdapter());
 		this.setLayout(new SignalPanelLayoutManager());
 		graphs = new ArrayList<SignalView>(12);
+		// DEBUG this button only serves debug purposes
 		Sidebar.getInstance().addDbgButtonAL(new ActionListener() {
 												public void actionPerformed(ActionEvent ae) {
 													SignalView sv = graphs.iterator().next();
 													Dimension d = sv.getPreferredSize();
 													d.height += 20;
 													sv.setPreferredSize(d);
+													doLayout();
 												}
 											});
-		this.addComponentListener(new SignalPanelComponentAdapter());
 		return;
 	}
 	
@@ -101,6 +103,7 @@ public class SignalPanel extends JPanel {
 			Dimension dim = sv.getPreferredSize();
 			dim.width = width;
 			sv.setPreferredSize(dim);
+			// DEBUG adjustingGraphWidths too
 			System.out.println(dim);
 		}
 		return;
@@ -110,17 +113,20 @@ public class SignalPanel extends JPanel {
 	 * ComponentAdapter to save new size of panel after resizing.
 	 * @author Enrico Grunitz
 	 * @version 0.2 (01.06.2012)
-	 * FIXME doesn't adjusts graphs after maximizing application
 	 */
 	private class SignalPanelComponentAdapter extends ComponentAdapter {
 		public void componentResized(ComponentEvent event) {
 			int newHeight = getHeight();
 			int newWidth = getWidth();
+			/* FIXME doesn't adjusts graphs after maximizing application
+			 * 		 seems like LayoutManager is informed before ComponentAdapter
+			 * 		 doLayout() is a workaround
+			 */
 			// DEBUG system message for resizing signalpanel 
 			System.out.println("new size: " + newWidth + "x" + newHeight);
 			if(newWidth > 0 && newHeight > 0 && !graphs.isEmpty()) {
 				adjustGraphWidths(newWidth);
-				validate();
+				doLayout();
 			}
 		}
 	}
