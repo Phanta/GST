@@ -5,6 +5,7 @@
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 /**
@@ -30,10 +30,6 @@ public class SignalPanel extends JPanel {
 	
 	/** collection of the signalgraphs */		private Collection<SignalView> graphs;
 	/** collection of resize controls */		private Collection controls;
-	
-//	/** height of the Panel */					private int height;
-//	/** width of the Panel */					private int width;
-//testcomment
 	
 	/**
 	 * Only used constructor.
@@ -74,8 +70,8 @@ public class SignalPanel extends JPanel {
 			element.setPreferredSize(new Dimension(this.getWidth(), this.getHeight() / graphs.size()));
 			this.add(element);
 			this.validate();
-			//recalculateSizes();
-			System.out.println("Added signal - size: " + element.getSize() + "; preffered size: " + element.getPreferredSize());
+			// DEBUG console message for adding signals to signalpanel 
+			System.out.println("Added signal - preffered size: " + element.getPreferredSize());
 		}
 	}
 	
@@ -88,60 +84,53 @@ public class SignalPanel extends JPanel {
 		if(graphs.contains(element)) {
 			graphs.remove(element);
 			this.remove(element);
-			//recalculateSizes();
 			return true;
 		} else {
 			return false;
 		}
 	}
+	
+	/**
+	 * Sets for all graphs the width of preferred sizes to the given width.
+	 * @param width the new preferred size width
+	 */
+	private void adjustGraphWidths(int width) {
+		Iterator<SignalView> it = graphs.iterator();
+		// DEBUG adjustingGraphWidths
+		System.out.println("Adjusting widths to " + width);
+		while(it.hasNext()) {
+			SignalView sv = it.next();
+			Dimension dim = sv.getPreferredSize();
+			dim.width = width;
+			sv.setPreferredSize(dim);
+			System.out.println(dim);
+		}
+		return;
+	}
 
 	/**
 	 * ComponentAdapter to save new size of panel after resizing.
 	 * @author Enrico Grunitz
-	 * @version 0.1 (31.05.2012)
+	 * @version 0.2 (01.06.2012)
+	 * FIXME doesn't adjusts graphs after maximizing application
 	 */
 	private class SignalPanelComponentAdapter extends ComponentAdapter {
 		public void componentResized(ComponentEvent event) {
 			int newHeight = getHeight();
 			int newWidth = getWidth();
+			// DEBUG system message for resizing signalpanel 
 			System.out.println("new size: " + newWidth + "x" + newHeight);
-			if(!(newWidth > 0 && newHeight > 0 && !graphs.isEmpty())) {
+			if(newWidth > 0 && newHeight > 0 && !graphs.isEmpty()) {
+				adjustGraphWidths(newWidth);
 				validate();
-				//recalculateSizes();
 			}
 		}
 	}
 	
-	/**
-	 * recalculates the sizes of the SignalView panels
-	 */
-/*	private void recalculateSizes() {
-		SignalView sv = null;
-		Iterator<SignalView> i = graphs.iterator();
-		int sumHeights = 0;
-		while(i.hasNext()) {
-			sv = i.next();
-			sumHeights += sv.getHeight();
-		}
-		if(sumHeights == 0) {
-			sumHeights = 100;	// random default value
-		}
-		i = graphs.iterator();
-		System.out.print("Recalc Sizes");
-		while(i.hasNext()) {
-			sv = i.next();
-			Dimension dim = new Dimension(getWidth(), Math.round((float)this.getHeight() / (float)sumHeights * (float)sv.getHeight()));
-			sv.setSize(dim);
-			System.out.print("\n\t" + dim);
-		}
-		System.out.println("\n\t old dumHeights: "+sumHeights);
-		this.validate();
-	}
-*/
 	/** 
 	 * LayoutManager for the SignalPanel. It arranges the Components in a vertical arrangement. It tries to use preferred sizes.
 	 * If this fails it resizes all elements scaling with the preferred size.
-	 * @version 0.1 (31.05.2012)
+	 * @version 0.2 (01.06.2012)
 	 * @author Enrico Grunitz
 	 */
 	public class SignalPanelLayoutManager implements LayoutManager {
@@ -158,11 +147,12 @@ public class SignalPanel extends JPanel {
 		 * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
 		 */
 		public void layoutContainer(Container parent) {
-			// TODO Auto-generated method stub
+			// TODO insets not fully regarded when doing layout
 			if(parent != null) {
 				Dimension targetDim = parent.getSize();
 				Dimension prefDim = this.preferredLayoutSize(parent);
-				int curY = 0;
+				Insets ins = parent.getInsets();
+				int curY = ins.top;
 				Rectangle rect = new Rectangle();
 				Component[] comps = parent.getComponents();
 				double yScaleFactor = 1.0;
@@ -170,7 +160,7 @@ public class SignalPanel extends JPanel {
 					yScaleFactor = (double)targetDim.height / (double)prefDim.height; 
 				}
 				for(int i = 0; i < comps.length; i++) {
-					rect.x = 0;
+					rect.x = ins.left;
 					rect.y = curY;
 					if(comps[i].getPreferredSize().getWidth() <= targetDim.width) {
 						rect.width = comps[i].getPreferredSize().width; 
@@ -179,7 +169,7 @@ public class SignalPanel extends JPanel {
 					}
 					rect.height = (int)Math.round( (double)comps[i].getPreferredSize().getHeight() * yScaleFactor);
 					comps[i].setBounds(rect);
-					comps[i].validate();
+					curY += rect.height;
 				}
 			}
 		}
@@ -191,13 +181,16 @@ public class SignalPanel extends JPanel {
 		public Dimension minimumLayoutSize(Container parent) {
 			Dimension minDim = new Dimension(0, 0);
 			if(parent != null) {
+				// getting sizes of components
 				Component[] comps = parent.getComponents();
 				for(int i = 0; i < comps.length; i++) {
 					minDim.height += comps[i].getMinimumSize().height;
-					if(comps[i].getMinimumSize().width > minDim.width) {
-						minDim.width = comps[i].getMinimumSize().width;
-					}
+					minDim.width = Math.max(minDim.width, comps[i].getMinimumSize().width);
 				}
+				// adding sizes of insets
+				Insets ins = parent.getInsets();
+				minDim.width += ins.left + ins.right;
+				minDim.height += ins.top + ins.bottom;
 			}
 			return minDim;
 		}
@@ -209,13 +202,16 @@ public class SignalPanel extends JPanel {
 		public Dimension preferredLayoutSize(Container parent) {
 			Dimension dim = new Dimension(0, 0);
 			if(parent != null) {
+				// getting sizes of components
 				Component[] comps = parent.getComponents();
 				for(int i = 0; i < comps.length; i++) {
 					dim.height += comps[i].getPreferredSize().height;
-					if(comps[i].getPreferredSize().width > dim.width) {
-						dim.width = comps[i].getPreferredSize().width;
-					}
+					dim.width = Math.max(dim.width, comps[i].getPreferredSize().width);
 				}
+				// adding inset sizes
+				Insets ins = parent.getInsets();
+				dim.height += ins.top + ins.bottom;
+				dim.width += ins.left + ins.right;
 			}
 			return dim;
 		}

@@ -5,13 +5,6 @@ import java.awt.Dimension;	// Screenresolution
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.time.FixedMillisecond;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
-
 public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -62,10 +55,6 @@ public class MainWindow extends JFrame {
 		Sidebar.getInstance().setParent(this);
 		
 		// basic chart of JFreeChart
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
 		this.add(SignalPanel.getInstance(), BorderLayout.CENTER);
 		//this.add(helpJFreeChart(), BorderLayout.CENTER);
 		
@@ -74,7 +63,13 @@ public class MainWindow extends JFrame {
 		this.add(StatusBar.getInstance(), BorderLayout.PAGE_END);
 		
 		// show me what u got!
-		setVisible(true);
+		this.setVisible(true);
+		
+		// adding charts to our SignalPanel
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
 	}
 	
 }
