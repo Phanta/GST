@@ -36,7 +36,6 @@ public class SignalPanel extends JPanel {
 	 */
 	private SignalPanel() {
 		super();
-//		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.setLayout(new SignalPanelLayoutManager());
 		graphs = new ArrayList<SignalView>(12);
 		Sidebar.getInstance().addDbgButtonAL(new ActionListener() {
@@ -45,7 +44,6 @@ public class SignalPanel extends JPanel {
 													Dimension d = sv.getPreferredSize();
 													d.height += 20;
 													sv.setPreferredSize(d);
-													//recalculateSizes();
 												}
 											});
 		this.addComponentListener(new SignalPanelComponentAdapter());
@@ -130,7 +128,7 @@ public class SignalPanel extends JPanel {
 	/** 
 	 * LayoutManager for the SignalPanel. It arranges the Components in a vertical arrangement. It tries to use preferred sizes.
 	 * If this fails it resizes all elements scaling with the preferred size.
-	 * @version 0.2 (01.06.2012)
+	 * @version 0.2.1 (01.06.2012)
 	 * @author Enrico Grunitz
 	 */
 	public class SignalPanelLayoutManager implements LayoutManager {
@@ -147,11 +145,10 @@ public class SignalPanel extends JPanel {
 		 * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
 		 */
 		public void layoutContainer(Container parent) {
-			// TODO insets not fully regarded when doing layout
 			if(parent != null) {
-				Dimension targetDim = parent.getSize();
-				Dimension prefDim = this.preferredLayoutSize(parent);
 				Insets ins = parent.getInsets();
+				Dimension targetDim = removeInsets(parent.getSize(), ins);
+				Dimension prefDim = removeInsets(this.preferredLayoutSize(parent), ins);
 				int curY = ins.top;
 				Rectangle rect = new Rectangle();
 				Component[] comps = parent.getComponents();
@@ -188,9 +185,7 @@ public class SignalPanel extends JPanel {
 					minDim.width = Math.max(minDim.width, comps[i].getMinimumSize().width);
 				}
 				// adding sizes of insets
-				Insets ins = parent.getInsets();
-				minDim.width += ins.left + ins.right;
-				minDim.height += ins.top + ins.bottom;
+				minDim = addInsets(minDim, parent.getInsets());
 			}
 			return minDim;
 		}
@@ -209,9 +204,7 @@ public class SignalPanel extends JPanel {
 					dim.width = Math.max(dim.width, comps[i].getPreferredSize().width);
 				}
 				// adding inset sizes
-				Insets ins = parent.getInsets();
-				dim.height += ins.top + ins.bottom;
-				dim.width += ins.left + ins.right;
+				dim = addInsets(dim, parent.getInsets());
 			}
 			return dim;
 		}
@@ -224,5 +217,24 @@ public class SignalPanel extends JPanel {
 			return;	// nothing to do here - yay holidays
 		}
 		
+		/**
+		 * Adds the insets to the dimension.
+		 * @param dim Dimension to add to
+		 * @param ins Insets to be added
+		 * @return the new calculated Dimension
+		 */
+		private Dimension addInsets(Dimension dim, Insets ins) {
+			return new Dimension(dim.width + ins.left + ins.right, dim.height + ins.top + ins.bottom);
+		}
+		
+		/**
+		 * Subtracts the insets from the dimension.
+		 * @param dim the Dimension
+		 * @param ins Insets to be subtracted
+		 * @return the new calculated Dimension
+		 */
+		private Dimension removeInsets(Dimension dim, Insets ins) {
+			return new Dimension(dim.width - ins.left - ins.right, dim.height - ins.top - ins.bottom);
+		}
 	}
 }
