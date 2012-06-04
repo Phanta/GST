@@ -8,7 +8,7 @@ import javax.swing.UIManager;
 public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static Settings settings = new Settings();
+	private static Settings settings = Settings.getInstance();
 	
 	/**
 	 * The main of the application. At this time no handling of command line parameters... And I'm not planning to do it in the future.

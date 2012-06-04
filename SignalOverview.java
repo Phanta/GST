@@ -52,8 +52,8 @@ public class SignalOverview extends JPanel {
 	 * Standard constructor. 
 	 */
 	private SignalOverview() {
-		width = Settings.getDefaults().ui.getSignalOverviewWidth();
-		height = Settings.getDefaults().ui.getSignalOverviewHeight();
+		width = Settings.getInstance().ui.getSignalOverviewWidth();
+		height = Settings.getInstance().ui.getSignalOverviewHeight();
 		
 		ts = new TimeSeries("Timeseries Name");
 		dataset = new TimeSeriesCollection(ts);

@@ -1,21 +1,32 @@
+/**
+ * Settings.java created 22.05.2012
+ */
+
 import java.awt.Dimension;
 
 /**  
- * Settings is used to store global settings of the behavior of the program.
- * @version 0.1.2 (23.05.2012)
+ * Settings is used to store global settings of the behavior of the program. Implemented as Singleton.
+ * @version 0.2.0 (04 06.2012)
  * @author Enrico Grunitz 
  */
 public class Settings {
-	public UI ui;
+	/** Singleton instance of this class. */			private static Settings myself = new Settings();
 	
-	public static Settings getDefaults() {
-		return new Settings();
+	/** sub settings of the user interface */			public UI ui;
+	
+
+	/**
+	 * Access to the instance of the Settings object.
+	 * @return
+	 */
+	public static Settings getInstance() {
+		return myself;
 	}
 	
 	/**
 	 * Only Constructor. Initializes the Object with default settings.
 	 */
-	public Settings() {
+	private Settings() {
 		ui = new UI();
 		this.defaultValues();
 	}
@@ -34,23 +45,17 @@ public class Settings {
 	 * @author Enrico Grunitz
 	 */
 	public static class UI {
-		/**
-		 * Value for left aligned Sidebar.
-		 */
-		public static final Boolean SIDEBAR_LEFT = true;
-		/**
-		 * Value for right aligned Sidebar.
-		 */
-		public static final Boolean SIDEBAR_RIGHT = false;
+		/** Value for left aligned Sidebar. */			public static final Boolean SIDEBAR_LEFT = true;
+		/** Value for right aligned Sidebar. */			public static final Boolean SIDEBAR_RIGHT = false;
 		
-		/** dimension of the main window */	private Dimension dimMainWindow;
-		/** title string of main window */	private String titleMainWindow;
+		/** dimension of the main window */				private Dimension dimMainWindow;
+		/** title string of main window */				private String titleMainWindow;
 		
-		/** alignment of the sidebar */		private boolean sidebarAlignment;
-		/** width in pixel of sidebar */	private int sidebarWidth;
+		/** alignment of the sidebar */					private boolean sidebarAlignment;
+		/** width in pixel of sidebar */				private int sidebarWidth;
 		
-		/** width of signaloverview */		private int signalOverviewWidth;
-		/** height of signaloverview */		private int signalOverviewHeight;
+		/** width of signaloverview */					private int signalOverviewWidth;
+		/** height of signaloverview */					private int signalOverviewHeight;
 		
 		/**
 		 * Standard Constructor. Initializes UI with default Values.

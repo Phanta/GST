@@ -44,7 +44,7 @@ public class Sidebar extends JPanel {
 
 		parent = null;
 		
-		leftAligned = Settings.getDefaults().ui.getSidebarAlignment();
+		leftAligned = Settings.getInstance().ui.getSidebarAlignment();
 		
 		// upper panel
 		panNorth = new JPanel();
