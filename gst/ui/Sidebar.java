@@ -103,8 +103,8 @@ public class Sidebar extends JPanel {
 	
 	/**
 	 * @return Alignment of the Sidebar.
-	 * @see Settings.UI#SIDEBAR_LEFT Settings.UI.SIDEBAR_LEFT
-	 * @see Settings.UI#SIDEBAR_RIGHT Settings.UI.SIDEBAR_RIGHT
+	 * @see gst.Settings.UI#SIDEBAR_LEFT Settings.UI.SIDEBAR_LEFT
+	 * @see gst.Settings.UI#SIDEBAR_RIGHT Settings.UI.SIDEBAR_RIGHT
 	 */
 	public boolean getAlignment() {
 		return leftAligned;

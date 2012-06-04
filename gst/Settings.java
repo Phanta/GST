@@ -16,10 +16,12 @@ public class Settings {
 	
 	/** sub settings of the user interface */			public UI ui;
 	
+	/** default number of maximum signals */			private int signalCount;
+	
 
 	/**
 	 * Access to the instance of the Settings object.
-	 * @return
+	 * @return the Instance
 	 */
 	public static Settings getInstance() {
 		return myself;
@@ -37,8 +39,17 @@ public class Settings {
 	 * Resets settings to default values.
 	 */
 	public void defaultValues() {
+		signalCount = 16;		// 16 channel ecg data possible
 		ui.defaultValues();
 		return;
+	}
+	
+	/**
+	 * Returns the number of maximum signals used. Should be used to initialize Collections.
+	 * @return maximum of signals
+	 */
+	public int getMaxSignals() {
+		return signalCount;
 	}
 	
 	/**
