@@ -1,3 +1,4 @@
+package gst.ui;
 /*
  * Copyright 2002 Sun Microsystems, Inc. All rights reserved.
  * 

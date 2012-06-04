@@ -1,3 +1,4 @@
+package gst.ui;
 /**
  * SignalView.java created 31.05.2012
  */

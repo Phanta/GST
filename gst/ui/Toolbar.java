@@ -1,3 +1,4 @@
+package gst.ui;
 /* Class for the Toolbar of the Program
  * 
  * should contain shortcuts for the different tools

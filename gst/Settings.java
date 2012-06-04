@@ -2,6 +2,8 @@
  * Settings.java created 22.05.2012
  */
 
+package gst;
+
 import java.awt.Dimension;
 
 /**  

@@ -2,6 +2,10 @@
  * SignalOverview.java created 24.05.2012
  */
 
+package gst.ui;
+
+import gst.Settings;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;

@@ -2,6 +2,8 @@
  * SignalPanel.java created 31.05.2012
  */
 
+package gst.ui;
+
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -61,19 +63,30 @@ public class SignalPanel extends JPanel {
 	}
 	
 	/**
-	 * Adds the given ChartPanel to the display.
+	 * Adds the given SignalView to the display.
 	 * @param element the ChartPanel to be added
 	 */
 	public void addSignal(SignalView element) {
+		this.addSignal(element, true);
+	}
+	
+	/**
+	 * Adds the given ChartPanel to the display.
+	 * @param element the ChartPanel to be added
+	 * @param visible flag if the SignalView should be displayed
+	 */
+	public void addSignal(SignalView element, boolean visible) {
 		if(element != null) {
 			graphs.add(element);
 			element.setPreferredSize(new Dimension(this.getWidth(), this.getHeight() / graphs.size()));
+			element.setVisible(visible);
 			this.add(element);
 			this.validate();
 			// DEBUG console message for adding signals to signalpanel 
 			System.out.println("Added signal - preffered size: " + element.getPreferredSize());
 		}
 	}
+	
 	
 	/**
 	 * Removes the given ChartPanel from the diplay.
@@ -132,8 +145,8 @@ public class SignalPanel extends JPanel {
 	}
 	
 	/** 
-	 * LayoutManager for the SignalPanel. It arranges the Components in a vertical arrangement. It tries to use preferred sizes.
-	 * If this fails it resizes all elements scaling with the preferred size.
+	 * LayoutManager for the SignalPanel. It arranges the Components in a vertical arrangement. It tries to use preferred sizes and if this
+	 * fails it resizes all elements scaling with the preferred size.
 	 * @version 0.2.1 (01.06.2012)
 	 * @author Enrico Grunitz
 	 */

@@ -1,3 +1,11 @@
+/**
+ * MainWindow.java created on 16.05.2012
+ */
+
+package gst.ui;
+
+import gst.Settings;
+
 import java.awt.BorderLayout;
 import java.awt.Toolkit;	// Screenresolution
 import java.awt.Dimension;	// Screenresolution

@@ -1,3 +1,4 @@
+package gst.ui;
 /** Class for the (Main-) Menus of the Program.
  * 
  * contains all the menus including:

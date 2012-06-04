@@ -1,6 +1,11 @@
 /**
- * Sidebar.java
+ * Sidebar.java created on 22.05.2012
  */
+
+package gst.ui;
+
+import gst.Settings;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
