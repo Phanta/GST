@@ -21,7 +21,9 @@ public class ComponentArrangement {
 	/** all Components with even heights and maximum width */		public static final int EVENHEIGHTS = 1;
 	/** one Component has 60% of available height rest is even */	public static final int ONEBIG = 2;
 	/** ratio of screenheight for ONEBIG */							private static final double ONEBIGRATIO = 0.6;
-	/** last pattern number */										private static final int LASTPATTERN = 2;
+	/** two Components take each 35% of the screen, rest is even */	public static final int TWOMEDIUM = 3;
+	/** ration of screenheight for TWOMEDIUM */						private static final double TWOMEDIUMRATIO = 0.35;
+	/** last pattern number */										private static final int LASTPATTERN = 3;
 	
 	/** the pattern used for the arrangement */						private int pattern;
 	
@@ -97,6 +99,15 @@ public class ComponentArrangement {
 			}
 			setOneBig(visibleComponents, width, height, params[0]);
 			break;
+		case TWOMEDIUM:
+			if(params == null) {
+				throw new NullPointerException("TWOMEDIUM pattern needs indexes");
+			}
+			if(params[0] < 0 || params[0] >= visibleComponents.size() || params[1] < 0 || params[1] >= visibleComponents.size()) {
+				throw new IndexOutOfBoundsException("TWOMEDIUM index out of bounds: " + params[0] + ", " + params[1] + " [0 - " + visibleComponents.size() + "[\n");
+			}
+			setTwoMedium(visibleComponents, width, height, params[0], params[1]);
+			break;
 		default:
 			System.out.println("Unknown pattern detected.");
 			break;
@@ -141,5 +152,28 @@ public class ComponentArrangement {
 			i++;
 		}
 		return;
+	}
+	
+	/**
+	 * Adjust the sizes of the components for the TWOMEDIUM pattern.
+	 * @param coll collection of visible components
+	 * @param width width to uses
+	 * @param height height to use
+	 * @param index1 index of one component
+	 * @param index2 index of the second component
+	 */
+	private void setTwoMedium(Collection<Component> coll, int width, int height, int index1, int index2) {
+		int smallCompHeight = (int)Math.round(height / (coll.size() - 2) * (1 - TWOMEDIUMRATIO * 2));
+		int bigCompHeight = (int)Math.round(height * TWOMEDIUMRATIO);
+		Iterator<Component> it = coll.iterator();
+		int i = 0;
+		while(it.hasNext()) {
+			if(i == index1 || i == index2) {
+				it.next().setPreferredSize(new Dimension(width, bigCompHeight));
+			} else {
+				it.next().setPreferredSize(new Dimension(width, smallCompHeight));
+			}
+			i++;
+		}
 	}
 }

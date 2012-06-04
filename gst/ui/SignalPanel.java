@@ -45,12 +45,13 @@ public class SignalPanel extends JPanel {
 		graphs = new ArrayList<SignalView>(Settings.getInstance().getMaxSignals());
 		compArr = new ComponentArrangement();
 		compArr.setPattern(ComponentArrangement.EVENHEIGHTS);
-		lastUsedArgs = new int[1];
+		lastUsedArgs = new int[2];
 		lastUsedArgs[0] = 0;
+		lastUsedArgs[1] = 0;
 		// DEBUG this button only serves debug purposes
 		Sidebar.getInstance().addDbgButtonAL(new ActionListener() {
 												public void actionPerformed(ActionEvent ae) {
-													compArr.setPattern(ComponentArrangement.ONEBIG);
+													compArr.setPattern(ComponentArrangement.TWOMEDIUM);
 													lastUsedArgs[0]++;
 													if(lastUsedArgs[0] == 4) {
 														lastUsedArgs[0] = 0;
