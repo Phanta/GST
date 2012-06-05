@@ -13,7 +13,7 @@ import java.util.Iterator;
 /**
  * Class that sets the preferred sizes of a Collection of Components to predefined patterns.
  * @author Enrico Grunitz
- * @version 0.1.1 (04.06.2012)
+ * @version 0.1.2 (05.06.2012)
  */
 public class ComponentArrangement {
 	/* all pattern numbers must be consecutive */
@@ -34,7 +34,7 @@ public class ComponentArrangement {
 	/** indices of selected components for different views */		private int index[];
 	
 	/**
-	 * Standard constructor. Default pattern is EVENHEIGHTS.
+	 * Standard constructor. Default pattern is EVENHEIGHTS. First components selected.
 	 */
 	public ComponentArrangement() {
 		pattern = EVENHEIGHTS;

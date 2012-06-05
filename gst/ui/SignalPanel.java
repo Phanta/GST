@@ -116,6 +116,7 @@ public class SignalPanel extends JPanel {
 	 * @version 0.2 (01.06.2012)
 	 */
 	private class SignalPanelComponentAdapter extends ComponentAdapter {
+		@Override
 		public void componentResized(ComponentEvent event) {
 			int newHeight = getHeight();
 			int newWidth = getWidth();
