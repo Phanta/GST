@@ -25,13 +25,23 @@ public class ComponentArrangement {
 	/** ration of screenheight for TWOMEDIUM */						private static final double TWOMEDIUMRATIO = 0.35;
 	/** last pattern number */										private static final int LASTPATTERN = 3;
 	
+	/** index of the selected component for ONEBIG pattern */		public static final int INDEX_ONEBIG = 0;
+	/** first component index for TWOMEDIUM pattern */				public static final int INDEX1_TWOMEDIUM = 1;
+	/** second component index for TWOMEDIUM pattern */				public static final int INDEX2_TWOMEDIUM = 2;
+	/** maximum component index used */								public static final int INDEX_MAX = 2;
+	
 	/** the pattern used for the arrangement */						private int pattern;
+	/** indices of selected components for different views */		private int index[];
 	
 	/**
 	 * Standard constructor. Default pattern is EVENHEIGHTS.
 	 */
 	public ComponentArrangement() {
 		pattern = EVENHEIGHTS;
+		index = new int[INDEX_MAX + 1];
+		index[INDEX_ONEBIG] = 0;
+		index[INDEX1_TWOMEDIUM] = 0;
+		index[INDEX2_TWOMEDIUM] = 1;
 		return;
 	}
 	
@@ -46,6 +56,19 @@ public class ComponentArrangement {
 		}
 		pattern = p;
 		return true;
+	}
+	
+	/**
+	 * Selects the component(s) for the pattern. 
+	 * @param index the INDEX
+	 * @param component the index of the component
+	 */
+	public void select(int index, int component) {
+		if(index < 0 || index > INDEX_MAX) {
+			throw new IndexOutOfBoundsException(index + " [0, " + INDEX_MAX + "]");
+		}
+		this.index[index] = component;
+		return;
 	}
 	
 	/**
@@ -64,9 +87,8 @@ public class ComponentArrangement {
 	 * @param coll Collection of Components
 	 * @param width	width of the area to fill
 	 * @param height height of the area to fill
-	 * @param params[] additional parameters used for specific patterns
 	 */
-	public void setPreferredSizes(Collection<Component> coll, int width, int height, int[] params) {
+	public void setPreferredSizes(Collection<Component> coll, int width, int height) {
 		if(coll == null) {
 			throw new NullPointerException();
 		}
@@ -91,22 +113,16 @@ public class ComponentArrangement {
 			setEvenHeights(visibleComponents, width, height);
 			break;
 		case ONEBIG:
-			if(params == null) {
-				throw new NullPointerException("ONEBIG pattern needs index");
+			if(index[INDEX_ONEBIG] < 0 || index[INDEX_ONEBIG] >= visibleComponents.size()) {
+				throw new IndexOutOfBoundsException("ONEBIG index out of bounds: " + index[0] + " [0 - " + visibleComponents.size() + "[");
 			}
-			if(params[0] < 0 || params[0] >= visibleComponents.size()) {
-				throw new IndexOutOfBoundsException("ONEBIG index out of bounds: " + params[0] + " [0 - " + visibleComponents.size() + "[");
-			}
-			setOneBig(visibleComponents, width, height, params[0]);
+			setOneBig(visibleComponents, width, height);
 			break;
 		case TWOMEDIUM:
-			if(params == null) {
-				throw new NullPointerException("TWOMEDIUM pattern needs indexes");
+			if(index[INDEX1_TWOMEDIUM] < 0 || index[INDEX1_TWOMEDIUM] >= visibleComponents.size() || index[INDEX2_TWOMEDIUM] < 0 || index[INDEX2_TWOMEDIUM] >= visibleComponents.size()) {
+				throw new IndexOutOfBoundsException("TWOMEDIUM index out of bounds: " + index[INDEX1_TWOMEDIUM] + ", " + index[INDEX2_TWOMEDIUM] + " [0 - " + visibleComponents.size() + "[\n");
 			}
-			if(params[0] < 0 || params[0] >= visibleComponents.size() || params[1] < 0 || params[1] >= visibleComponents.size()) {
-				throw new IndexOutOfBoundsException("TWOMEDIUM index out of bounds: " + params[0] + ", " + params[1] + " [0 - " + visibleComponents.size() + "[\n");
-			}
-			setTwoMedium(visibleComponents, width, height, params[0], params[1]);
+			setTwoMedium(visibleComponents, width, height);
 			break;
 		default:
 			System.out.println("Unknown pattern detected.");
@@ -136,15 +152,14 @@ public class ComponentArrangement {
 	 * @param coll collection of visible components
 	 * @param width width to uses
 	 * @param height height to use
-	 * @param index index of the big component
 	 */
-	private void setOneBig(Collection<Component> coll, int width, int height, int index) {
+	private void setOneBig(Collection<Component> coll, int width, int height) {
 		int smallCompHeight = (int)Math.round(height / (coll.size() - 1) * (1 - ONEBIGRATIO));
 		int bigCompHeight = (int)Math.round(height * ONEBIGRATIO);
 		Iterator<Component> it = coll.iterator();
 		int i = 0;
 		while(it.hasNext()) {
-			if(i == index) {
+			if(i == index[INDEX_ONEBIG]) {
 				it.next().setPreferredSize(new Dimension(width, bigCompHeight));
 			} else {
 				it.next().setPreferredSize(new Dimension(width, smallCompHeight));
@@ -159,16 +174,20 @@ public class ComponentArrangement {
 	 * @param coll collection of visible components
 	 * @param width width to uses
 	 * @param height height to use
-	 * @param index1 index of one component
-	 * @param index2 index of the second component
 	 */
-	private void setTwoMedium(Collection<Component> coll, int width, int height, int index1, int index2) {
-		int smallCompHeight = (int)Math.round(height / (coll.size() - 2) * (1 - TWOMEDIUMRATIO * 2));
+	private void setTwoMedium(Collection<Component> coll, int width, int height) {
+		int smallCompHeight;
+		if(index[INDEX1_TWOMEDIUM] == index[INDEX2_TWOMEDIUM]) {
+			// if both indices are same we have a "ONEMEDIUM" pattern
+			smallCompHeight = (int)Math.round(height / (coll.size() - 1) * (1 - TWOMEDIUMRATIO * 1));
+		} else {
+			smallCompHeight = (int)Math.round(height / (coll.size() - 2) * (1 - TWOMEDIUMRATIO * 2));
+		}
 		int bigCompHeight = (int)Math.round(height * TWOMEDIUMRATIO);
 		Iterator<Component> it = coll.iterator();
 		int i = 0;
 		while(it.hasNext()) {
-			if(i == index1 || i == index2) {
+			if(i == index[INDEX1_TWOMEDIUM] || i == index[INDEX2_TWOMEDIUM]) {
 				it.next().setPreferredSize(new Dimension(width, bigCompHeight));
 			} else {
 				it.next().setPreferredSize(new Dimension(width, smallCompHeight));

@@ -33,7 +33,6 @@ public class SignalPanel extends JPanel {
 	/** collection of resize controls */		private Collection controls;
 	
 	/** component arranger */					private ComponentArrangement compArr;
-	/** last used additional args */			private int[] lastUsedArgs;
 	
 	/**
 	 * Only used constructor.
@@ -45,18 +44,15 @@ public class SignalPanel extends JPanel {
 		graphs = new ArrayList<SignalView>(Settings.getInstance().getMaxSignals());
 		compArr = new ComponentArrangement();
 		compArr.setPattern(ComponentArrangement.EVENHEIGHTS);
-		lastUsedArgs = new int[2];
-		lastUsedArgs[0] = 0;
-		lastUsedArgs[1] = 0;
 		// DEBUG this button only serves debug purposes
 		Sidebar.getInstance().addDbgButtonAL(new ActionListener() {
+												private int compind = 0;
 												public void actionPerformed(ActionEvent ae) {
 													compArr.setPattern(ComponentArrangement.TWOMEDIUM);
-													lastUsedArgs[0]++;
-													if(lastUsedArgs[0] == 4) {
-														lastUsedArgs[0] = 0;
-													}
-													compArr.setPreferredSizes(new ArrayList<Component>(graphs), getWidth(), getHeight(), lastUsedArgs);
+													compind++;
+													compind = (compind >= 4) ? 0 : compind;
+													compArr.select(ComponentArrangement.INDEX2_TWOMEDIUM, compind);
+													compArr.setPreferredSizes(new ArrayList<Component>(graphs), getWidth(), getHeight());
 													doLayout();
 												}
 											});
@@ -89,7 +85,7 @@ public class SignalPanel extends JPanel {
 			graphs.add(element);
 			element.setPreferredSize(new Dimension(this.getWidth(), this.getHeight() / graphs.size()));
 			element.setVisible(visible);
-			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight(), lastUsedArgs);
+			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
 			this.add(element);
 			this.validate();
 			// DEBUG console message for adding signals to signalpanel 
@@ -106,7 +102,7 @@ public class SignalPanel extends JPanel {
 	public boolean removeSignal(SignalView element) {
 		if(graphs.contains(element)) {
 			graphs.remove(element);
-			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight(), lastUsedArgs);
+			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
 			this.remove(element);
 			return true;
 		} else {
@@ -130,7 +126,7 @@ public class SignalPanel extends JPanel {
 			// DEBUG system message for resizing signalpanel 
 			System.out.println("new size: " + newWidth + "x" + newHeight);
 			if(newWidth > 0 && newHeight > 0 && !graphs.isEmpty()) {
-				compArr.setPreferredSizes(new ArrayList<Component>(graphs), newWidth, newHeight, lastUsedArgs);
+				compArr.setPreferredSizes(new ArrayList<Component>(graphs), newWidth, newHeight);
 				doLayout();
 			}
 		}
