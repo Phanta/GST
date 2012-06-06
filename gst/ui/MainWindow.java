@@ -67,7 +67,7 @@ public class MainWindow extends JFrame {
 		//this.add(helpJFreeChart(), BorderLayout.CENTER);
 		
 		// add statusbar
-		// TODO: die sollte ich mir nochmal ueberlegen!
+		// FIXME i don't like this style of status bar, maybe replace it with some homebrew
 		this.add(StatusBar.getInstance(), BorderLayout.PAGE_END);
 		
 		// show me what u got!

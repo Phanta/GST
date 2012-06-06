@@ -8,6 +8,7 @@ import gst.Settings;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -222,7 +223,18 @@ public class MultiSplit extends JPanel {
 	}
 	
 	private class Divider extends JButton {
-		// TODO fill me with content, please
+		// TODO adapt size of button
+		// TODO Mouselistener
+		// TODO resize of components
+		/**
+		 * Standard Constructor.
+		 */
+		public Divider() {
+			super("-");
+			Dimension size = this.getSize();
+			System.out.println(size);
+			return;
+		}
 	}
 	
 }

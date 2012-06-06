@@ -76,21 +76,7 @@ public class Sidebar extends JPanel {
 		panCenter.setLayout(new BorderLayout());
 		btnSize = new JButton("+");
 		panCenter.add(btnSize, BorderLayout.NORTH);
-		// DEBUG testing JXMultiSplitPane
-		JXMultiSplitPane msp = new JXMultiSplitPane();
-		msp.setModel(new MSPLayout());
-		JPanel p1 = new JPanel();
-        p1.setBackground(Color.PINK);
-		msp.add(p1, MSPLayout.n1);
-        JPanel p2 = new JPanel();
-        p2.setBackground(Color.YELLOW);
-		msp.add(p2, MSPLayout.n2);
-        JPanel p3 = new JPanel();
-        p3.setBackground(Color.CYAN);
-		//msp.add(p3, MSPLayout.n3);
-		msp.setSize(40, 200);
-		MultiSplitLayout.printModel(new MSPLayout());
-		panCenter.add(msp, BorderLayout.CENTER);
+		designCenterCenterSwingX();
 		this.add(panCenter, BorderLayout.CENTER);
 
 		// lower panel
@@ -100,22 +86,6 @@ public class Sidebar extends JPanel {
 		return;
 	}
 	
-	private class MSPLayout extends MultiSplitLayout.Split {
-		public static final String n1 = "1";
-		public static final String n2 = "2";
-		public static final String n3 = "3";
-		
-		public MSPLayout() {
-			this.setRowLayout(false);
-			Leaf l1 = new Leaf(n1);
-			l1.setWeight(0.33);
-			Leaf l2 = new Leaf(n2);
-			l2.setWeight(0.33);
-			Leaf l3 = new Leaf(n3);
-			l3.setWeight(0.33);
-			this.setChildren(l1, new Divider(), l2, new Divider(), l3);
-		}
-	}
 	
 	/**
 	 * @return Instance of the Sidebar
@@ -192,4 +162,48 @@ public class Sidebar extends JPanel {
 		}
 	}
 	
+	/**
+	 * Designs the center of the center panel with an SwingX MultiSplitLayout. 
+	 */
+	// DEBUGCODE test SwingX MultiSplitPane
+	private void designCenterCenterSwingX() {
+		JXMultiSplitPane msp = new JXMultiSplitPane();
+		msp.setModel(new MSPLayout());
+		JPanel p1 = new JPanel();
+        p1.setBackground(Color.PINK);
+		msp.add(p1, MSPLayout.n1);
+        JPanel p2 = new JPanel();
+        p2.setBackground(Color.YELLOW);
+		msp.add(p2, MSPLayout.n2);
+        JPanel p3 = new JPanel();
+        p3.setBackground(Color.CYAN);
+		msp.add(p3, MSPLayout.n3);
+		msp.setSize(40, 200);
+		MultiSplitLayout.printModel(new MSPLayout());
+		panCenter.add(msp, BorderLayout.CENTER);
+		return;
+	}
+	
+	/**
+	 * class needed for SwingX MultisplitLayout.
+	 * 
+	 * @author Enrico Grunitz
+	 * @version 0.1 (06.06.2012)
+	 */
+	private class MSPLayout extends MultiSplitLayout.Split {
+		public static final String n1 = "1";
+		public static final String n2 = "2";
+		public static final String n3 = "3";
+		
+		public MSPLayout() {
+			this.setRowLayout(false);
+			Leaf l1 = new Leaf(n1);
+			l1.setWeight(0.33);
+			Leaf l2 = new Leaf(n2);
+			l2.setWeight(0.33);
+			Leaf l3 = new Leaf(n3);
+			l3.setWeight(0.33);
+			this.setChildren(l1, new Divider(), l2, new Divider(), l3);
+		}
+	}
 }

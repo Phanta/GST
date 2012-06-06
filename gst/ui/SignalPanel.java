@@ -44,7 +44,7 @@ public class SignalPanel extends JPanel {
 		graphs = new ArrayList<SignalView>(Settings.getInstance().getMaxSignals());
 		compArr = new ComponentArrangement();
 		compArr.setPattern(ComponentArrangement.EVENHEIGHTS);
-		// DEBUG this button only serves debug purposes
+		// DEBUGCODE this button only serves debug purposes
 		Sidebar.getInstance().addDbgButtonAL(new ActionListener() {
 												private int compind = 0;
 												public void actionPerformed(ActionEvent ae) {
@@ -88,8 +88,6 @@ public class SignalPanel extends JPanel {
 			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
 			this.add(element);
 			this.validate();
-			// DEBUG console message for adding signals to signalpanel 
-			System.out.println("Added signal - preffered size: " + element.getPreferredSize());
 		}
 	}
 	
@@ -124,8 +122,6 @@ public class SignalPanel extends JPanel {
 			 * 		 seems like LayoutManager is informed before ComponentAdapter
 			 * 		 doLayout() is a workaround
 			 */
-			// DEBUG system message for resizing signalpanel 
-			System.out.println("new size: " + newWidth + "x" + newHeight);
 			if(newWidth > 0 && newHeight > 0 && !graphs.isEmpty()) {
 				compArr.setPreferredSizes(new ArrayList<Component>(graphs), newWidth, newHeight);
 				doLayout();

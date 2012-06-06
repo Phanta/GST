@@ -89,7 +89,7 @@ public class SignalOverview extends JPanel {
 	    mouseAdapter = new SOMouseAdapter();
 		panel.addMouseListener(mouseAdapter);
 	    panel.addMouseMotionListener(mouseAdapter);
-	    // TODO: looks ugly due to lack of double buffering
+	    // TODO looks ugly due to lack of double buffering
 	    panel.setHorizontalAxisTrace(true);
 	    
 		plot = chart.getXYPlot();
