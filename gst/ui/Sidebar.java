@@ -5,6 +5,7 @@
 package gst.ui;
 
 import gst.Settings;
+import gst.ui.layout.MultiSplit;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -76,7 +77,8 @@ public class Sidebar extends JPanel {
 		panCenter.setLayout(new BorderLayout());
 		btnSize = new JButton("+");
 		panCenter.add(btnSize, BorderLayout.NORTH);
-		designCenterCenterSwingX();
+		designCenterCenterMultiSplit();
+		//designCenterCenterSwingX();
 		this.add(panCenter, BorderLayout.CENTER);
 
 		// lower panel
@@ -178,7 +180,6 @@ public class Sidebar extends JPanel {
         JPanel p3 = new JPanel();
         p3.setBackground(Color.CYAN);
 		msp.add(p3, MSPLayout.n3);
-		msp.setSize(40, 200);
 		MultiSplitLayout.printModel(new MSPLayout());
 		panCenter.add(msp, BorderLayout.CENTER);
 		return;
@@ -205,5 +206,24 @@ public class Sidebar extends JPanel {
 			l3.setWeight(0.33);
 			this.setChildren(l1, new Divider(), l2, new Divider(), l3);
 		}
+	}
+	
+	/**
+	 * Designs the center of the center panel with own MultiSplit. 
+	 */
+	// DEBUGCODE test MultiSplit
+	private void designCenterCenterMultiSplit() {
+		MultiSplit ms = new MultiSplit();
+		JPanel p1 = new JPanel();
+        p1.setBackground(Color.PINK);
+		ms.add(p1);
+        JPanel p2 = new JPanel();
+        p2.setBackground(Color.YELLOW);
+		ms.add(p2);
+        JPanel p3 = new JPanel();
+        p3.setBackground(Color.CYAN);
+		ms.add(p3);
+		panCenter.add(ms, BorderLayout.CENTER);
+		return;
 	}
 }

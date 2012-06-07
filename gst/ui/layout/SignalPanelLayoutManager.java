@@ -110,7 +110,7 @@ public class SignalPanelLayoutManager implements LayoutManager {
 	 * @param ins Insets to be added
 	 * @return the new calculated Dimension
 	 */
-	private Dimension addInsets(Dimension dim, Insets ins) {
+	private static final Dimension addInsets(Dimension dim, Insets ins) {
 		return new Dimension(dim.width + ins.left + ins.right, dim.height + ins.top + ins.bottom);
 	}
 	
@@ -120,7 +120,7 @@ public class SignalPanelLayoutManager implements LayoutManager {
 	 * @param ins Insets to be subtracted
 	 * @return the new calculated Dimension
 	 */
-	private Dimension removeInsets(Dimension dim, Insets ins) {
+	private static final Dimension removeInsets(Dimension dim, Insets ins) {
 		return new Dimension(dim.width - ins.left - ins.right, dim.height - ins.top - ins.bottom);
 	}
 }

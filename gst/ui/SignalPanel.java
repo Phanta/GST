@@ -48,10 +48,10 @@ public class SignalPanel extends JPanel {
 		Sidebar.getInstance().addDbgButtonAL(new ActionListener() {
 												private int compind = 0;
 												public void actionPerformed(ActionEvent ae) {
-													compArr.setPattern(ComponentArrangement.TWOMEDIUM);
+													compArr.setPattern(ComponentArrangement.ONEBIG);
 													compind++;
 													compind = (compind >= 4) ? 0 : compind;
-													compArr.select(ComponentArrangement.INDEX2_TWOMEDIUM, compind);
+													compArr.select(ComponentArrangement.INDEX_ONEBIG, compind);
 													compArr.setPreferredSizes(new ArrayList<Component>(graphs), getWidth(), getHeight());
 													doLayout();
 												}
