@@ -10,11 +10,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.LayoutManager;
-import java.awt.LayoutManager2;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 
 import javax.swing.JButton;
@@ -233,7 +230,7 @@ public class MultiSplit extends JPanel {
 		/**
 		 * LayoutManager to layout the component and it's divider.
 		 * @author Enrico Grunitz
-		 * @version 1.0 (07.06.2012)
+		 * @version 1.0.1 (08.06.2012)
 		 */
 		private class MultiSplitEntryLayoutManager extends VerticalLayoutManager {
 			/**
@@ -248,46 +245,48 @@ public class MultiSplit extends JPanel {
 				if(parent == null) {
 					throw new NullPointerException("cannot layout null");
 				}
-				Component[] comps = parent.getComponents();
-				if(comps.length != 2) {
-					System.out.println ("this LayoutManager can only layout 2 Components");
+				synchronized(parent.getTreeLock()) {
+					Component[] comps = parent.getComponents();
+					if(comps.length != 2) {
+						System.out.println ("this LayoutManager can only layout 2 Components");
+						return;
+					}
+					// calculate available space
+					Insets ins = parent.getInsets();
+					Dimension availableSpace = parent.getSize();
+					availableSpace = removeInsets(availableSpace, ins);
+					// layout Divider first
+					Rectangle rect = new Rectangle();
+					if(comps[1].isVisible() == true) {
+						Dimension prefSize = comps[1].getPreferredSize();
+						if(prefSize.width < availableSpace.width && prefSize.height < availableSpace.height) {
+							rect.width = prefSize.width;
+							rect.height = prefSize.height;
+						} else {
+							// trying minimum Size
+							Dimension minSize = comps[1].getMinimumSize();
+							if(minSize.width < availableSpace.width && minSize.height < availableSpace.height) {
+								rect.width = minSize.width;
+								rect.height = minSize.height;
+							} else {
+								// area to small for minimum size -> abort
+								return;
+							}
+						}
+						rect.x = (availableSpace.width - rect.width) / 2 + ins.left;
+						rect.y = ins.top + availableSpace.height - rect.height;
+						comps[1].setBounds(rect);
+						availableSpace.height -= rect.height;	// update availableSpace
+					}
+					if(comps[0].isVisible() == true) {
+						rect.x = ins.left;
+						rect.y = ins.top;
+						rect.width = availableSpace.width;
+						rect.height = availableSpace.height;
+						comps[0].setBounds(rect);
+					}
 					return;
 				}
-				// calculate available space
-				Insets ins = parent.getInsets();
-				Dimension availableSpace = parent.getSize();
-				availableSpace = removeInsets(availableSpace, ins);
-				// layout Divider first
-				Rectangle rect = new Rectangle();
-				if(comps[1].isVisible() == true) {
-					Dimension prefSize = comps[1].getPreferredSize();
-					if(prefSize.width < availableSpace.width && prefSize.height < availableSpace.height) {
-						rect.width = prefSize.width;
-						rect.height = prefSize.height;
-					} else {
-						// trying minimum Size
-						Dimension minSize = comps[1].getMinimumSize();
-						if(minSize.width < availableSpace.width && minSize.height < availableSpace.height) {
-							rect.width = minSize.width;
-							rect.height = minSize.height;
-						} else {
-							// area to small for minimum size -> abort
-							return;
-						}
-					}
-					rect.x = (availableSpace.width - rect.width) / 2 + ins.left;
-					rect.y = ins.top + availableSpace.height - rect.height;
-					comps[1].setBounds(rect);
-					availableSpace.height -= rect.height;	// update availableSpace
-				}
-				if(comps[0].isVisible() == true) {
-					rect.x = ins.left;
-					rect.y = ins.top;
-					rect.width = availableSpace.width;
-					rect.height = availableSpace.height;
-					comps[0].setBounds(rect);
-				}
-				return;
 			}
 		}
 	}
@@ -315,7 +314,7 @@ public class MultiSplit extends JPanel {
 	}
 	
 	/**
-	 * Aranges all components vertically in the container. It respects minimum sizes and visibility. If there is not enough space for
+	 * Arranges all components vertically in the container. It respects minimum sizes and visibility. If there is not enough space for
 	 * preferred sizes it scales heights with their preferred heights. All components width are set to parents width. 
 	 * @author Enrico Grunitz
 	 * @version 0.1 (07.06.2012)
@@ -327,28 +326,33 @@ public class MultiSplit extends JPanel {
 		 */
 		@Override
 		public void layoutContainer(Container parent) {
-			// TODO minimum size respect
-			
+			// TODO test minimum size respect
 			if(parent == null) {
 				throw new NullPointerException("null has no layout");
 			}
-			Insets ins = parent.getInsets();
-			Dimension targetDim = removeInsets(parent.getSize(), ins);
-			Dimension prefDim = removeInsets(preferredLayoutSize(parent), ins);
-			int curY = ins.top;
-			Rectangle rect = new Rectangle();
-			Component[] comps = parent.getComponents();
-			double yScaleFactor = 1.0;
-			if(prefDim.height > targetDim.height) {
-				yScaleFactor = (double)targetDim.height / (double)prefDim.height; 
-			}
-			for(int i = 0; i < comps.length; i++) {
-				rect.x = ins.left;
-				rect.y = curY;
-				rect.width = targetDim.width;
-				rect.height = (int)Math.round( (double)comps[i].getPreferredSize().getHeight() * yScaleFactor);
-				comps[i].setBounds(rect);
-				curY += rect.height;
+			synchronized(parent.getTreeLock()) {
+				Insets ins = parent.getInsets();
+				Dimension targetDim = removeInsets(parent.getSize(), ins);
+				Dimension prefDim = removeInsets(preferredLayoutSize(parent), ins);
+				Dimension minDim = removeInsets(minimumLayoutSize(parent), ins);
+				int curY = ins.top;
+				Rectangle rect = new Rectangle();
+				//int numComps = parent.getComponentCount();
+				Component[] comps = parent.getComponents();
+				double yScaleFactor = 1.0;
+				if(prefDim.height > targetDim.height) {
+					yScaleFactor = (double)(targetDim.height - minDim.height) / (double)prefDim.height; 
+				}
+				for(int i = 0; i < comps.length; i++) {
+					if(comps[i].isVisible() == true) {
+						rect.x = ins.left;
+						rect.y = curY;
+						rect.width = targetDim.width;
+						rect.height = (int)Math.round( (double)comps[i].getPreferredSize().height * yScaleFactor) + comps[i].getMinimumSize().height;
+						comps[i].setBounds(rect);
+						curY += rect.height;
+					}
+				}
 			}
 		}
 		

@@ -77,10 +77,10 @@ public class Sidebar extends JPanel {
 		panCenter.setLayout(new BorderLayout());
 		btnSize = new JButton("+");
 		panCenter.add(btnSize, BorderLayout.NORTH);
-		designCenterCenterMultiSplit();
 		//designCenterCenterSwingX();
 		this.add(panCenter, BorderLayout.CENTER);
-
+		designCenterCenterMultiSplit();
+		
 		// lower panel
 		panSouth = SignalOverview.getInstance();
 		this.add(panSouth, BorderLayout.SOUTH);
@@ -223,6 +223,7 @@ public class Sidebar extends JPanel {
         JPanel p3 = new JPanel();
         p3.setBackground(Color.CYAN);
 		ms.add(p3);
+		ms.setSize(ms.getMaximumSize());
 		panCenter.add(ms, BorderLayout.CENTER);
 		return;
 	}

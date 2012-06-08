@@ -13,7 +13,7 @@ import java.awt.LayoutManager2;
 /**
  * A LayoutManager that arranges all it components vertically. 
  * @author Enrico Grunitz
- * @version 1.0 (07.06.2012)
+ * @version 1.0.1 (08.06.2012)
  */
 public abstract class VerticalLayoutManager implements LayoutManager2 {
 
@@ -43,17 +43,18 @@ public abstract class VerticalLayoutManager implements LayoutManager2 {
 		if(parent == null) {
 			throw new NullPointerException("null has no minimum size");
 		}
-		Component[] comps = parent.getComponents();
-		Dimension minDim = new Dimension(0, 0);
-		if(comps != null) {
-			for(int i = 0; i < comps.length; i++) {
-				if(comps[i].isVisible() == true) {
-					minDim.height += comps[i].getMinimumSize().height;
-					minDim.width = Math.max(minDim.width, comps[i].getMinimumSize().width);
+		synchronized(parent.getTreeLock()) {
+			int numComps = parent.getComponentCount();
+			Dimension minDim = new Dimension(0, 0);
+			for(int i = 0; i < numComps; i++) {
+				Component comp = parent.getComponent(i);
+				if(comp.isVisible() == true) {
+					minDim.height += comp.getMinimumSize().height;
+					minDim.width = Math.max(minDim.width, comp.getMinimumSize().width);
 				}
 			}
+			return addInsets(minDim, parent.getInsets());
 		}
-		return addInsets(minDim, parent.getInsets());
 	}
 
 	/**
@@ -66,17 +67,18 @@ public abstract class VerticalLayoutManager implements LayoutManager2 {
 		if(parent == null) {
 			throw new NullPointerException("null has no preferred layout size");
 		}
-		Component[] comps = parent.getComponents();
-		Dimension prefDim = new Dimension(0, 0);
-		if(comps != null) {
-			for(int i = 0; i < comps.length; i++) {
-				if(comps[i].isVisible() == true) {
-					prefDim.height += comps[i].getPreferredSize().height;
-					prefDim.width = Math.max(prefDim.width, comps[i].getPreferredSize().width);
+		synchronized(parent.getTreeLock()) {
+			int numComps = parent.getComponentCount();
+			Dimension prefDim = new Dimension(0, 0);
+			for(int i = 0; i < numComps; i++) {
+				Component comp = parent.getComponent(i);
+				if(comp.isVisible() == true) {
+					prefDim.height += comp.getPreferredSize().height;
+					prefDim.width = Math.max(prefDim.width, comp.getPreferredSize().width);
 				}
 			}
+			return addInsets(prefDim, parent.getInsets());
 		}
-		return addInsets(prefDim, parent.getInsets());
 	}
 
 	/**
