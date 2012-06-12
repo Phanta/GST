@@ -52,8 +52,9 @@ public class SignalPanel extends JPanel {
 													compind++;
 													compind = (compind >= 4) ? 0 : compind;
 													compArr.select(ComponentArrangement.INDEX_ONEBIG, compind);
-													compArr.setPreferredSizes(new ArrayList<Component>(graphs), getWidth(), getHeight());
-													doLayout();
+													//compArr.setPreferredSizes(new ArrayList<Component>(graphs), getWidth(), getHeight());
+													revalidate();
+													getParent().repaint();
 												}
 											});
 		return;
@@ -85,12 +86,25 @@ public class SignalPanel extends JPanel {
 			graphs.add(element);
 			element.setPreferredSize(new Dimension(this.getWidth(), this.getHeight() / graphs.size()));
 			element.setVisible(visible);
-			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
+			//compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
 			this.add(element);
-			this.validate();
+			revalidate();
+			repaint();
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.awt.Container#validate()
+	 */
+	@Override
+	public void validate() {
+		// FIXME this function is never called even with revalidate()
+		System.out.println("call");
+		compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
+		doLayout();
+		super.validate();
+		return;
+	}
 	
 	/**
 	 * Removes the given ChartPanel from the diplay.
@@ -102,6 +116,7 @@ public class SignalPanel extends JPanel {
 			graphs.remove(element);
 			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
 			this.remove(element);
+			revalidate();
 			return true;
 		} else {
 			return false;
@@ -123,8 +138,8 @@ public class SignalPanel extends JPanel {
 			 * 		 doLayout() is a workaround
 			 */
 			if(newWidth > 0 && newHeight > 0 && !graphs.isEmpty()) {
-				compArr.setPreferredSizes(new ArrayList<Component>(graphs), newWidth, newHeight);
-				doLayout();
+				//compArr.setPreferredSizes(new ArrayList<Component>(graphs), newWidth, newHeight);
+				revalidate();
 			}
 		}
 	}

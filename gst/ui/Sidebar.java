@@ -52,7 +52,6 @@ public class Sidebar extends JPanel {
 	private Sidebar() {
 		super();
 		this.setLayout(new BorderLayout());
-		//this.setPreferredSize(new Dimension(250, 0));
 
 		parent = null;
 		
@@ -97,20 +96,34 @@ public class Sidebar extends JPanel {
 	}
 	
 	/**
+	 * Adds itself to the parent Component assuming it has a BorderLayoutManager.
+	 * @see javax.swing.JComponent#addNotify()
+	 */
+	@Override
+	public void addNotify() {
+		if(parent != getParent()) {
+			parent = getParent();
+			updateParentPosition();
+		}
+		super.addNotify();
+		return;
+	}
+	
+	/**
 	 * Set the parent Container. Automatically adds this component to the its parent based on {@link Sidebar#leftAligned leftAligned} with
 	 * java.awt.BorderLayout.LINE_START or java.awt.BorderLayout.LINE_END LINE_END. Does not call parent.validate().
 	 * @param par the parent JFrame
 	 */
-	public void setParent(Container par) {
-		parent = par;
-		if(parent != null) {
-			if(leftAligned == true) {
-				parent.add(this, BorderLayout.LINE_START);
-			} else {
-				parent.add(this, BorderLayout.LINE_END);
-			}
-		}
-	}
+//	public void setParent(Container par) {
+//		parent = par;
+//		if(parent != null) {
+//			if(leftAligned == true) {
+//				parent.add(this, BorderLayout.LINE_START);
+//			} else {
+//				parent.add(this, BorderLayout.LINE_END);
+//			}
+//		}
+//	}
 	
 	/**
 	 * @return Alignment of the Sidebar.
@@ -133,16 +146,22 @@ public class Sidebar extends JPanel {
 	private void alSideSwitch(ActionEvent ae) {
 		leftAligned = !leftAligned;
 		designNorthPanel();
-		if(parent != null) {
+		updateParentPosition();
+		return;
+	}
+	
+	/**
+	 * Updates this Components Position in the parent component. Assumes it (the parent) has BorderLayout. 
+	 */
+	private void updateParentPosition() {
+		if(getParent() != null) {
 			if(leftAligned == true) {
-				parent.add(this, BorderLayout.LINE_START);
+				getParent().add(this, BorderLayout.LINE_START);
 			} else {
-				parent.add(this, BorderLayout.LINE_END);
+				getParent().add(this, BorderLayout.LINE_END);
 			}
-			parent.validate();
-		} else {
-			this.validate();
 		}
+		revalidate();
 		return;
 	}
 	

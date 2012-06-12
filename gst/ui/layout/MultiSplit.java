@@ -239,7 +239,6 @@ public class MultiSplit extends JPanel {
 			 * size. The first component gets the remaining space.  
 			 * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
 			 */
-			// TODO visibility of comps not checked
 			@Override
 			public void layoutContainer(Container parent) {
 				if(parent == null) {
@@ -311,6 +310,10 @@ public class MultiSplit extends JPanel {
 			this.setMaximumSize(minDim);
 			return;
 		}
+		
+		public void startDrag() {
+			
+		}
 	}
 	
 	/**
@@ -326,7 +329,6 @@ public class MultiSplit extends JPanel {
 		 */
 		@Override
 		public void layoutContainer(Container parent) {
-			// TODO test minimum size respect
 			if(parent == null) {
 				throw new NullPointerException("null has no layout");
 			}
@@ -337,7 +339,6 @@ public class MultiSplit extends JPanel {
 				Dimension minDim = removeInsets(minimumLayoutSize(parent), ins);
 				int curY = ins.top;
 				Rectangle rect = new Rectangle();
-				//int numComps = parent.getComponentCount();
 				Component[] comps = parent.getComponents();
 				double yScaleFactor = 1.0;
 				if(prefDim.height > targetDim.height) {

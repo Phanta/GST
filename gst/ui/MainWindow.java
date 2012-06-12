@@ -11,6 +11,7 @@ import java.awt.Toolkit;	// Screenresolution
 import java.awt.Dimension;	// Screenresolution
 
 import javax.swing.JFrame;
+import javax.swing.JWindow;
 import javax.swing.UIManager;
 
 public class MainWindow extends JFrame {
@@ -24,7 +25,15 @@ public class MainWindow extends JFrame {
 	 * @param args evaluation not (yet) implemented
 	 */
 	public static void main(String[] args) {
-		new MainWindow();
+		MainWindow main = new MainWindow();
+		
+		// adding charts to our SignalPanel
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		main.revalidate();
+		main.repaint();
 	}
 
 	/**
@@ -60,7 +69,7 @@ public class MainWindow extends JFrame {
 		// this.add(VerticalScrollPane.getInstance());
 		
 		// add Sidebar
-		Sidebar.getInstance().setParent(this);
+		this.add(Sidebar.getInstance(), BorderLayout.LINE_START);
 		
 		// basic chart of JFreeChart
 		this.add(SignalPanel.getInstance(), BorderLayout.CENTER);
@@ -72,12 +81,7 @@ public class MainWindow extends JFrame {
 		
 		// show me what u got!
 		this.setVisible(true);
-		
-		// adding charts to our SignalPanel
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		//this.revalidate();
 	}
 	
 }
