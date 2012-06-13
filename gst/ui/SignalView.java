@@ -6,18 +6,27 @@ package gst.ui;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.time.FixedMillisecond;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.CombinedDomainXYPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.data.RangeType;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleInsets;
 
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.0.1 (31.05.2012)
+ * @version 0.0.2 (13.06.2012)
  */
 public class SignalView extends ChartPanel {
 
 	/** default serialization ID */						private static final long serialVersionUID = 1L;
+	/** the default domain axis */						private static NumberAxis domainAxis = initDomainAxis();
 
 	/* * * Constructors * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
@@ -34,7 +43,7 @@ public class SignalView extends ChartPanel {
 	 * @param useBuffer
 	 */
 	public SignalView(JFreeChart chart, boolean useBuffer) {
-		super(chart, useBuffer);
+		super(chart, true, false, false, true, true);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -106,16 +115,73 @@ public class SignalView extends ChartPanel {
 
 	/* * * static methods * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-	static SignalView generateRandomChart(int numDataPoints) {
-		TimeSeries ts = new TimeSeries("new random series");
-		TimeSeriesCollection dataset = new TimeSeriesCollection(ts);
+	public static SignalView generateRandomChart(int numDataPoints) {
+		XYSeries series = new XYSeries("new random series");
+		XYSeriesCollection dataset = new XYSeriesCollection(series);
 		// data "creation"
 		double lastDataPoint = 0;
 		for(int i = 0; i < numDataPoints; i++) {
 			lastDataPoint = lastDataPoint + Math.random() - 0.5;
-			ts.add(new FixedMillisecond(i), lastDataPoint);
+			series.add((double) i, lastDataPoint);
 		}
-		JFreeChart chart = ChartFactory.createTimeSeriesChart("Random", null, null, dataset, false, false, false);
+		JFreeChart chart = ChartFactory.createXYLineChart(null, null, null, dataset, PlotOrientation.VERTICAL, false, false, false);
+		chart.getXYPlot().setDomainAxis(domainAxis);
+		chart.getXYPlot().getRangeAxis().setLabelInsets(new RectangleInsets(0, 0, 0, 0));
+		chart.getXYPlot().getRangeAxis().setTickLabelInsets(new RectangleInsets(1, 1, 1, 1));
+		System.out.println(chart.getXYPlot().getRangeAxis().getTickLabelInsets());
+		//domainAxis.setRange(0.0, 2000.0);
 		return new SignalView(chart, false);
+	}
+	
+	public static SignalView generateRandomCombinedChart(int numDataPoints, int numCharts, int[] weights) {
+		XYSeries series;
+		XYSeriesCollection dataset;
+		XYItemRenderer renderer;
+		NumberAxis xAxis, yAxis;
+		XYPlot subplot;
+		CombinedDomainXYPlot mainplot;
+		double lastDataPoint;
+		
+		//setting up the combined plot
+		xAxis = new NumberAxis();
+		xAxis.setAutoRangeIncludesZero(false);
+		xAxis.setAutoRangeStickyZero(false);
+		mainplot = new CombinedDomainXYPlot(xAxis);
+		mainplot.setGap(10.0);
+		mainplot.setOrientation(PlotOrientation.VERTICAL);
+		
+		// setting up subplots
+		for(int i = 0; i < numCharts; i++) {
+			series = new XYSeries("Series " + i);
+			dataset = new XYSeriesCollection(series);
+			renderer = new StandardXYItemRenderer();
+			yAxis = new NumberAxis();
+			yAxis.setAutoRangeIncludesZero(false);
+			yAxis.setAutoRangeStickyZero(false);
+			// generate data
+			lastDataPoint = 0;
+			for(int j = 0; j < numDataPoints; j++) {
+				lastDataPoint = lastDataPoint + Math.random() - 0.5;
+				series.add((double) j, lastDataPoint);
+			}
+			// packing all in a subplot
+			subplot = new XYPlot(dataset, null, yAxis, renderer);
+			subplot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
+			// add subplot to mainplot
+			mainplot.add(subplot, weights[i]);
+		}
+		xAxis.setRange(0.0, numDataPoints);
+		// generate chart from mainplot
+		JFreeChart chart = new JFreeChart(null, JFreeChart.DEFAULT_TITLE_FONT, mainplot, false);
+		return new SignalView(chart, true);
+	}
+	
+	private static NumberAxis initDomainAxis() {
+		NumberAxis axis = new NumberAxis();
+		axis.setAutoRangeIncludesZero(false);
+		axis.setAutoRangeStickyZero(false);
+		axis.setAutoRange(true);
+		axis.setRangeType(RangeType.FULL);
+		return axis;
 	}
 }

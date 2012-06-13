@@ -11,7 +11,6 @@ import java.awt.Toolkit;	// Screenresolution
 import java.awt.Dimension;	// Screenresolution
 
 import javax.swing.JFrame;
-import javax.swing.JWindow;
 import javax.swing.UIManager;
 
 public class MainWindow extends JFrame {
@@ -28,10 +27,11 @@ public class MainWindow extends JFrame {
 		MainWindow main = new MainWindow();
 		
 		// adding charts to our SignalPanel
+		/*SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
 		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
 		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
+		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(1000));
+*/		SignalPanel.getInstance().addSignal(SignalView.generateRandomCombinedChart(2000, 3, new int[]{2, 6, 2}));
 		main.revalidate();
 		main.repaint();
 	}

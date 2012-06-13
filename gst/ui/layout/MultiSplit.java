@@ -125,6 +125,7 @@ public class MultiSplit extends JPanel {
 	 * @version 0.1.1 (07.06.2012)
 	 */
 	private class MultiSplitEntry extends Container {
+		/** generated serialization ID */			private static final long serialVersionUID = -1018800692300416075L;
 		/** the component */						private Component component;
 		/** the devider following the component */	private Divider divider;
 		/** the entry above this */					private MultiSplitEntry predecessor;
@@ -296,6 +297,8 @@ public class MultiSplit extends JPanel {
 	 * @version 0.1 (07.06.2012)
 	 */
 	private class Divider extends JButton {
+		/** generated serialization ID */					private static final long serialVersionUID = -9116895657099562652L;
+
 		// TODO Mouselistener
 		// TODO resize of components
 		/**
@@ -312,7 +315,8 @@ public class MultiSplit extends JPanel {
 		}
 		
 		public void startDrag() {
-			
+			// TODO implementation
+			return;
 		}
 	}
 	
