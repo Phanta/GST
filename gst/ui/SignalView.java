@@ -11,7 +11,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.RangeType;
 import org.jfree.data.xy.XYSeries;
@@ -154,7 +154,7 @@ public class SignalView extends ChartPanel {
 		for(int i = 0; i < numCharts; i++) {
 			series = new XYSeries("Series " + i);
 			dataset = new XYSeriesCollection(series);
-			renderer = new StandardXYItemRenderer();
+			renderer = new SamplingXYLineRenderer();
 			yAxis = new NumberAxis();
 			yAxis.setAutoRangeIncludesZero(false);
 			yAxis.setAutoRangeStickyZero(false);
@@ -173,6 +173,8 @@ public class SignalView extends ChartPanel {
 		xAxis.setRange(0.0, numDataPoints);
 		// generate chart from mainplot
 		JFreeChart chart = new JFreeChart(null, JFreeChart.DEFAULT_TITLE_FONT, mainplot, false);
+		chart.setAntiAlias(false);			// clean charts ...
+		chart.setTextAntiAlias(true);		// ... but fancy fonts
 		return new SignalView(chart, true);
 	}
 	
