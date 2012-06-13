@@ -64,10 +64,6 @@ public class MainWindow extends JFrame {
 		// add Toolbar
 		this.add(Toolbar.getInstance(), BorderLayout.PAGE_START);
 		
-		// add vertical scrollpane
-		// at this time no need for this one
-		// this.add(VerticalScrollPane.getInstance());
-		
 		// add Sidebar
 		this.add(Sidebar.getInstance(), BorderLayout.LINE_START);
 		

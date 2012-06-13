@@ -26,7 +26,7 @@ import org.jdesktop.swingx.MultiSplitLayout.Leaf;
 
 /**
  * Panel for Information and Signal-Overview at the side of the Main-Window. Implemented as Singleton.
- * @version 0.1.2 (24.05.2012)
+ * @version 0.1.3 (13.06.2012)
  * @author Enrico Grunitz
  */
 public class Sidebar extends JPanel {
@@ -34,7 +34,7 @@ public class Sidebar extends JPanel {
 	private static final long serialVersionUID = 1L;
 	/** Singleton instance of this class*/			private static final Sidebar myself = new Sidebar();
 	
-	/** the parent container */						private Container parent;
+	/** the parent container */						private Container oldParent;
 	
 	/** value for left alignment of the Sidebar */	private boolean leftAligned;
 
@@ -45,6 +45,7 @@ public class Sidebar extends JPanel {
 	/** filler for northern button line */			private Component glueNorth;
 	
 	/** testing purpose */							private JButton btnSize;
+	/** testing purpose */							private JButton btnPause;
 	
 	/**
 	 * Standard Constructor.
@@ -53,7 +54,7 @@ public class Sidebar extends JPanel {
 		super();
 		this.setLayout(new BorderLayout());
 
-		parent = null;
+		oldParent = null;
 		
 		leftAligned = Settings.getInstance().ui.getSidebarAlignment();
 		
@@ -62,7 +63,6 @@ public class Sidebar extends JPanel {
 		panNorth.setLayout(new BoxLayout(panNorth, BoxLayout.LINE_AXIS));
 		glueNorth = Box.createHorizontalGlue();
 		btnSideSwitch = new JButton();
-		//btnSideSwitch.setEnabled(false);	// JComponent.disable() deprecated
 		btnSideSwitch.addActionListener(new ActionListener() {
 											public void actionPerformed(ActionEvent ae) {
 												alSideSwitch(ae);
@@ -76,7 +76,13 @@ public class Sidebar extends JPanel {
 		panCenter.setLayout(new BorderLayout());
 		btnSize = new JButton("+");
 		panCenter.add(btnSize, BorderLayout.NORTH);
-		//designCenterCenterSwingX();
+		btnPause = new JButton("Pause");
+		panCenter.add(btnPause, BorderLayout.SOUTH);
+		btnPause.addActionListener(new ActionListener() {
+										public void actionPerformed(ActionEvent ae) {
+											return;
+										}
+									});
 		this.add(panCenter, BorderLayout.CENTER);
 		designCenterCenterMultiSplit();
 		
@@ -101,29 +107,13 @@ public class Sidebar extends JPanel {
 	 */
 	@Override
 	public void addNotify() {
-		if(parent != getParent()) {
-			parent = getParent();
+		if(oldParent != getParent()) {
+			oldParent = getParent();
 			updateParentPosition();
 		}
 		super.addNotify();
 		return;
 	}
-	
-	/**
-	 * Set the parent Container. Automatically adds this component to the its parent based on {@link Sidebar#leftAligned leftAligned} with
-	 * java.awt.BorderLayout.LINE_START or java.awt.BorderLayout.LINE_END LINE_END. Does not call parent.validate().
-	 * @param par the parent JFrame
-	 */
-//	public void setParent(Container par) {
-//		parent = par;
-//		if(parent != null) {
-//			if(leftAligned == true) {
-//				parent.add(this, BorderLayout.LINE_START);
-//			} else {
-//				parent.add(this, BorderLayout.LINE_END);
-//			}
-//		}
-//	}
 	
 	/**
 	 * @return Alignment of the Sidebar.
@@ -180,50 +170,6 @@ public class Sidebar extends JPanel {
 			btnSideSwitch.setText("<");
 			panNorth.add(btnSideSwitch);
 			//panNorth.add(glueNorth); not yet necessary
-		}
-	}
-	
-	/**
-	 * Designs the center of the center panel with an SwingX MultiSplitLayout. 
-	 */
-	// DEBUGCODE test SwingX MultiSplitPane
-	private void designCenterCenterSwingX() {
-		JXMultiSplitPane msp = new JXMultiSplitPane();
-		msp.setModel(new MSPLayout());
-		JPanel p1 = new JPanel();
-        p1.setBackground(Color.PINK);
-		msp.add(p1, MSPLayout.n1);
-        JPanel p2 = new JPanel();
-        p2.setBackground(Color.YELLOW);
-		msp.add(p2, MSPLayout.n2);
-        JPanel p3 = new JPanel();
-        p3.setBackground(Color.CYAN);
-		msp.add(p3, MSPLayout.n3);
-		MultiSplitLayout.printModel(new MSPLayout());
-		panCenter.add(msp, BorderLayout.CENTER);
-		return;
-	}
-	
-	/**
-	 * class needed for SwingX MultisplitLayout.
-	 * 
-	 * @author Enrico Grunitz
-	 * @version 0.1 (06.06.2012)
-	 */
-	private class MSPLayout extends MultiSplitLayout.Split {
-		public static final String n1 = "1";
-		public static final String n2 = "2";
-		public static final String n3 = "3";
-		
-		public MSPLayout() {
-			this.setRowLayout(false);
-			Leaf l1 = new Leaf(n1);
-			l1.setWeight(0.33);
-			Leaf l2 = new Leaf(n2);
-			l2.setWeight(0.33);
-			Leaf l3 = new Leaf(n3);
-			l3.setWeight(0.33);
-			this.setChildren(l1, new Divider(), l2, new Divider(), l3);
 		}
 	}
 	

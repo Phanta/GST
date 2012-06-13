@@ -22,7 +22,7 @@ import javax.swing.JPanel;
 /**
  * The panel containing all signalgraphs and the controls to resize them. Implemented as Singleton.
  * @author Enrico Grunitz
- * @version 0.2 (04.06.2012)
+ * @version 0.2.1 (13.06.2012)
  */
 public class SignalPanel extends JPanel {
 
@@ -52,9 +52,10 @@ public class SignalPanel extends JPanel {
 													compind++;
 													compind = (compind >= 4) ? 0 : compind;
 													compArr.select(ComponentArrangement.INDEX_ONEBIG, compind);
-													//compArr.setPreferredSizes(new ArrayList<Component>(graphs), getWidth(), getHeight());
+													compArr.setPreferredSizes(new ArrayList<Component>(graphs), getWidth(), getHeight());
+													doLayout();
 													revalidate();
-													getParent().repaint();
+													repaint();
 												}
 											});
 		return;
@@ -69,7 +70,7 @@ public class SignalPanel extends JPanel {
 	}
 	
 	/**
-	 * Adds the given SignalView to the display.
+	 * Convenience method for {@link #addSignal(SignalView, boolean)}. The added element is visible.
 	 * @param element the ChartPanel to be added
 	 */
 	public void addSignal(SignalView element) {
@@ -86,24 +87,11 @@ public class SignalPanel extends JPanel {
 			graphs.add(element);
 			element.setPreferredSize(new Dimension(this.getWidth(), this.getHeight() / graphs.size()));
 			element.setVisible(visible);
-			//compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
+			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
 			this.add(element);
 			revalidate();
 			repaint();
 		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.awt.Container#validate()
-	 */
-	@Override
-	public void validate() {
-		// FIXME this function is never called even with revalidate()
-		System.out.println("call");
-		compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
-		doLayout();
-		super.validate();
-		return;
 	}
 	
 	/**
@@ -117,6 +105,7 @@ public class SignalPanel extends JPanel {
 			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
 			this.remove(element);
 			revalidate();
+			repaint();
 			return true;
 		} else {
 			return false;
@@ -138,8 +127,10 @@ public class SignalPanel extends JPanel {
 			 * 		 doLayout() is a workaround
 			 */
 			if(newWidth > 0 && newHeight > 0 && !graphs.isEmpty()) {
-				//compArr.setPreferredSizes(new ArrayList<Component>(graphs), newWidth, newHeight);
+				compArr.setPreferredSizes(new ArrayList<Component>(graphs), newWidth, newHeight);
+				doLayout();
 				revalidate();
+				repaint();
 			}
 		}
 	}
