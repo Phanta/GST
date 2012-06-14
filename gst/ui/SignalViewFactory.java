@@ -80,7 +80,7 @@ public abstract class SignalViewFactory {
 		XYSeries series;
 		XYSeriesCollection dataset;
 		XYItemRenderer renderer;
-		NumberAxis xAxis, yAxis, upperXAxis;
+		NumberAxis xAxis, yAxis;
 		XYPlot subplot;
 		CombinedDomainXYPlot mainplot;
 		double lastDataPoint;
