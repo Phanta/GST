@@ -19,27 +19,9 @@ public class MainWindow extends JFrame {
 	private static Settings settings = Settings.getInstance();
 	
 	/**
-	 * The main of the application. At this time no handling of command line parameters... And I'm not planning to do it in the future.
-	 * @version 0.0.0.1 or lower (23.05.2012)
-	 * @param args evaluation not (yet) implemented
-	 */
-	public static void main(String[] args) {
-		MainWindow main = new MainWindow();
-		
-		// adding charts to our SignalPanel
-		/*SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(2000));
-		SignalPanel.getInstance().addSignal(SignalView.generateRandomChart(1000));
-*/		SignalPanel.getInstance().addSignal(SignalView.generateRandomCombinedChart(2000, 3, new int[]{2, 6, 2}));
-		main.revalidate();
-		main.repaint();
-	}
-
-	/**
 	 * Constructor of the applications main window. Generates the UI.
 	 */
-	MainWindow() {
+	public MainWindow() {
 		// native look and feel
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

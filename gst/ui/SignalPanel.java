@@ -53,9 +53,9 @@ public class SignalPanel extends JPanel {
 													compind = (compind >= 4) ? 0 : compind;
 													compArr.select(ComponentArrangement.INDEX_ONEBIG, compind);
 													compArr.setPreferredSizes(new ArrayList<Component>(graphs), getWidth(), getHeight());
-													doLayout();
-													revalidate();
-													repaint();
+													//doLayout();
+													SignalPanel.this.revalidate();
+													SignalPanel.this.repaint();
 												}
 											});
 		return;
@@ -87,10 +87,11 @@ public class SignalPanel extends JPanel {
 			graphs.add(element);
 			element.setPreferredSize(new Dimension(this.getWidth(), this.getHeight() / graphs.size()));
 			element.setVisible(visible);
-			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
 			this.add(element);
-			revalidate();
-			repaint();
+			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
+			this.doLayout();
+			//this.revalidate();
+			//this.repaint();
 		}
 	}
 	
@@ -128,9 +129,9 @@ public class SignalPanel extends JPanel {
 			 */
 			if(newWidth > 0 && newHeight > 0 && !graphs.isEmpty()) {
 				compArr.setPreferredSizes(new ArrayList<Component>(graphs), newWidth, newHeight);
-				doLayout();
-				revalidate();
-				repaint();
+				SignalPanel.this.doLayout();
+				//SignalPanel.this.revalidate();
+				//SignalPanel.this.repaint();
 			}
 		}
 	}
