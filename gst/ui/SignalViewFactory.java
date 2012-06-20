@@ -4,7 +4,6 @@
 
 package gst.ui;
 
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.AxisSpace;
@@ -22,7 +21,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * This class provides static method to generate SignalViews from scratch or given data.
  * @author Enrico Grunitz
- * @version 0.1 (14.06.2012)
+ * @version 0.1 (20.06.2012)
  */
 public abstract class SignalViewFactory {
 	/** number of the generated charts */							private static long chartNumber = 0;
@@ -33,15 +32,30 @@ public abstract class SignalViewFactory {
 	 * @return the SignalView of the generated chart
 	 */
 	public static final SignalView generateRandomChart(int numDataPoints) {
-		XYSeries series = new XYSeries("random walk series");
+		XYSeries series = new XYSeries("massively random walk series");
 		XYSeriesCollection dataset = new XYSeriesCollection(series);
+		XYItemRenderer renderer;
+		NumberAxis xAxis, yAxis;
+		JFreeChart chart;
+		XYPlot plot;
 		// data "creation"
 		double lastDataPoint = 0;
 		for(int i = 0; i < numDataPoints; i++) {
 			lastDataPoint = lastDataPoint + Math.random() - 0.5;
 			series.add((double) i, lastDataPoint);
 		}
-		JFreeChart chart = ChartFactory.createXYLineChart(null, null, null, dataset, PlotOrientation.VERTICAL, false, false, false);
+		renderer = new SamplingXYLineRenderer();
+		xAxis = new NumberAxis();
+		xAxis.setAutoRangeIncludesZero(false);
+		xAxis.setAutoRangeStickyZero(false);
+		
+		yAxis = new NumberAxis();
+		yAxis.setAutoRangeIncludesZero(false);
+		yAxis.setAutoRangeStickyZero(false);
+		plot = new XYPlot(dataset, xAxis, yAxis, renderer);
+		chart = new JFreeChart(null, plot);
+		
+		//JFreeChart chart = ChartFactory.createXYLineChart(null, null, null, dataset, PlotOrientation.VERTICAL, false, false, false);
 		//chart.getXYPlot().setDomainAxis(domainAxis);
 		chart.getXYPlot().getRangeAxis().setLabelInsets(new RectangleInsets(1, 1, 1, 1));
 		chart.getXYPlot().getRangeAxis().setTickLabelInsets(new RectangleInsets(1, 1, 1, 1));
@@ -55,7 +69,6 @@ public abstract class SignalViewFactory {
 		chartNumber++;
 		return new SignalView(chart, false);
 	}
-
 	
 	/**
 	 * Convenience method for {@link #generateRandomCombinedChart(int, int, int[]) generateRandomCombinedChart(numDataPoints, numCharts, null)}.
