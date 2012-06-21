@@ -32,7 +32,7 @@ public abstract class SignalViewFactory {
 	 * @return the SignalView of the generated chart
 	 */
 	public static final SignalView generateRandomChart(int numDataPoints) {
-		XYSeries series = new XYSeries("massively random walk series");
+		XYSeries series = new XYSeries("random walk series");
 		XYSeriesCollection dataset = new XYSeriesCollection(series);
 		XYItemRenderer renderer;
 		NumberAxis xAxis, yAxis;
@@ -61,6 +61,7 @@ public abstract class SignalViewFactory {
 		chart.getXYPlot().getRangeAxis().setTickLabelInsets(new RectangleInsets(1, 1, 1, 1));
 		AxisSpace as = new AxisSpace();
 		as.add(50, RectangleEdge.LEFT);
+		chart.removeLegend();
 		chart.getXYPlot().setFixedRangeAxisSpace(as);
 		chart.setAntiAlias(false);			// clean charts ...
 		chart.setTextAntiAlias(true);		// ... but fancy fonts

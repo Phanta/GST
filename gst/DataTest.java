@@ -4,9 +4,7 @@
 
 package gst;
 
-import org.unisens.Unisens;
-import org.unisens.UnisensParseException;
-import org.unisens.ri.UnisensImpl;
+import gst.data.UnisensDataset;
 
 /**
  * 
@@ -14,14 +12,23 @@ import org.unisens.ri.UnisensImpl;
  * @version 0.1 (14.06.2012)
  */
 public class DataTest {
-	Unisens us;
+	UnisensDataset usds = null;
 	
 	public DataTest() {
-		try {
-			us = new UnisensImpl("");
-		} catch(UnisensParseException upe) {
-			System.out.println("boom");
-		}
-		 
+		
+	}
+	
+	public void testGenerate() {
+		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\uniImplTest", true);
+		usds.setComment("this is a test dataset");
+		usds.save();
+	}
+	
+	public void testLoad() {
+		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\uniImplTest", true);
+		System.out.println(usds.getComment());
+		usds.setName("der neue Name ist immer besser");
+		usds.save();
+		usds.close();
 	}
 }

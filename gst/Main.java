@@ -17,7 +17,7 @@ import gst.ui.SignalViewFactory;
 public abstract class Main {
 	
 	private static SignalView[] sv;
-	private static final int MAXSIGNALS = 16;
+	private static final int MAXSIGNALS = 5;
 	private static MainWindow main;
 	
 	/**
@@ -27,24 +27,30 @@ public abstract class Main {
 	public static void main(String[] args) {
 		main = new MainWindow();
 		
-		// adding charts to our SignalPanel
 		sv = new SignalView[MAXSIGNALS];
-		for(int i = 0; i < MAXSIGNALS; i++) {
-			sv[i] = SignalViewFactory.generateRandomChart(1000000);
-			SignalPanel.getInstance().addSignal(sv[i]);
-		}
+		generateSignalViews(MAXSIGNALS, 2000);
 		
 		main.revalidate();
 		main.repaint();
 
-		rescale(0, 1000);
+/*		rescale(0, 1000);
 		rescale(1000, 11000);
 		rescale(11000, 111000);
 		rescale(111000, 311000);
 		rescale(311000, 811000);
 		rescale(0, 1000000);
-		
+*/		
 		DataTest dt = new DataTest();
+		dt.testGenerate();
+		dt.testLoad();
+	}
+	
+	private static void generateSignalViews(int numSignals, int numDataPoints) {
+		for(int i = 0; i < numSignals; i++) {
+			sv[i] = SignalViewFactory.generateRandomChart(numDataPoints);
+			SignalPanel.getInstance().addSignal(sv[i]);
+		}
+		return;
 	}
 	
 	private static void rescale(double min, double max) {
