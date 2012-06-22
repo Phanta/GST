@@ -27,7 +27,7 @@ public class DataTest {
 	public void testLoad() {
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\uniImplTest", true);
 		System.out.println(usds.getComment());
-		usds.setName("der neue Name ist immer besser");
+		usds.setName(null);
 		usds.save();
 		usds.close();
 	}

@@ -12,14 +12,15 @@ import org.unisens.UnisensParseException;
 import org.unisens.ri.UnisensImpl;
 
 /**
- * This is a convenience wrapper class for an org.unisens.Unisens object.
+ * This is a convenience wrapper class for org.unisens.Unisens objects.
  * @author Enrico Grunitz
- * @version 0.1 (21.06.2012)
+ * @version 0.1 (22.06.2012)
  */
 public class UnisensDataset {
-	/** key for custom attribute name */			protected static final String KEY_NAME = "DatasetName";
+	/** key for custom attribute: name */			protected static final String KEY_NAME = "DatasetName";
 	
 	/** number of objects generated */				private static int datasetCount = 0;
+	
 	/** name of this dataset */						private String name = "";
 	/** the unisens object enclosed */				private Unisens us = null;
 	

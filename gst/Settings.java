@@ -58,8 +58,8 @@ public class Settings {
 	 * @author Enrico Grunitz
 	 */
 	public static class UI {
-		/** Value for left aligned Sidebar. */			public static final Boolean SIDEBAR_LEFT = true;
-		/** Value for right aligned Sidebar. */			public static final Boolean SIDEBAR_RIGHT = false;
+		/** Value for left aligned Sidebar. */			public static final boolean SIDEBAR_LEFT = true;
+		/** Value for right aligned Sidebar. */			public static final boolean SIDEBAR_RIGHT = false;
 		
 		/** dimension of the main window */				private Dimension dimMainWindow;
 		/** title string of main window */				private String titleMainWindow;

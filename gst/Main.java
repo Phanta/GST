@@ -25,6 +25,7 @@ public abstract class Main {
 	 * @param args command line parameters (not evaluated)
 	 */
 	public static void main(String[] args) {
+		System.out.println(System.getProperty("java.class.path"));
 		main = new MainWindow();
 		
 		sv = new SignalView[MAXSIGNALS];
@@ -33,13 +34,6 @@ public abstract class Main {
 		main.revalidate();
 		main.repaint();
 
-/*		rescale(0, 1000);
-		rescale(1000, 11000);
-		rescale(11000, 111000);
-		rescale(111000, 311000);
-		rescale(311000, 811000);
-		rescale(0, 1000000);
-*/		
 		DataTest dt = new DataTest();
 		dt.testGenerate();
 		dt.testLoad();
