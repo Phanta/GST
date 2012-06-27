@@ -4,6 +4,7 @@
 
 package gst;
 
+import gst.test.DataTest;
 import gst.ui.MainWindow;
 import gst.ui.SignalPanel;
 import gst.ui.SignalView;
@@ -12,7 +13,7 @@ import gst.ui.SignalViewFactory;
 /**
  * Class for the public static void main(String[] args) function.
  * @author Enrico Grunitz
- * @version 0.1 (20.06.2012)
+ * @version 0.1 (27.06.2012)
  */
 public abstract class Main {
 	
@@ -25,7 +26,6 @@ public abstract class Main {
 	 * @param args command line parameters (not evaluated)
 	 */
 	public static void main(String[] args) {
-		System.out.println(System.getProperty("java.class.path"));
 		main = new MainWindow();
 		
 		sv = new SignalView[MAXSIGNALS];
@@ -37,6 +37,9 @@ public abstract class Main {
 		DataTest dt = new DataTest();
 		dt.testGenerate();
 		dt.testLoad();
+		dt.loadAndPrintIds();
+		dt.loadAndPrintContentClasses();
+		dt.loadAndPrintEntryTypes();
 	}
 	
 	private static void generateSignalViews(int numSignals, int numDataPoints) {
