@@ -1,0 +1,17 @@
+../src/gst/Main.java
+../src/gst/Settings.java
+../src/gst/data/UnisensDataset.java
+../src/gst/test/DataTest.java
+../src/gst/ui/MainWindow.java
+../src/gst/ui/Menus.java
+../src/gst/ui/Sidebar.java
+../src/gst/ui/SignalOverview.java
+../src/gst/ui/SignalPanel.java
+../src/gst/ui/SignalView.java
+../src/gst/ui/SignalViewFactory.java
+../src/gst/ui/StatusBar.java
+../src/gst/ui/Toolbar.java
+../src/gst/ui/layout/ComponentArrangement.java
+../src/gst/ui/layout/MultiSplit.java
+../src/gst/ui/layout/SignalPanelLayoutManager.java
+../src/gst/ui/layout/VerticalLayoutManager.java

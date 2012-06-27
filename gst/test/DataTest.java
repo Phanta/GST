@@ -24,6 +24,7 @@ public class DataTest {
 	
 	public void testGenerate() {
 		testing("testGenerate(void)");
+		// DEBUG absolute path
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\uniImplTest", true);
 		usds.setComment("this is a test dataset");
 		usds.save();
@@ -32,6 +33,7 @@ public class DataTest {
 	
 	public void testLoad() {
 		testing("testLoad(void)");
+		// DEBUG absolute path
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\uniImplTest", true);
 		echo(usds.getComment());
 		usds.setName(null);
@@ -42,6 +44,7 @@ public class DataTest {
 	
 	public void loadAndPrintIds() {
 		testing("loadAndPrintIds(void)");
+		// DEBUG absolute path
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_001\\Example_001", true);
 		List<String> ids = usds.getDataIds();
 		Iterator<String> it = ids.iterator();
@@ -59,6 +62,7 @@ public class DataTest {
 	
 	public void loadAndPrintContentClasses() {
 		testing("loadAndPrintClasses(void)");
+		// DEBUG absolute path
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_001\\Example_001", true);
 		List<String> ids = usds.getContentClasses();
 		Iterator<String> it = ids.iterator();
@@ -72,6 +76,7 @@ public class DataTest {
 
 	public void loadAndPrintEntryTypes() {
 		testing("loadAndPrintClasses(void)");
+		// DEBUG absolute path
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_001\\Example_001", true);
 		List<EntryType> ids = usds.getEntryTypes();
 		Iterator<EntryType> it = ids.iterator();
