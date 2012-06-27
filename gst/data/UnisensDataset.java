@@ -58,6 +58,11 @@ public class UnisensDataset {
 			}
 		}
 		
+		/**
+		 * Returns the corresponding EntryType of the given Entry.
+		 * @param entry the entry to which the type should be generated
+		 * @return type of the given entry
+		 */
 		public static EntryType getType(Entry entry) {
 			if(entry instanceof SignalEntry) {
 				return SIGNAL;

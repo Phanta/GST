@@ -11,15 +11,16 @@ import gst.data.UnisensDataset;
 import gst.data.UnisensDataset.EntryType;
 
 /**
- * 
+ * Class to contain static tests on some components of the programm. functions in this class are not commented due to the fact they change
+ * frequently or are never touched again.
  * @author Enrico Grunitz
- * @version 0.1 (27.06.2012)
+ * @version 2 (27.06.2012)
  */
 public class DataTest {
 	UnisensDataset usds = null;
 	
 	public DataTest() {
-		
+		return;
 	}
 	
 	public void testGenerate() {

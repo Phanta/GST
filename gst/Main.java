@@ -22,7 +22,7 @@ public abstract class Main {
 	private static MainWindow main;
 	
 	/**
-	 * The run program function.
+	 * I give you three chances to guess the purpose of this function. Hint: !cigam s'tI
 	 * @param args command line parameters (not evaluated)
 	 */
 	public static void main(String[] args) {
