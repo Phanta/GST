@@ -22,13 +22,13 @@ import javax.swing.KeyStroke;
 /**
  * Menus represent the Menubar of the Application. Implemented as Singleton.
  * 
- * @version 0.1.1 (22.05.2012)
+ * @version 0.1.2 (27.06.2012)
  * @author Enrico Grunitz
  */
 public class Menus extends JMenuBar {
 	
 	private static final long serialVersionUID = 1L;
-	private static Menus myself = new Menus();
+	private static final Menus myself = new Menus();
 	
 	/**
 	 * @return the Instance of the Menubar

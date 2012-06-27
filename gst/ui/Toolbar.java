@@ -10,16 +10,27 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 
+/**
+ * Toolbar of the main window.
+ * @author Enrico Grunitz
+ * @version 0.1 (27.06.2012)
+ */
 public class Toolbar extends JToolBar{
-	private static final long serialVersionUID = 1L;
-	private static Toolbar myself = new Toolbar();
+	/** srialization ID */								private static final long serialVersionUID = 1L;
+	/** singleton instance of this class */				private static final Toolbar myself = new Toolbar();
 	
+	/**
+	 * Returns Singleton instance of this class.
+	 * @return the instance
+	 */
 	static Toolbar getInstance() {
 		return myself;
 	}
 
-	// one and only Ctor
-	protected Toolbar() {
+	/**
+	 * Constructor. One. And. Only.
+	 */
+	private Toolbar() {
 		this.setSize(800,50);
 		JButton btn01 = new JButton("Beenden");
 		// quick'n'dirty test actionlistener

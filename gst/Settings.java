@@ -8,11 +8,11 @@ import java.awt.Dimension;
 
 /**  
  * Settings is used to store global settings of the behavior of the program. Implemented as Singleton.
- * @version 0.2.0 (04 06.2012)
+ * @version 0.2.1 (27 06.2012)
  * @author Enrico Grunitz 
  */
 public class Settings {
-	/** Singleton instance of this class. */			private static Settings myself = new Settings();
+	/** Singleton instance of this class. */			private static final Settings myself = new Settings();
 	
 	/** sub settings of the user interface */			public UI ui;
 	
