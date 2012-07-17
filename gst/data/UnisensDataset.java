@@ -183,7 +183,7 @@ public class UnisensDataset {
 	}
 	
 	/**
-	 * Returns the Entry with the geven ID.
+	 * Returns the Entry with the given ID.
 	 * @param entryId the ID of the requested entry
 	 * @return the entry object
 	 */

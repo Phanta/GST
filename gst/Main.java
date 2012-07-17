@@ -13,7 +13,7 @@ import gst.ui.SignalViewFactory;
 /**
  * Class for the public static void main(String[] args) function.
  * @author Enrico Grunitz
- * @version 0.1 (27.06.2012)
+ * @version 0.1 (17.07.2012)
  */
 public abstract class Main {
 	
@@ -40,6 +40,8 @@ public abstract class Main {
 		dt.loadAndPrintIds();
 		dt.loadAndPrintContentClasses();
 		dt.loadAndPrintEntryTypes();
+		dt.signalControllerTest();
+		dt.arrayTest();
 	}
 	
 	private static void generateSignalViews(int numSignals, int numDataPoints) {
