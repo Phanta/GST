@@ -9,10 +9,12 @@ import java.util.List;
 
 import org.jfree.data.xy.XYSeriesCollection;
 import org.unisens.SignalEntry;
+import org.unisens.ValuesEntry;
 
 import gst.data.SignalController;
 import gst.data.UnisensDataset;
 import gst.data.UnisensDataset.EntryType;
+import gst.data.ValueController;
 import gst.data.ViewController;
 import gst.ui.SignalPanel;
 import gst.ui.SignalView;
@@ -174,6 +176,21 @@ public class DataTest {
 		SignalPanel.getInstance().addSignal(csv);
 		csv.setTimeAxisBounds(20.0, 40.0);
 		testEnd();
+	}
+	
+	public void testValueController() {
+		testing("testValueController(void) -> Example_003", 2);
+		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_003", true);
+		echo("loading dataset 'Example_003'");
+		ViewController vc = new ValueController((ValuesEntry) usds.getEntry("bloodpressure.csv"));
+		echo("generated ValueController");
+		test--;
+		((ValueController)vc).setChannelToControl("systolisch");
+		echo("selected channel 'systolisch'");
+		test--;
+		
+		testEnd();
+		usds.close();
 	}
 	
 	public void arrayTest() {

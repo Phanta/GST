@@ -31,11 +31,23 @@ public class SignalView extends ChartPanel {
 
 	/* * * Constructors * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
+	/**
+	 * Constructor using a chart. X-Axis range is set to 0.0 - 30.0.
+	 * @param chart the chart to use
+	 * @param useBuffer boolean for double buffered chart
+	 */
 	public SignalView(JFreeChart chart, boolean useBuffer) {
 		this(chart, useBuffer, 0.0, 30.0);
 		return;
 	}
 	
+	/**
+	 * Base constructor using full version of ChartPanel constructor.
+	 * @param chart chart to display
+	 * @param useBuffer use double buffering?
+	 * @param startTime starting value of x-axis
+	 * @param endTime end value of x-axis
+	 */
 	private SignalView(JFreeChart chart, boolean useBuffer, double startTime, double endTime) {
 		super(/*the chart*/			chart,
 			  /*width, height*/		0, 0,
@@ -47,28 +59,28 @@ public class SignalView extends ChartPanel {
 			  /*enable save*/		true,
 			  /*enable print*/		false,
 			  /*enable zoom*/		true,
-			  /*enable tooltips*/	true);
+			  /*enable tooltips*/	false);
+		if(endTime < startTime) {
+			double temp = endTime;
+			endTime = startTime;
+			startTime = temp;
+		}
 		this.startTime = startTime;
 		this.endTime = endTime;
-		needNewData = true;
+		chart.getXYPlot().getDomainAxis().setRange(startTime, endTime);
+		needNewData = true;	// there is no controller yet
 		return;
 	}
 	
-/*	public SignalView(String name, String yAxisLabel) {
-		super(null);
-		this.name = name;
-		this.getChart().getXYPlot().getRangeAxis().setLabel(yAxisLabel);
-	}
-*/	
-
 	/* * * methods * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
 	/**
+	 * Needed for catching width changes to this component. Refreshes data of the plot if necessary. 
 	 * @see java.awt.Component#setBounds(int, int, int, int)
 	 */
 	@Override
 	public void setBounds(int x, int y, int width, int height) {
-		if(needNewData == true && controller != null) {
+		if(controller != null && (width != this.getWidth() || needNewData == true)) {
 			this.getChart().getXYPlot().setDataset(controller.getDataPoints(startTime, endTime, width));
 			needNewData = false;
 		}
@@ -81,6 +93,9 @@ public class SignalView extends ChartPanel {
 	 */
 	private void setController(ViewController ctrl) {
 		this.controller = ctrl;
+		if(needNewData == true) {
+			this.getChart().getXYPlot().setDataset(controller.getDataPoints(startTime, endTime, this.getWidth()));
+		}
 		return;
 	}
 	
@@ -90,6 +105,11 @@ public class SignalView extends ChartPanel {
 	 * @param end ending time
 	 */
 	public void setTimeAxisBounds(double start, double end) {
+		if(end < start) {
+			double temp = end;
+			end = start;
+			start = temp;
+		}
 		if(start != startTime || end != endTime) {
 			startTime = start;
 			endTime = end;
@@ -100,7 +120,6 @@ public class SignalView extends ChartPanel {
 			}
 			this.getChart().getXYPlot().getDomainAxis().setRange(start, end);
 		}
-		this.getChart().getXYPlot().getDomainAxis().setRange(start, end);
 		return;
 	}
 	
@@ -155,6 +174,7 @@ public class SignalView extends ChartPanel {
 		chart = new JFreeChart(null, plot);
 		chart.getXYPlot().getRangeAxis().setLabelInsets(new RectangleInsets(1, 1, 1, 1));
 		chart.getXYPlot().getRangeAxis().setTickLabelInsets(new RectangleInsets(1, 1, 1, 1));
+		chart.getXYPlot().getRangeAxis().setLabel(controller.getPhysicalUnit());
 		chart.setAntiAlias(false);			// clean charts ...
 		chart.setTextAntiAlias(true);		// ... but fancy fonts
 		AxisSpace as = new AxisSpace();

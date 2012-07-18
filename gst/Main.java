@@ -45,6 +45,7 @@ public abstract class Main {
 		dt.testControlledSignalView();
 		main.revalidate();
 		main.repaint();
+		dt.testValueController();
 
 		return;
 	}
