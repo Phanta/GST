@@ -13,7 +13,7 @@ import org.unisens.SignalEntry;
 /**
  * ViewController for SignalEntry-type data in an UnisensDataset.
  * @author Enrico Grunitz
- * @version 0.1 (17.07.2012)
+ * @version 0.1 (18.07.2012)
  */
 public class SignalController extends ViewController {
 	
@@ -63,6 +63,9 @@ public class SignalController extends ViewController {
 		double sampleRate = ((SignalEntry)this.entry).getSampleRate();
 		XYSeries series = new XYSeries("");
 		XYSeriesCollection dataset = new XYSeriesCollection(series);
+		if(maxPoints <= 0) {
+			return dataset;
+		}
 		// calculate indices from time variables
 		long iStart = (long)Math.ceil((startTime - this.basetime) * sampleRate); 
 		long iEnd = (long)Math.round((endTime - this.basetime) * sampleRate);

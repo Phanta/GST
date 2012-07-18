@@ -14,6 +14,8 @@ import gst.data.SignalController;
 import gst.data.UnisensDataset;
 import gst.data.UnisensDataset.EntryType;
 import gst.data.ViewController;
+import gst.ui.SignalPanel;
+import gst.ui.SignalView;
 
 /**
  * Class to contain static tests on some components of the programm. functions in this class are not commented due to the fact they change
@@ -163,8 +165,19 @@ public class DataTest {
 		return;
 	}
 
+	public void testControlledSignalView() {
+		testing("controllerTest(void) -> Example_002", 0);
+		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_002\\Example_002", true);
+		ViewController vc = new SignalController((SignalEntry) usds.getEntry("ecg.bin"));
+		((SignalController)vc).setChannelToControl("Brustgurt");
+		SignalView csv = SignalView.createControlledView(vc);
+		SignalPanel.getInstance().addSignal(csv);
+		csv.setTimeAxisBounds(20.0, 40.0);
+		testEnd();
+	}
+	
 	public void arrayTest() {
-		testing("arrayTest(void)");
+		testing("arrayTest(void)", 0);
 		int[][] ar = new int[5][3];
 		echo("" + ar.length);
 		testEnd();

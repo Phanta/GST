@@ -42,6 +42,11 @@ public abstract class Main {
 		dt.loadAndPrintEntryTypes();
 		dt.signalControllerTest();
 		dt.arrayTest();
+		dt.testControlledSignalView();
+		main.revalidate();
+		main.repaint();
+
+		return;
 	}
 	
 	private static void generateSignalViews(int numSignals, int numDataPoints) {
