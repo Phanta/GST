@@ -70,11 +70,11 @@ public class SignalController extends ViewController {
 		long iStart = (long)Math.ceil((startTime - this.basetime) * sampleRate); 
 		long iEnd = (long)Math.round((endTime - this.basetime) * sampleRate);
 		// read data from file
-		double [][] dataArray = null;
+		double[][] dataArray = null;
 		try {
 			dataArray = ((SignalEntry)this.entry).readScaled(iStart, (int)(iEnd - iStart));
 		} catch(IOException ioe) {
-			System.out.println("couldn't read data from file");
+			System.out.println("couldn't read signal data from file");
 			System.exit(1);
 		}
 		// add data to collection

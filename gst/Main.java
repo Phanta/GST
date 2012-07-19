@@ -13,12 +13,12 @@ import gst.ui.SignalViewFactory;
 /**
  * Class for the public static void main(String[] args) function.
  * @author Enrico Grunitz
- * @version 0.1 (17.07.2012)
+ * @version 0.1 (19.07.2012)
  */
 public abstract class Main {
 	
 	private static SignalView[] sv;
-	private static final int MAXSIGNALS = 5;
+	private static final int MAXSIGNALS = 2;
 	private static MainWindow main;
 	
 	/**

@@ -108,7 +108,7 @@ public class DataTest {
 	 * Testing functions of ViewController and SignalController with Unisens example 002.
 	 */
 	public void signalControllerTest() {
-		testing("controllerTest(void) -> Example_002", 11);
+		testing("signalControllerTest(void) -> Example_002", 11);
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_002\\Example_002", true);
 		ViewController vc = new SignalController((SignalEntry) usds.getEntry("ecg.bin"));
 		((SignalController)vc).setChannelToControl("Brustgurt");
@@ -168,7 +168,7 @@ public class DataTest {
 	}
 
 	public void testControlledSignalView() {
-		testing("controllerTest(void) -> Example_002", 0);
+		testing("testControlledSignalView(void) -> Example_002", 0);
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_002\\Example_002", true);
 		ViewController vc = new SignalController((SignalEntry) usds.getEntry("ecg.bin"));
 		((SignalController)vc).setChannelToControl("Brustgurt");
@@ -188,7 +188,10 @@ public class DataTest {
 		((ValueController)vc).setChannelToControl("systolisch");
 		echo("selected channel 'systolisch'");
 		test--;
-		
+		SignalView cvsv = SignalView.createControlledView(vc);
+		SignalPanel.getInstance().addSignal(cvsv, true);
+		cvsv.setTimeAxisBounds(0.0, 3600.0);
+		echo("displaying data");
 		testEnd();
 		usds.close();
 	}
