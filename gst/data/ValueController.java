@@ -8,33 +8,34 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.unisens.Event;
 import org.unisens.Value;
 import org.unisens.ValuesEntry;
 
 /**
- * 
+ * {@code ViewController} implementation for {@code ValuesEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
  * @version 0.1 (19.07.2012)
+ * @see gst.data.DataController
  */
-public class ValueController extends ViewController {
+public class ValueController extends DataController {
 	/** index of controlled channel */				private int channelIndex = 0;
 	/** sample number of first entry */				private long firstSampleNumber = 0;
 	/** sample number of last entry */				private long lastSampleNumber = 0;
-	/** number of samples */						private long numSamples = 0;
 
 	public ValueController(ValuesEntry entry) {
 		super(entry);
 		this.channelCount = entry.getChannelCount();
 		channelIndex = 0;
-		this.numSamples = entry.getCount();
 		Value[] firstData = null;
 		Value[] lastData = null;
 		try {
 			firstData = entry.read(0, 1);
-			lastData = entry.read(this.numSamples - 1, 1);
+			lastData = entry.read(entry.getCount() - 1, 1);
 		} catch(IOException ioe) {
 			System.out.println("couldn't read first and last value entry of " + entry.getId());
 			return;
@@ -75,7 +76,7 @@ public class ValueController extends ViewController {
 	}
 
 	/**
-	 * @see gst.data.ViewController#getDataPoints(double, double, int)
+	 * @see gst.data.DataController#getDataPoints(double, double, int)
 	 */
 	@Override
 	public XYSeriesCollection getDataPoints(double startTime, double endTime, int maxPoints) {
@@ -84,6 +85,12 @@ public class ValueController extends ViewController {
 		XYSeriesCollection dataset = new XYSeriesCollection(series);
 		if(maxPoints <= 0) {
 			return dataset;
+		}
+		if(endTime < startTime) {
+			// i can handle negative time-spans
+			double temp = startTime;
+			startTime = endTime;
+			endTime = temp;
 		}
 		// calculate indices from time variables
 		long iStart = (long)Math.ceil((startTime - this.basetime) * sampleRate); 
@@ -140,7 +147,7 @@ public class ValueController extends ViewController {
 	}
 
 	/**
-	 * @see gst.data.ViewController#getMaxX()
+	 * @see gst.data.DataController#getMaxX()
 	 */
 	@Override
 	public double getMaxX() {
@@ -148,7 +155,7 @@ public class ValueController extends ViewController {
 	}
 
 	/**
-	 * @see gst.data.ViewController#getMinX()
+	 * @see gst.data.DataController#getMinX()
 	 */
 	@Override
 	public double getMinX() {
@@ -156,10 +163,18 @@ public class ValueController extends ViewController {
 	}
 
 	/**
-	 * @see gst.data.ViewController#getPhysicalUnit()
+	 * @see gst.data.DataController#getPhysicalUnit()
 	 */
 	@Override
 	public String getPhysicalUnit() {
 		return ((ValuesEntry)this.entry).getUnit();
+	}
+
+	/**
+	 * @see gst.data.DataController#getAnnotations(double, double)
+	 */
+	@Override
+	public AnnotationList getAnnotations(double startTime, double endTime) {
+		return null;
 	}
 }

@@ -1,20 +1,23 @@
 /**
- * ViewController.java created on 17.07.2012
+ * DataController.java created on 17.07.2012
  */
 
 package gst.data;
+
+import java.util.List;
 
 import gst.data.UnisensDataset.EntryType;
 
 import org.jfree.data.xy.XYSeriesCollection;
 import org.unisens.Entry;
+import org.unisens.Event;
 
 /**
- * Controller class for managing data access of SignalViews.
+ * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1 (17.07.2012)
+ * @version 0.1 (18.07.2012)
  */
-public abstract class ViewController {
+public abstract class DataController {
 	/** the entry of this controller */				protected Entry entry;
 	/** type of the controlled entry */				protected EntryType type;
 	/** measurement time of the first entry */		protected double basetime;
@@ -25,7 +28,7 @@ public abstract class ViewController {
 	 * @param ds dataset which contains the entry
 	 * @param entryId ID of the entry inside the dataset
 	 */
-	protected ViewController(UnisensDataset ds, String entryId) {
+	protected DataController(UnisensDataset ds, String entryId) {
 		if(ds == null) {
 			throw new NullPointerException();
 		}
@@ -43,7 +46,7 @@ public abstract class ViewController {
 	 * Constructs the controller object for the given entry.
 	 * @param entry the entry (not null)
 	 */
-	protected ViewController(Entry entry) {
+	protected DataController(Entry entry) {
 		if(entry == null) {
 			throw new NullPointerException();
 		}
@@ -62,14 +65,32 @@ public abstract class ViewController {
 		return channelCount;
 	}
 	
+	/**
+	 * Returns true if the controlled entry is annotation like.
+	 * @return true if the data is annotation like, else false 
+	 */
+	public boolean isAnnotation() {
+		if(type.equals(EntryType.EVENT)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	/**
-	 * Returns an array of data points as double[2][x] where double[0][x] is the value and double[1][x] is the time. All data points are
-	 * between {@code startTime} and {@code endTime}.
+	 * Returns a {@code List} of the annotations of controlled {@code Entry}. All annotations are between {@code startTime} and
+	 * {@code endTime}. If the entry doesn't has annotations null is returned.
+	 * @param startTime beginning time
+	 * @param endTime ending time
+	 * @return list of annotations or null
+	 */
+	abstract public AnnotationList getAnnotations(double startTime, double endTime);
+	/**
+	 * Returns the data points as an {@code XYSeriesCollection}. All data points are between {@code startTime} and {@code endTime}.
 	 * @param startTime beginning time
 	 * @param endTime ending time
 	 * @param maxPoints number of maximum data points
-	 * @return the array of data points
+	 * @return the array of data points or null if there are only annotations
 	 */
 	abstract public XYSeriesCollection getDataPoints(double startTime, double endTime, int maxPoints);
 	/**

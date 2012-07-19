@@ -5,17 +5,20 @@
 package gst.data;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.unisens.Event;
 import org.unisens.SignalEntry;
 
 /**
- * ViewController for SignalEntry-type data in an UnisensDataset.
+ * {@code ViewController} implementation for {@code SignalEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
  * @version 0.1 (18.07.2012)
+ * @see gst.data.DataController
  */
-public class SignalController extends ViewController {
+public class SignalController extends DataController {
 	
 	/** index of controlled channel */				private int channelIndex;
 
@@ -56,7 +59,7 @@ public class SignalController extends ViewController {
 	}
 
 	/**
-	 * @see gst.data.ViewController#getDataPoints(double, double, int)
+	 * @see gst.data.DataController#getDataPoints(double, double, int)
 	 */
 	@Override
 	public XYSeriesCollection getDataPoints(double startTime, double endTime, int maxPoints) {
@@ -65,6 +68,12 @@ public class SignalController extends ViewController {
 		XYSeriesCollection dataset = new XYSeriesCollection(series);
 		if(maxPoints <= 0) {
 			return dataset;
+		}
+		if(endTime < startTime) {
+			// i can handle negative time-spans
+			double temp = startTime;
+			startTime = endTime;
+			endTime = temp;
 		}
 		// calculate indices from time variables
 		long iStart = (long)Math.ceil((startTime - this.basetime) * sampleRate); 
@@ -94,7 +103,7 @@ public class SignalController extends ViewController {
 	}
 	
 	/**
-	 * @see gst.data.ViewController#getMinX()
+	 * @see gst.data.DataController#getMinX()
 	 */
 	@Override
 	public double getMinX() {
@@ -102,7 +111,7 @@ public class SignalController extends ViewController {
 	}
 	
 	/**
-	 * @see gst.data.ViewController#getMaxX()
+	 * @see gst.data.DataController#getMaxX()
 	 */
 	@Override
 	public double getMaxX() {
@@ -110,10 +119,18 @@ public class SignalController extends ViewController {
 	}
 	
 	/**
-	 * @see gst.data.ViewController#getPhysicalUnit()
+	 * @see gst.data.DataController#getPhysicalUnit()
 	 */
 	@Override
 	public String getPhysicalUnit() {
 		return ((SignalEntry)entry).getUnit();
+	}
+
+	/**
+	 * @see gst.data.DataController#getAnnotations(double, double)
+	 */
+	@Override
+	public AnnotationList getAnnotations(double startTime, double endTime) {
+		return null;
 	}
 }

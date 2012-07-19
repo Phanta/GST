@@ -10,12 +10,15 @@ import java.util.List;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.unisens.SignalEntry;
 import org.unisens.ValuesEntry;
+import org.unisens.EventEntry;
 
+import gst.data.AnnotationController;
+import gst.data.AnnotationList;
 import gst.data.SignalController;
 import gst.data.UnisensDataset;
 import gst.data.UnisensDataset.EntryType;
 import gst.data.ValueController;
-import gst.data.ViewController;
+import gst.data.DataController;
 import gst.ui.SignalPanel;
 import gst.ui.SignalView;
 
@@ -105,60 +108,60 @@ public class DataTest {
 	}
 	
 	/**
-	 * Testing functions of ViewController and SignalController with Unisens example 002.
+	 * Testing functions of DataController and SignalController with Unisens example 002.
 	 */
 	public void signalControllerTest() {
 		testing("signalControllerTest(void) -> Example_002", 11);
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_002\\Example_002", true);
-		ViewController vc = new SignalController((SignalEntry) usds.getEntry("ecg.bin"));
-		((SignalController)vc).setChannelToControl("Brustgurt");
+		DataController dataCtrl = new SignalController((SignalEntry) usds.getEntry("ecg.bin"));
+		((SignalController)dataCtrl).setChannelToControl("Brustgurt");
 		echo("channel 'Brustgurt' of 'ecg.bin' exists");
 		test--;
 		try{
-			((SignalController)vc).setChannelToControl("brustgurt");
+			((SignalController)dataCtrl).setChannelToControl("brustgurt");
 		} catch(Exception e) {
 			echo("channel 'brustgurt' of 'ecg.bin' doesn't exist ... fine for me");
 			test--;
 		}
-		((SignalController)vc).setChannelToControl(0);
+		((SignalController)dataCtrl).setChannelToControl(0);
 		echo("channel '0' of 'ecg.bin' exists");
 		test--;
 		try{
-			((SignalController)vc).setChannelToControl(1);
+			((SignalController)dataCtrl).setChannelToControl(1);
 		} catch(Exception e) {
 			echo("channel '1' of 'ecg.bin' doesn't exist ... fine for me");
 			test--;
 		}
 		try{
-			((SignalController)vc).setChannelToControl(-2);
+			((SignalController)dataCtrl).setChannelToControl(-2);
 		} catch(Exception e) {
 			echo("channel '-2' of 'ecg.bin' doesn't exist ... fine for me");
 			test--;
 		}
-		echo("first data entry @ time " + vc.getMinX());
-		if(vc.getMinX() == 0) {
+		echo("first data entry @ time " + dataCtrl.getMinX());
+		if(dataCtrl.getMinX() == 0) {
 			test--;
 		}
-		echo("last data entry @ time " + vc.getMaxX());
-		if(vc.getMaxX() == 300) {
+		echo("last data entry @ time " + dataCtrl.getMaxX() + " (-> 300)");
+		if(dataCtrl.getMaxX() == 300) {
 			test--;
 		}
-		echo("data stored in units of '" + vc.getPhysicalUnit() + "'");
-		if(vc.getPhysicalUnit().equals("mV")) {
+		echo("data stored in units of '" + dataCtrl.getPhysicalUnit() + "' (-> 'mV')");
+		if(dataCtrl.getPhysicalUnit().equals("mV")) {
 			test--;
 		}
-		XYSeriesCollection xysc = vc.getDataPoints(0.0, 300.0, 60000);
-		echo("collection contains " + xysc.getSeries(0).getItemCount() + " Items");
+		XYSeriesCollection xysc = dataCtrl.getDataPoints(0.0, 300.0, 60000);
+		echo("collection contains " + xysc.getSeries(0).getItemCount() + " Items (-> 60000)");
 		if(xysc.getSeries(0).getItemCount() == 60000) {
 			test--;
 		}
-		xysc = vc.getDataPoints(0.0, 150.0, 60000);
-		echo("half-collection contains " + xysc.getSeries(0).getItemCount() + " Items");
+		xysc = dataCtrl.getDataPoints(0.0, 150.0, 60000);
+		echo("half-collection contains " + xysc.getSeries(0).getItemCount() + " Items (-> 30000)");
 		if(xysc.getSeries(0).getItemCount() == 30000) {
 			test--;
 		}
-		xysc = vc.getDataPoints(0.0, 150.0, 1000);
-		echo("1k-item-collection contains " + xysc.getSeries(0).getItemCount() + " Items");
+		xysc = dataCtrl.getDataPoints(0.0, 150.0, 1000);
+		echo("1k-item-collection contains " + xysc.getSeries(0).getItemCount() + " Items (-> 1000)");
 		if(xysc.getSeries(0).getItemCount() == 1000) {
 			test--;
 		}
@@ -167,28 +170,34 @@ public class DataTest {
 		return;
 	}
 
+	/**
+	 * Test of working SignalView controlled by SignalController.
+	 */
 	public void testControlledSignalView() {
 		testing("testControlledSignalView(void) -> Example_002", 0);
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_002\\Example_002", true);
-		ViewController vc = new SignalController((SignalEntry) usds.getEntry("ecg.bin"));
-		((SignalController)vc).setChannelToControl("Brustgurt");
-		SignalView csv = SignalView.createControlledView(vc);
+		DataController dataCtrl = new SignalController((SignalEntry) usds.getEntry("ecg.bin"));
+		((SignalController)dataCtrl).setChannelToControl("Brustgurt");
+		SignalView csv = SignalView.createControlledView(dataCtrl);
 		SignalPanel.getInstance().addSignal(csv);
 		csv.setTimeAxisBounds(20.0, 40.0);
 		testEnd();
 	}
 	
+	/**
+	 * Function test of ValueController including SignalView interaction.
+	 */
 	public void testValueController() {
 		testing("testValueController(void) -> Example_003", 2);
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_003", true);
 		echo("loading dataset 'Example_003'");
-		ViewController vc = new ValueController((ValuesEntry) usds.getEntry("bloodpressure.csv"));
+		DataController dataCtrl = new ValueController((ValuesEntry) usds.getEntry("bloodpressure.csv"));
 		echo("generated ValueController");
 		test--;
-		((ValueController)vc).setChannelToControl("systolisch");
+		((ValueController)dataCtrl).setChannelToControl("systolisch");
 		echo("selected channel 'systolisch'");
 		test--;
-		SignalView cvsv = SignalView.createControlledView(vc);
+		SignalView cvsv = SignalView.createControlledView(dataCtrl);
 		SignalPanel.getInstance().addSignal(cvsv, true);
 		cvsv.setTimeAxisBounds(0.0, 3600.0);
 		echo("displaying data");
@@ -196,6 +205,71 @@ public class DataTest {
 		usds.close();
 	}
 	
+	/**
+	 * Test of AnnotationController.
+	 */
+	public void testAnnotationController() {
+		testing("testAnnotationController(void) -> Example_003", 7);
+		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_003", true);
+		echo("loading dataset 'Example_003'");
+		DataController dataCtrl = new AnnotationController((EventEntry) usds.getEntry("trigger_reference.csv"));
+		echo("generated ValueController");
+		test--;
+		if(dataCtrl.isAnnotation() == true) {
+			echo("controller is an AnnotationController");
+			test--;
+		} else {
+			echo("controller isn't AnnotationController ... too bad :-(");
+		}
+		echo("time point of first event is " + dataCtrl.getMinX() + "s (-> 0.575s)");
+		if(dataCtrl.getMinX() == 0.575) {
+			test--;
+		}
+		echo("time point of last event is " + dataCtrl.getMaxX() + "s (-> 3599.857s)");
+		if(dataCtrl.getMaxX() == 3599.857) {
+			test--;
+		}
+		AnnotationList dataToDisplay = dataCtrl.getAnnotations(0, 84.0);
+		echo("annotations between 0 and 84 seconds: " + dataToDisplay.size() + " (-> 100)");
+		if(dataToDisplay.size() == 100) {
+			test--;
+		}
+		dataToDisplay = dataCtrl.getAnnotations(1657.0, 1994.0);
+		echo("annotations between 1657 and 1994 seconds: " + dataToDisplay.size() + " (-> 432)");
+		if(dataToDisplay.size() == 432) {
+			test--;
+		}
+		dataToDisplay = dataCtrl.getAnnotations(3333.0, 3600.0);
+		echo("annotations between 3333 and 3600 seconds: " + dataToDisplay.size() + " (-> 279)");
+		if(dataToDisplay.size() == 279) {
+			test--;
+		}
+		SignalView cvsv = SignalView.createControlledView(dataCtrl);
+		SignalPanel.getInstance().addSignal(cvsv, true);
+		cvsv.setTimeAxisBounds(0.0, 300.0);
+		echo("displaying data, not annotations");
+		
+		testEnd();
+		usds.close();
+	}
+	
+	public void testAnnotationZoom() {
+		testing("testAnnotationZoom(void) -> Example_002", 2);
+		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_002\\Example_002", true);
+		echo("loading dataset 'Example_002'");
+		DataController dataCtrl = new AnnotationController((EventEntry) usds.getEntry("qrs-Trigger.csv"));
+		echo("generated DataController");
+		test--;
+		SignalView csv = SignalView.createControlledView(dataCtrl);
+		SignalPanel.getInstance().addSignal(csv);
+		csv.setTimeAxisBounds(20.0, 40.0);
+		echo("displayed data");
+		test--;
+		testEnd();
+		usds.close();
+	}
+		
+	@Deprecated
 	public void arrayTest() {
 		testing("arrayTest(void)", 0);
 		int[][] ar = new int[5][3];

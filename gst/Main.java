@@ -18,7 +18,7 @@ import gst.ui.SignalViewFactory;
 public abstract class Main {
 	
 	private static SignalView[] sv;
-	private static final int MAXSIGNALS = 2;
+	private static final int MAXSIGNALS = 0;
 	private static MainWindow main;
 	
 	/**
@@ -35,18 +35,20 @@ public abstract class Main {
 		main.repaint();
 
 		DataTest dt = new DataTest();
+		dt.arrayTest();
 		dt.testGenerate();
 		dt.testLoad();
 		dt.loadAndPrintIds();
 		dt.loadAndPrintContentClasses();
 		dt.loadAndPrintEntryTypes();
 		dt.signalControllerTest();
-		dt.arrayTest();
 		dt.testControlledSignalView();
+		dt.testAnnotationZoom();
+		dt.testValueController();
+		dt.testAnnotationController();
 		main.revalidate();
 		main.repaint();
-		dt.testValueController();
-
+		
 		return;
 	}
 	

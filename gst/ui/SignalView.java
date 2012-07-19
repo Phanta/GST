@@ -3,17 +3,23 @@ package gst.ui;
  * SignalView.java created 31.05.2012
  */
 
-import gst.data.ViewController;
+import java.util.Iterator;
+import java.util.List;
+
+import gst.data.AnnotationList;
+import gst.data.DataController;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
+import org.unisens.Event;
 
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
@@ -24,7 +30,7 @@ public class SignalView extends ChartPanel {
 
 	/** default serialization ID */						private static final long serialVersionUID = 1L;
 	//** the default domain axis */						private static NumberAxis domainAxis = initDomainAxis();
-	/** the data accessor */							private ViewController controller = null;
+	/** the data accessor */							private DataController controller = null;
 	/** starting time of x-axis in seconds*/			private double startTime;
 	/** ending time of x-axis in seconds*/				private double endTime;
 	/** new data required */							private boolean needNewData;
@@ -82,6 +88,9 @@ public class SignalView extends ChartPanel {
 	public void setBounds(int x, int y, int width, int height) {
 		if(controller != null && (width != this.getWidth() || needNewData == true)) {
 			this.getChart().getXYPlot().setDataset(controller.getDataPoints(startTime, endTime, width));
+			if(controller.isAnnotation() == true) {
+				paintTimeAxisMarkers();
+			}
 			needNewData = false;
 		}
 		super.setBounds(x, y, width, height);
@@ -91,10 +100,14 @@ public class SignalView extends ChartPanel {
 	 * Sets the ViewController for this SignalView.
 	 * @param ctrl the controller to set
 	 */
-	private void setController(ViewController ctrl) {
+	private void setController(DataController ctrl) {
 		this.controller = ctrl;
 		if(needNewData == true) {
 			this.getChart().getXYPlot().setDataset(controller.getDataPoints(startTime, endTime, this.getWidth()));
+			if(controller.isAnnotation() == true) {
+				paintTimeAxisMarkers();
+			}
+			needNewData = false;
 		}
 		return;
 	}
@@ -116,6 +129,9 @@ public class SignalView extends ChartPanel {
 			needNewData = true;
 			if(controller != null) {
 				this.getChart().getXYPlot().setDataset(controller.getDataPoints(startTime, endTime, this.getWidth()));
+				if(controller.isAnnotation() == true) {
+					paintTimeAxisMarkers();
+				}
 				needNewData = false;
 			}
 			this.getChart().getXYPlot().getDomainAxis().setRange(start, end);
@@ -142,6 +158,27 @@ public class SignalView extends ChartPanel {
 		return;
 	}
 	
+	private void paintTimeAxisMarkers() {
+		if(controller == null || controller.isAnnotation() == false) {
+			return;			// nothing to do here
+		}
+		removeTimeAxisMarker();
+		AnnotationList annoList = controller.getAnnotations(startTime, endTime);
+		for(int i = 0; i < annoList.size(); i++) {
+			ValueMarker marker = new ValueMarker(annoList.getTime(i));
+			if(i == annoList.size() - 1) {
+				this.getChart().getXYPlot().addDomainMarker(0, marker, org.jfree.ui.Layer.FOREGROUND, true);
+			} else {
+				this.getChart().getXYPlot().addDomainMarker(0, marker, org.jfree.ui.Layer.FOREGROUND, false);
+			}
+		}
+		return;
+	}
+	
+	private void removeTimeAxisMarker() {
+		this.getChart().getXYPlot().clearDomainMarkers();
+	}
+	
 	/* * * static methods * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
 	/**
@@ -149,7 +186,7 @@ public class SignalView extends ChartPanel {
 	 * @param controller controller controlling the data for this view
 	 * @return the created SignaView
 	 */
-	public static final SignalView createControlledView(ViewController controller) {
+	public static final SignalView createControlledView(DataController controller) {
 		if(controller == null) {
 			throw new NullPointerException("controller for controlled SignalView must be non-null");
 		}
