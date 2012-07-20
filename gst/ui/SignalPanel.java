@@ -29,20 +29,18 @@ public class SignalPanel extends JPanel {
 	/** serialization ID */						private static final long serialVersionUID = 1L;
 	/** the singleton instance */				private static final SignalPanel myself = new SignalPanel();
 	
-	/** collection of the signalgraphs */		private Collection<SignalView> graphs;
+	/** collection of the signalgraphs */		private Collection<SignalView> graphs = new ArrayList<SignalView>(Settings.getInstance().getMaxSignals());
 	/** collection of resize controls */		private Collection controls;
 	
-	/** component arranger */					private ComponentArrangement compArr;
+	/** component arranger */					private ComponentArrangement compArr = new ComponentArrangement();
 	
 	/**
-	 * Only used constructor.
+	 * Private singleton constructor.
 	 */
 	private SignalPanel() {
 		super();
 		this.addComponentListener(new SignalPanelComponentAdapter());
 		this.setLayout(new SignalPanelLayoutManager());
-		graphs = new ArrayList<SignalView>(Settings.getInstance().getMaxSignals());
-		compArr = new ComponentArrangement();
 		compArr.setPattern(ComponentArrangement.EVENHEIGHTS);
 		// DEBUGCODE this button only serves debug purposes
 		Sidebar.getInstance().addDbgButtonAL(new ActionListener() {
@@ -112,7 +110,38 @@ public class SignalPanel extends JPanel {
 			return false;
 		}
 	}
+	
+	/**
+	 * Returns the {@code ComponentArrangement} object of this panel.
+	 * @return the component arranger
+	 */
+	/* package visibility */ ComponentArrangement getComponentArrangement() {
+		return compArr;
+	}
+	
+	/**
+	 * Returns the number of {@code SignalView}s of this panel.
+	 * @return number of {@code SignalView}s
+	 */
+	public int getNumSignalViews() {
+		return graphs.size();
+	}
 
+	/**
+	 * @see java.awt.Container#validate()
+	 */
+	@Override
+	public void revalidate() {
+		super.revalidate();
+		System.out.println("REVALIDATE");
+		if(graphs != null) {
+			// this case happens after call of super() in constructor
+			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
+			this.doLayout();
+			this.repaint();
+		}
+	}
+	
 	/**
 	 * ComponentAdapter to save new size of panel after resizing.
 	 * @author Enrico Grunitz

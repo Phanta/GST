@@ -58,6 +58,10 @@ public class ComponentArrangement {
 		return true;
 	}
 	
+	public int getPattern() {
+		return pattern;
+	}
+	
 	/**
 	 * Selects the component(s) for the pattern. 
 	 * @param index the INDEX
@@ -89,6 +93,8 @@ public class ComponentArrangement {
 	 * @param height height of the area to fill
 	 */
 	public void setPreferredSizes(Collection<Component> coll, int width, int height) {
+		//DEBUG
+		System.out.println("sPS() " + javax.swing.SwingUtilities.isEventDispatchThread());
 		if(coll == null) {
 			throw new NullPointerException();
 		}

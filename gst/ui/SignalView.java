@@ -3,6 +3,7 @@ package gst.ui;
  * SignalView.java created 31.05.2012
  */
 
+import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,13 +61,14 @@ public class SignalView extends ChartPanel {
 			  /*min width, heigth*/	0, 0,
 			  /*max width, heigth*/	Integer.MAX_VALUE, Integer.MAX_VALUE,
 			  /*use buffer*/		useBuffer,
-			  /*enable properties*/ false,
+			  /*enable properties*/ true,
 			  /*enable copy*/		false,
 			  /*enable save*/		true,
 			  /*enable print*/		false,
 			  /*enable zoom*/		true,
-			  /*enable tooltips*/	false);
+			  /*enable tooltips*/	true);
 		if(endTime < startTime) {
+			// swapping start and end time if needed 
 			double temp = endTime;
 			endTime = startTime;
 			startTime = temp;
@@ -75,6 +77,7 @@ public class SignalView extends ChartPanel {
 		this.endTime = endTime;
 		chart.getXYPlot().getDomainAxis().setRange(startTime, endTime);
 		needNewData = true;	// there is no controller yet
+		this.add(this.createPopupMenu(true, false, true, false, true));
 		return;
 	}
 	
@@ -158,6 +161,17 @@ public class SignalView extends ChartPanel {
 		return;
 	}
 	
+	// DEBUGCODE
+	@Override
+	public void setPreferredSize(Dimension d) {
+		super.setPreferredSize(d);
+		this.revalidate();
+		System.out.println("stress!");
+	}
+	
+	/**
+	 * Sets for all annotations given by the {@code DataController} DomainMarkers. 
+	 */
 	private void paintTimeAxisMarkers() {
 		if(controller == null || controller.isAnnotation() == false) {
 			return;			// nothing to do here

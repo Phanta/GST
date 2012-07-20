@@ -64,6 +64,8 @@ public class Settings {
 		/** dimension of the main window */				private Dimension dimMainWindow;
 		/** title string of main window */				private String titleMainWindow;
 		
+		/** show text labels in toolbar */				private boolean toolbarShowLabels;
+		
 		/** alignment of the sidebar */					private boolean sidebarAlignment;
 		/** width in pixel of sidebar */				private int sidebarWidth;
 		
@@ -84,6 +86,8 @@ public class Settings {
 		private void defaultValues() {
 			dimMainWindow = new Dimension(1024, 680);
 			titleMainWindow = new String("Signal Display Tool");
+			
+			toolbarShowLabels = true;
 			
 			sidebarAlignment = SIDEBAR_LEFT;
 			sidebarWidth = 250;
@@ -135,6 +139,22 @@ public class Settings {
 		 */
 		public int getSignalOverviewHeight() {
 			return signalOverviewHeight;
+		}
+		
+		/**
+		 * @return true if the toolbar should show text labels
+		 */
+		public boolean showToolbarLabels() {
+			return this.toolbarShowLabels;
+		}
+		
+		/**
+		 * Sets the switch for showing and hiding toolbar text labels.
+		 * @param enable
+		 */
+		public void showToolbarLabels(boolean enable) {
+			this.toolbarShowLabels = enable;
+			return;
 		}
 	}
 }
