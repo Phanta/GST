@@ -30,7 +30,7 @@ public abstract class Main {
 	 * @param args command line parameters (not evaluated)
 	 */
 	public static void main(String[] args) {
-		main = new MainWindow();
+		main = MainWindow.getInstance();
 		
 		sv = new SignalView[MAXSIGNALS];
 		generateSignalViews(MAXSIGNALS, 2000);

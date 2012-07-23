@@ -38,9 +38,8 @@ public class SignalPanel extends JPanel {
 	 * Private singleton constructor.
 	 */
 	private SignalPanel() {
-		super();
+		super(new SignalPanelLayoutManager(), false);
 		this.addComponentListener(new SignalPanelComponentAdapter());
-		this.setLayout(new SignalPanelLayoutManager());
 		compArr.setPattern(ComponentArrangement.EVENHEIGHTS);
 		// DEBUGCODE this button only serves debug purposes
 		Sidebar.getInstance().addDbgButtonAL(new ActionListener() {
@@ -133,14 +132,35 @@ public class SignalPanel extends JPanel {
 	@Override
 	public void revalidate() {
 		super.revalidate();
-		System.out.println("REVALIDATE");
+		// DEBUGCODE revalidate call signer
+			String DBG_not = "";
+			if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
+				DBG_not = "NOT ";
+			}
+			System.out.println("DEBUG\tSignalPanel.revalidate() called and running " + DBG_not + "in EDT.");
+		// end of debugcode
 		if(graphs != null) {
 			// this case happens after call of super() in constructor
 			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
-			this.doLayout();
-			this.repaint();
 		}
 	}
+	
+	/**
+	 * @see java.awt.Container#validate()
+	 */
+	@Override
+	public void repaint() {
+		super.repaint();
+		// DEBUGCODE repaint call signer
+			String DBG_not = "";
+			if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
+				DBG_not = "NOT ";
+			}
+			System.out.println("DEBUG\tSignalPanel.repaint() called and running " + DBG_not + "in EDT.");
+		// end of debugcode
+		return;
+	}
+	
 	
 	/**
 	 * ComponentAdapter to save new size of panel after resizing.

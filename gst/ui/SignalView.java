@@ -161,14 +161,6 @@ public class SignalView extends ChartPanel {
 		return;
 	}
 	
-	// DEBUGCODE
-	@Override
-	public void setPreferredSize(Dimension d) {
-		super.setPreferredSize(d);
-		this.revalidate();
-		System.out.println("stress!");
-	}
-	
 	/**
 	 * Sets for all annotations given by the {@code DataController} DomainMarkers. 
 	 */

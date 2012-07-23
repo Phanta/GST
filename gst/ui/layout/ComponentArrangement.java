@@ -12,8 +12,26 @@ import java.util.Iterator;
 
 /**
  * Class that sets the preferred sizes of a Collection of Components to predefined patterns.
+	 * <table>
+	 * 		<tr>
+	 * 			<th>EVENHEIGHTS</th>
+	 * 			<th>all components have the maximum width and the same height to fill the specified area</th>
+	 * 		</tr>
+	 * 		<tr>
+	 * 			<th>ONEBIG</th>
+	 * 			<th>one component gets 60% of the available height, the rest fills the remaining space; all have maximum width<br>
+	 * 				params[0] is the index of "the big one"</th>
+	 * 		</tr>
+	 * 		<tr>
+	 * 			<th>TWOMEDIUM</th>
+	 * 			<th>two components get each 35% of avialable height, the rest fills the remaining space; all have maximum width<br>
+	 * 				params[1] is the index of first component<br>
+	 * 				params[2] is the second components index<br>
+	 * 				if both indices are the same ONEBIG size is used for the selected component</th>
+	 * 		</tr>
+	 * </table>
  * @author Enrico Grunitz
- * @version 0.1.2 (05.06.2012)
+ * @version 0.1.3 (23.07.2012)
  */
 public class ComponentArrangement {
 	/* all pattern numbers must be consecutive */
@@ -64,7 +82,7 @@ public class ComponentArrangement {
 	
 	/**
 	 * Selects the component(s) for the pattern. 
-	 * @param index the INDEX
+	 * @param index the index of the index to set
 	 * @param component the index of the component
 	 */
 	public void select(int index, int component) {
@@ -76,25 +94,27 @@ public class ComponentArrangement {
 	}
 	
 	/**
+	 * Returns an array of component selection indices.
+	 * @return the index selection array
+	 */
+	public int[] getSelection() {
+		return index.clone();
+	}
+	
+	/**
 	 * Sets the preferred sizes of all visible components given to the previously specified pattern.
-	 * <table>
-	 * 		<tr>
-	 * 			<th>EVENHEIGHTS</th>
-	 * 			<th>all components have the maximum width and the same height to fill the specified area</th>
-	 * 		</tr>
-	 * 		<tr>
-	 * 			<th>ONEBIG</th>
-	 * 			<th>one component gets 60% of the available height, the rest fills the remaining space; all have maximum width<br>
-	 * 				params[0] is the index of "the big one"</th>
-	 * 		</tr>
-	 * </table>
 	 * @param coll Collection of Components
 	 * @param width	width of the area to fill
 	 * @param height height of the area to fill
 	 */
 	public void setPreferredSizes(Collection<Component> coll, int width, int height) {
-		//DEBUG
-		System.out.println("sPS() " + javax.swing.SwingUtilities.isEventDispatchThread());
+		// DEBUGCODE setPreferredSizes() EDT check
+			String DBG_not = "";
+			if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
+				DBG_not = "NOT ";
+			}
+			System.out.println("DEBUG:\tsetPreferredSizes() "+ DBG_not + "running in EventDispatchThread.");
+		// end of debugcode
 		if(coll == null) {
 			throw new NullPointerException();
 		}

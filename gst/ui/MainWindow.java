@@ -17,11 +17,16 @@ public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private static Settings settings = Settings.getInstance();
+	private static final MainWindow myself = new MainWindow();
+	
+	public static MainWindow getInstance() {
+		return myself;
+	}
 	
 	/**
 	 * Constructor of the applications main window. Generates the UI.
 	 */
-	public MainWindow() {
+	private MainWindow() {
 		// native look and feel
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

@@ -278,7 +278,7 @@ public class DataTest {
 	}
 	
 	private static void testing(String testName) {
-		System.out.println("Running test '" + testName + "' ...");
+		System.out.println("TEST\tRunning '" + testName + "' ...");
 		functionName = testName;
 		return;
 	}
@@ -295,7 +295,7 @@ public class DataTest {
 	}
 	
 	private static void testEnd(String testName) {
-		System.out.println("... test '" + testName + "' ended with " + test + " failed tests.\n");
+		System.out.println("TEST\t... test '" + testName + "' ended with " + test + " failed tests.\n");
 	}
 
 	/**
