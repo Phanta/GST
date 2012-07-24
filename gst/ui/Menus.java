@@ -30,10 +30,12 @@ public class Menus extends JMenuBar {
 	private static final long serialVersionUID = 1L;
 	private static final Menus myself = new Menus();
 	
+	private JMenuItem miFileLoad;
+	
 	/**
 	 * @return the Instance of the Menubar
 	 */
-	public static JMenuBar getInstance() {
+	public static Menus getInstance() {
 		return myself;
 	}
 	
@@ -46,9 +48,9 @@ public class Menus extends JMenuBar {
 		// --- DATEI ----------------------------------------------------------
 		m = new JMenu("Datei");
 		m.setMnemonic(KeyEvent.VK_D);
-		mi = new JMenuItem("Signal laden...",KeyEvent.VK_S);
-		m.add(mi);
-		mi = new JMenuItem("Annotationen laden...",KeyEvent.VK_A);
+		miFileLoad = new JMenuItem("Signal laden...", KeyEvent.VK_S);
+		m.add(miFileLoad);
+		mi = new JMenuItem("Annotationen laden...", KeyEvent.VK_A);
 		m.add(mi);
 		m.addSeparator();
 		mi = new JMenuItem("Beenden",KeyEvent.VK_B);
@@ -93,5 +95,19 @@ public class Menus extends JMenuBar {
 		mi = new JMenuItem("Test 2");
 		m.add(mi);
 		this.add(m);
+	}
+	
+	/**
+	 * Registers an {@code ActionListener} for opening files.
+	 * @param al the {@code ActionListener} to register
+	 * @return true if successful else false
+	 */
+	/* package visibility */boolean registerOpenFileDialog(ActionListener al) {
+		if(miFileLoad == null) {
+			System.out.println("ERROR\tcouldn't register open-file-dialog");
+			return false;
+		}
+		miFileLoad.addActionListener(al);
+		return true;
 	}
 }

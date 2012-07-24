@@ -13,6 +13,7 @@ import java.util.List;
 import org.unisens.Entry;
 import org.unisens.CustomEntry;
 import org.unisens.EventEntry;
+import org.unisens.MeasurementEntry;
 import org.unisens.SignalEntry;
 import org.unisens.ValuesEntry;
 import org.unisens.Unisens;
@@ -223,6 +224,46 @@ public class UnisensDataset {
 	}
 	
 	/**
+	 * Creates {@link gst.data.DataController}s for all data in this {@code UnisensDataset}.
+	 * @return list of created {@code DataController}
+	 */
+	public List<DataController> createControllers() {
+		List<Entry> entryList = this.us.getEntries();
+		ArrayList<DataController> ctrlList = new ArrayList();
+		Iterator<Entry> it = entryList.iterator();
+		int numChannels;
+		Entry curEntry;
+		EntryType curType;
+		DataController curCtrl;
+		while(it.hasNext()) {
+			curEntry = it.next();
+			numChannels = getChannelCount(curEntry);
+			curType = EntryType.getType(curEntry);
+			for(int i = 0; i < numChannels; i++) {
+				switch(curType) {
+				case SIGNAL:
+					curCtrl = new SignalController((SignalEntry)curEntry);
+					((SignalController)curCtrl).setChannelToControl(i);
+					ctrlList.add(curCtrl);
+					break;
+				case VALUE:
+					curCtrl = new ValueController((ValuesEntry)curEntry);
+					((ValueController)curCtrl).setChannelToControl(i);
+					ctrlList.add(curCtrl);
+					break;
+				case EVENT:
+					curCtrl = new AnnotationController((EventEntry)curEntry);
+					ctrlList.add(curCtrl);
+					break;
+				default:
+					System.out.println("ERROR\tcannot create controller for entry-type '" + curType.toString() + "'");
+				}
+			}
+		}
+		return ctrlList;
+	}
+	
+	/**
 	 * Saves the dataset.
 	 * @return true if successful, else false
 	 */
@@ -249,4 +290,24 @@ public class UnisensDataset {
 		return;
 	}
 	
+	/**
+	 * Returns the number of channels of the given entry. Custom and unknown entries return always 0.
+	 * @param entry the entry
+	 * @return number of channels
+	 */
+	private static int getChannelCount(Entry entry) {
+		switch(EntryType.getType(entry)) {
+		case SIGNAL:
+		case VALUE:
+			return ((MeasurementEntry)entry).getChannelCount();
+		case EVENT:
+			return 1;
+		case CUSTOM:
+		case UNKNOWN:
+			return 0;
+		default:
+			System.out.println("ERROR\tentry of unhandled type detected in UnisensDataset.getChannelCount(Entry)");
+			return 0;
+		}
+	}
 }
