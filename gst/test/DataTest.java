@@ -7,7 +7,8 @@ package gst.test;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.data.xy.XYSeries;
+
 import org.unisens.SignalEntry;
 import org.unisens.ValuesEntry;
 import org.unisens.EventEntry;
@@ -19,6 +20,7 @@ import gst.data.UnisensDataset;
 import gst.data.UnisensDataset.EntryType;
 import gst.data.ValueController;
 import gst.data.DataController;
+
 import gst.ui.SignalPanel;
 import gst.ui.SignalView;
 
@@ -26,7 +28,7 @@ import gst.ui.SignalView;
  * Class to contain static tests on some components of the programm. functions in this class are not commented due to the fact they change
  * frequently or are never touched again.
  * @author Enrico Grunitz
- * @version 3 (17.07.2012)
+ * @version 3 (24.07.2012)
  */
 public class DataTest {
 	UnisensDataset usds = null;
@@ -150,19 +152,19 @@ public class DataTest {
 		if(dataCtrl.getPhysicalUnit().equals("mV")) {
 			test--;
 		}
-		XYSeriesCollection xysc = dataCtrl.getDataPoints(0.0, 300.0, 60000);
-		echo("collection contains " + xysc.getSeries(0).getItemCount() + " Items (-> 60000)");
-		if(xysc.getSeries(0).getItemCount() == 60000) {
+		XYSeries xys = dataCtrl.getDataPoints(0.0, 300.0, 60000);
+		echo("collection contains " + xys.getItemCount() + " Items (-> 60000)");
+		if(xys.getItemCount() == 60000) {
 			test--;
 		}
-		xysc = dataCtrl.getDataPoints(0.0, 150.0, 60000);
-		echo("half-collection contains " + xysc.getSeries(0).getItemCount() + " Items (-> 30000)");
-		if(xysc.getSeries(0).getItemCount() == 30000) {
+		xys = dataCtrl.getDataPoints(0.0, 150.0, 60000);
+		echo("half-collection contains " + xys.getItemCount() + " Items (-> 30000)");
+		if(xys.getItemCount() == 30000) {
 			test--;
 		}
-		xysc = dataCtrl.getDataPoints(0.0, 150.0, 1000);
-		echo("1k-item-collection contains " + xysc.getSeries(0).getItemCount() + " Items (-> 1000)");
-		if(xysc.getSeries(0).getItemCount() == 1000) {
+		xys = dataCtrl.getDataPoints(0.0, 150.0, 1000);
+		echo("1k-item-collection contains " + xys.getItemCount() + " Items (-> 1000)");
+		if(xys.getItemCount() == 1000) {
 			test--;
 		}
 		testEnd();

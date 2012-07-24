@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.data.xy.XYSeries;
 import org.unisens.Event;
 import org.unisens.EventEntry;
 
 /**
  * {@code ViewController} implementation for {@code EventEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1 (19.07.2012)
+ * @version 0.1 (24.07.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -97,7 +97,7 @@ public class AnnotationController extends DataController {
 	 * @see gst.data.DataController#getDataPoints(double, double, int)
 	 */
 	@Override
-	public XYSeriesCollection getDataPoints(double startTime, double endTime, int maxPoints) {
+	public XYSeries getDataPoints(double startTime, double endTime, int maxPoints) {
 		// TODO Auto-generated method stub
 		return null;
 	}

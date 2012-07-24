@@ -5,17 +5,14 @@
 package gst.data;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-import org.unisens.Event;
 import org.unisens.SignalEntry;
 
 /**
  * {@code ViewController} implementation for {@code SignalEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1 (18.07.2012)
+ * @version 0.1 (24.07.2012)
  * @see gst.data.DataController
  */
 public class SignalController extends DataController {
@@ -62,12 +59,11 @@ public class SignalController extends DataController {
 	 * @see gst.data.DataController#getDataPoints(double, double, int)
 	 */
 	@Override
-	public XYSeriesCollection getDataPoints(double startTime, double endTime, int maxPoints) {
+	public XYSeries getDataPoints(double startTime, double endTime, int maxPoints) {
 		double sampleRate = ((SignalEntry)this.entry).getSampleRate();
-		XYSeries series = new XYSeries("");
-		XYSeriesCollection dataset = new XYSeriesCollection(series);
+		XYSeries series = new XYSeries(this.entry.getName() + ((SignalEntry)this.entry).getChannelNames()[this.channelIndex]);
 		if(maxPoints <= 0) {
-			return dataset;
+			return series;
 		}
 		if(endTime < startTime) {
 			// i can handle negative time-spans
@@ -99,7 +95,7 @@ public class SignalController extends DataController {
 				timeBarrier += timeStep;
 			}
 		}
-		return dataset;
+		return series;
 	}
 	
 	/**

@@ -3,10 +3,6 @@ package gst.ui;
  * SignalView.java created 31.05.2012
  */
 
-import java.awt.Dimension;
-import java.util.Iterator;
-import java.util.List;
-
 import gst.data.AnnotationList;
 import gst.data.DataController;
 
@@ -18,6 +14,7 @@ import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 import org.unisens.Event;
@@ -25,7 +22,7 @@ import org.unisens.Event;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.0.3 (18.07.2012)
+ * @version 0.0.3 (24.07.2012)
  */
 public class SignalView extends ChartPanel {
 
@@ -90,7 +87,9 @@ public class SignalView extends ChartPanel {
 	@Override
 	public void setBounds(int x, int y, int width, int height) {
 		if(controller != null && (width != this.getWidth() || needNewData == true)) {
-			this.getChart().getXYPlot().setDataset(controller.getDataPoints(startTime, endTime, width));
+			XYSeriesCollection dataset = new XYSeriesCollection();
+			dataset.addSeries(controller.getDataPoints(startTime, endTime, width));
+			this.getChart().getXYPlot().setDataset(dataset);
 			if(controller.isAnnotation() == true) {
 				paintTimeAxisMarkers();
 			}
@@ -106,7 +105,9 @@ public class SignalView extends ChartPanel {
 	private void setController(DataController ctrl) {
 		this.controller = ctrl;
 		if(needNewData == true) {
-			this.getChart().getXYPlot().setDataset(controller.getDataPoints(startTime, endTime, this.getWidth()));
+			XYSeriesCollection dataset = new XYSeriesCollection();
+			dataset.addSeries(controller.getDataPoints(startTime, endTime, this.getWidth()));
+			this.getChart().getXYPlot().setDataset(dataset);
 			if(controller.isAnnotation() == true) {
 				paintTimeAxisMarkers();
 			}
@@ -131,7 +132,9 @@ public class SignalView extends ChartPanel {
 			endTime = end;
 			needNewData = true;
 			if(controller != null) {
-				this.getChart().getXYPlot().setDataset(controller.getDataPoints(startTime, endTime, this.getWidth()));
+				XYSeriesCollection dataset = new XYSeriesCollection();
+				dataset.addSeries(controller.getDataPoints(startTime, endTime, this.getWidth()));
+				this.getChart().getXYPlot().setDataset(dataset);
 				if(controller.isAnnotation() == true) {
 					paintTimeAxisMarkers();
 				}

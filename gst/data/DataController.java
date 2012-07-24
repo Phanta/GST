@@ -4,13 +4,10 @@
 
 package gst.data;
 
-import java.util.List;
-
 import gst.data.UnisensDataset.EntryType;
 
-import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.data.xy.XYSeries;
 import org.unisens.Entry;
-import org.unisens.Event;
 
 /**
  * Controller class for managing data access for SignalViews.
@@ -86,13 +83,13 @@ public abstract class DataController {
 	 */
 	abstract public AnnotationList getAnnotations(double startTime, double endTime);
 	/**
-	 * Returns the data points as an {@code XYSeriesCollection}. All data points are between {@code startTime} and {@code endTime}.
+	 * Returns the data points as an {@code XYSeries}. All data points are between {@code startTime} and {@code endTime}.
 	 * @param startTime beginning time
 	 * @param endTime ending time
 	 * @param maxPoints number of maximum data points
 	 * @return the array of data points or null if there are only annotations
 	 */
-	abstract public XYSeriesCollection getDataPoints(double startTime, double endTime, int maxPoints);
+	abstract public XYSeries getDataPoints(double startTime, double endTime, int maxPoints);
 	/**
 	 * Gives the time in seconds of the last measured data point.
 	 * @return time in seconds

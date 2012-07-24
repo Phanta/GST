@@ -8,18 +8,15 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-import org.unisens.Event;
 import org.unisens.Value;
 import org.unisens.ValuesEntry;
 
 /**
  * {@code ViewController} implementation for {@code ValuesEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1 (19.07.2012)
+ * @version 0.1 (24.07.2012)
  * @see gst.data.DataController
  */
 public class ValueController extends DataController {
@@ -79,12 +76,11 @@ public class ValueController extends DataController {
 	 * @see gst.data.DataController#getDataPoints(double, double, int)
 	 */
 	@Override
-	public XYSeriesCollection getDataPoints(double startTime, double endTime, int maxPoints) {
+	public XYSeries getDataPoints(double startTime, double endTime, int maxPoints) {
 		double sampleRate = ((ValuesEntry)this.entry).getSampleRate();
-		XYSeries series = new XYSeries("");
-		XYSeriesCollection dataset = new XYSeriesCollection(series);
+		XYSeries series = new XYSeries(this.entry.getName() + ((ValuesEntry)this.entry).getChannelNames()[this.channelIndex]);
 		if(maxPoints <= 0) {
-			return dataset;
+			return series;
 		}
 		if(endTime < startTime) {
 			// i can handle negative time-spans
@@ -143,7 +139,7 @@ public class ValueController extends DataController {
 				series.add(this.basetime + value.getSampleStamp() / sampleRate, ((double[])value.getData())[this.channelIndex]);
 			}
 		}
-		return dataset;
+		return series;
 	}
 
 	/**
