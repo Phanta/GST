@@ -3,6 +3,9 @@ package gst.ui;
  * SignalView.java created 31.05.2012
  */
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import gst.data.AnnotationList;
 import gst.data.DataController;
 
@@ -28,7 +31,8 @@ public class SignalView extends ChartPanel {
 
 	/** default serialization ID */						private static final long serialVersionUID = 1L;
 	//** the default domain axis */						private static NumberAxis domainAxis = initDomainAxis();
-	/** the data accessor */							private DataController controller = null;
+	/** the data accessor */							private DataController _controller = null;
+	/** list of {@link gst.data.DataController}s */		private ArrayList<DataController> ctrlList; 
 	/** starting time of x-axis in seconds*/			private double startTime;
 	/** ending time of x-axis in seconds*/				private double endTime;
 	/** new data required */							private boolean needNewData;
@@ -74,6 +78,7 @@ public class SignalView extends ChartPanel {
 		this.endTime = endTime;
 		chart.getXYPlot().getDomainAxis().setRange(startTime, endTime);
 		needNewData = true;	// there is no controller yet
+		ctrlList = new ArrayList<DataController>();
 		this.add(this.createPopupMenu(true, false, true, false, true));
 		return;
 	}
@@ -86,40 +91,53 @@ public class SignalView extends ChartPanel {
 	 */
 	@Override
 	public void setBounds(int x, int y, int width, int height) {
-		if(controller != null && (width != this.getWidth() || needNewData == true)) {
-			XYSeriesCollection dataset = new XYSeriesCollection();
-			XYSeries series = controller.getDataPoints(startTime, endTime, width);
-			if(series != null) {
-				dataset.addSeries(series);
-			}
-			this.getChart().getXYPlot().setDataset(dataset);
-			if(controller.isAnnotation() == true) {
-				paintTimeAxisMarkers();
-			}
-			needNewData = false;
+		if(this.getWidth() != width) {
+			needNewData = true;
 		}
 		super.setBounds(x, y, width, height);
+		if(needNewData == true) {
+			this.updateData();
+			MainWindow.getInstance().revalidate();
+			MainWindow.getInstance().repaint();
+		}
+		return;
 	}
 	
 	/**
 	 * Sets the ViewController for this SignalView.
 	 * @param ctrl the controller to set
 	 */
-	private void setController(DataController ctrl) {
-		this.controller = ctrl;
-		if(needNewData == true) {
-			XYSeriesCollection dataset = new XYSeriesCollection();
-			XYSeries series = controller.getDataPoints(startTime, endTime, this.getWidth());
-			if(series != null) {
-				dataset.addSeries(series);
-			}
-			this.getChart().getXYPlot().setDataset(dataset);
-			if(controller.isAnnotation() == true) {
-				paintTimeAxisMarkers();
-			}
-			needNewData = false;
+//	@Deprecated
+//	private void setController(DataController ctrl) {
+//		this.controller = ctrl;
+//		if(needNewData == true) {
+//			XYSeriesCollection dataset = new XYSeriesCollection();
+//			XYSeries series = controller.getDataPoints(startTime, endTime, this.getWidth());
+//			if(series != null) {
+//				dataset.addSeries(series);
+//			}
+//			this.getChart().getXYPlot().setDataset(dataset);
+//			if(controller.isAnnotation() == true) {
+//				paintTimeAxisMarkers();
+//			}
+//			needNewData = false;
+//		}
+//		return;
+//	}
+	
+	/**
+	 * Adds the given {@link gst.data.DataController} to this {@code SignalView}. If the {@code DataController} was already added to this
+	 * {@code SignalView} nothing happens. 
+	 * @param dataCtrl the {@code DataController} to connect to
+	 */
+	public void addController(DataController dataCtrl) {
+		if(ctrlList.contains(dataCtrl) == false) {
+			ctrlList.add(dataCtrl);
+			this.needNewData = true;
+			this.updateData();
+			MainWindow.getInstance().revalidate();
+			MainWindow.getInstance().repaint();
 		}
-		return;
 	}
 	
 	/**
@@ -134,22 +152,12 @@ public class SignalView extends ChartPanel {
 			start = temp;
 		}
 		if(start != startTime || end != endTime) {
-			startTime = start;
-			endTime = end;
-			needNewData = true;
-			if(controller != null) {
-				XYSeriesCollection dataset = new XYSeriesCollection();
-				XYSeries series = controller.getDataPoints(startTime, endTime, this.getWidth());
-				if(series != null) {
-					dataset.addSeries(series);
-				}
-				this.getChart().getXYPlot().setDataset(dataset);
-				if(controller.isAnnotation() == true) {
-					paintTimeAxisMarkers();
-				}
-				needNewData = false;
-			}
-			this.getChart().getXYPlot().getDomainAxis().setRange(start, end);
+			this.startTime = start;
+			this.endTime = end;
+			this.needNewData = true;
+			this.updateData();
+			MainWindow.getInstance().revalidate();
+			MainWindow.getInstance().repaint();
 		}
 		return;
 	}
@@ -174,14 +182,45 @@ public class SignalView extends ChartPanel {
 	}
 	
 	/**
-	 * Sets for all annotations given by the {@code DataController} DomainMarkers. 
+	 * Collects all data points from controllers and adds them to the chart. Sets {@code needNewData} to false.
 	 */
-	private void paintTimeAxisMarkers() {
-		if(controller == null || controller.isAnnotation() == false) {
-			return;			// nothing to do here
+	private void updateData() {
+		// DEBUGCODE updateData() EDT Test
+		String DBG_not = "";
+		if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
+			DBG_not = "NOT ";
 		}
+		System.out.println("DEBUG\tSignalView().updateData() called and running " + DBG_not + "in EDT.");
+		
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		Iterator<DataController> it = ctrlList.iterator();
+		XYSeries curSeries;	// current series
+		while(it.hasNext()) {
+			DataController ctrl = it.next();
+			if(ctrl.isAnnotation()) {
+				this.paintTimeAxisMarkers(ctrl);
+			} else {
+				curSeries = ctrl.getDataPoints(startTime, endTime, this.getWidth());
+				if(curSeries != null) {
+					dataset.addSeries(curSeries);
+				}
+			}
+		}
+		this.getChart().getXYPlot().setDataset(dataset);
+		if(this.ctrlList.isEmpty() == false) {
+			// only mark as updated if there are controllers
+			this.needNewData = false;
+		}
+		return;
+	}
+	
+	/**
+	 * Sets for all annotations given by the {@code DataController} DomainMarkers.
+	 * @param ctrl
+	 */
+	private void paintTimeAxisMarkers(DataController ctrl) {
 		removeTimeAxisMarker();
-		AnnotationList annoList = controller.getAnnotations(startTime, endTime);
+		AnnotationList annoList = ctrl.getAnnotations(startTime, endTime);
 		for(int i = 0; i < annoList.size(); i++) {
 			ValueMarker marker = new ValueMarker(annoList.getTime(i));
 			if(i == annoList.size() - 1) {
@@ -193,6 +232,30 @@ public class SignalView extends ChartPanel {
 		return;
 	}
 	
+	/**
+	 * Sets for all annotations given by the {@code DataController} DomainMarkers.
+	 */
+//	@Deprecated
+//	private void paintTimeAxisMarkers() {
+//		if(controller == null || controller.isAnnotation() == false) {
+//			return;			// nothing to do here
+//		}
+//		removeTimeAxisMarker();
+//		AnnotationList annoList = controller.getAnnotations(startTime, endTime);
+//		for(int i = 0; i < annoList.size(); i++) {
+//			ValueMarker marker = new ValueMarker(annoList.getTime(i));
+//			if(i == annoList.size() - 1) {
+//				this.getChart().getXYPlot().addDomainMarker(0, marker, org.jfree.ui.Layer.FOREGROUND, true);
+//			} else {
+//				this.getChart().getXYPlot().addDomainMarker(0, marker, org.jfree.ui.Layer.FOREGROUND, false);
+//			}
+//		}
+//		return;
+//	}
+	
+	/**
+	 * Removes all {@code DomainMarkers} from this {@code SignalView}'s chart.
+	 */
 	private void removeTimeAxisMarker() {
 		this.getChart().getXYPlot().clearDomainMarkers();
 	}
@@ -239,7 +302,7 @@ public class SignalView extends ChartPanel {
 
 		// create SignalView
 		SignalView sv = new SignalView(chart, true, 0.0, 30.0);
-		sv.setController(controller);
+		sv.addController(controller);
 		return sv;
 	}
 
