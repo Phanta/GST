@@ -101,6 +101,8 @@ public class MainWindow extends JFrame {
 			retVal &= Menus.getInstance().registerOpenFileDialog(al);
 			break;
 		case IDCloseProgram:
+			retVal &= Menus.getInstance().registerCloseProgram(al);
+			retVal &= Toolbar.getInstance().registerCloseProgram(al);
 			break;
 		default:
 			retVal = false;

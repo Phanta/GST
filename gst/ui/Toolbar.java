@@ -28,6 +28,7 @@ public class Toolbar extends JToolBar{
 	/** number of text labels */						private final short numLabels = 2;
 	/** array of text labels */							private JLabel[] labels;
 	
+	/** button for closing program */					private JButton btnClose;
 	/** button for view mode of SignalPanel */			private JButton btnViewMode;
 	/** button for view mode index 1 */					private JButton btnViewModeIndex1;
 	/** button for view mode index 2 */					private JButton btnViewModeIndex2;
@@ -56,14 +57,7 @@ public class Toolbar extends JToolBar{
 		labels[0] = new JLabel("System");		// text label
 		this.add(labels[0]);
 		this.add(Box.createHorizontalStrut(space));
-		JButton btnClose = new JButton("Beenden");		// close button
-		// quick'n'dirty test actionlistener
-		al = new ActionListener() {
-			public void actionPerformed( ActionEvent e ) {
-				System.exit( 0 );
-			}
-		};
-		btnClose.addActionListener(al);		
+		btnClose = new JButton("Beenden");		// close button
 		this.add(btnClose);
 		this.add(Box.createHorizontalStrut(space));
 		this.addSeparator();
@@ -113,6 +107,20 @@ public class Toolbar extends JToolBar{
 		for(int i = 0; i < labels.length; i++) {
 			labels[i].setVisible(Settings.getInstance().ui.showToolbarLabels());
 		}
+	}
+	
+	/**
+	 * Registers an {@code ActionListener} that closes the program.
+	 * @param al the {@code ActionListener}
+	 * @return true if successful, else false
+	 */
+	boolean registerCloseProgram(ActionListener al) {
+		if(btnClose == null) {
+			System.out.println("ERROR\ttoolbar close button doesn't exist - cannot register closeing action");
+			return false;
+		}
+		btnClose.addActionListener(al);
+		return true;
 	}
 	
 	/**

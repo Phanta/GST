@@ -54,6 +54,11 @@ public abstract class Main {
 																	loadUnisensData(ae);
 																}
 															});
+		main.registerActionListener(MainWindow.IDCloseProgram, new ActionListener() {
+																	public void actionPerformed(ActionEvent ae) {
+																		closeProgram(ae);
+																	}
+																});
 		
 		sv = new SignalView[MAXSIGNALS];
 		generateSignalViews(MAXSIGNALS, 2000);
@@ -118,6 +123,18 @@ public abstract class Main {
 		while(it.hasNext()) {
 			SignalPanel.getInstance().addSignal(SignalView.createControlledView(it.next()));
 		}
+	}
+	
+	/**
+	 * Exits the program without saving changes to unisens databases.
+	 * @param ae {@code ActionEvent} causing this action
+	 */
+	private static void closeProgram(ActionEvent ae) {
+		Iterator<UnisensDataset> it = datasets.iterator();
+		while(it.hasNext()) {
+			it.next().close();
+		}
+		System.exit(0);
 	}
 	
 	private static void generateSignalViews(int numSignals, int numDataPoints) {

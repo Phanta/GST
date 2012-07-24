@@ -30,6 +30,7 @@ public class Menus extends JMenuBar {
 	private static final long serialVersionUID = 1L;
 	private static final Menus myself = new Menus();
 	
+	private JMenuItem miCloseProgram;
 	private JMenuItem miFileLoad;
 	
 	/**
@@ -53,16 +54,9 @@ public class Menus extends JMenuBar {
 		mi = new JMenuItem("Annotationen laden...", KeyEvent.VK_A);
 		m.add(mi);
 		m.addSeparator();
-		mi = new JMenuItem("Beenden",KeyEvent.VK_B);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
-		// quick'n'dirty test of accelerator and actionlistener
-			ActionListener al = new ActionListener() {
-				public void actionPerformed( ActionEvent e ) {
-					System.exit( 0 );
-				}
-			};
-			mi.addActionListener(al);		
-		m.add(mi);
+		miCloseProgram = new JMenuItem("Beenden",KeyEvent.VK_B);
+		miCloseProgram.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
+		m.add(miCloseProgram);
 		this.add(m);
 		
 		// --- BEARBEITEN ----------------------------------------------------------
@@ -110,4 +104,19 @@ public class Menus extends JMenuBar {
 		miFileLoad.addActionListener(al);
 		return true;
 	}
+
+	/**
+	 * Registers an {@code ActionListener} for closing the program.
+	 * @param al the {@code ActionListener} to register
+	 * @return true if successful else false
+	 */
+	/* package visibility */boolean registerCloseProgram(ActionListener al) {
+		if(miCloseProgram == null) {
+			System.out.println("ERROR\tcouldn't register close-program-operation");
+			return false;
+		}
+		miCloseProgram.addActionListener(al);
+		return true;
+	}
+
 }
