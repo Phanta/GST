@@ -79,7 +79,7 @@ public class SignalOverview extends JPanel {
 							   1000,	// maximum width
 							   1000,	// maximum height
 							   true,	// use buffer
-							   false,	// enable properties on/off
+							   true,	// enable properties on/off
 							   false,	// copy on/off
 							   false,	// save on/off
 							   false,	// print on/off
@@ -87,9 +87,9 @@ public class SignalOverview extends JPanel {
 							   false	// tooltips on/off
 							  );
 	    mouseAdapter = new SOMouseAdapter();
-		panel.addMouseListener(mouseAdapter);
+	    panel.addMouseListener(mouseAdapter);
 	    panel.addMouseMotionListener(mouseAdapter);
-	    // TODO looks ugly due to lack of double buffering
+	      // TODO looks ugly due to lack of double buffering
 	    panel.setHorizontalAxisTrace(true);
 	    
 		plot = chart.getXYPlot();
@@ -139,6 +139,8 @@ public class SignalOverview extends JPanel {
 		public void mouseEntered(MouseEvent event) {
 			// updating dataArea every time mouse enters this panel
 			dataArea = panel.getScreenDataArea();
+			// DEBUG searching missing mouse events
+				//System.out.println("DEBUG->\tMouse entered SignalOverview");
 			return;
 		}
 		

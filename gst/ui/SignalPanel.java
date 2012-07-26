@@ -10,8 +10,6 @@ import gst.ui.layout.SignalPanelLayoutManager;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
@@ -22,7 +20,7 @@ import javax.swing.JPanel;
 /**
  * The panel containing all signalgraphs and the controls to resize them. Implemented as Singleton.
  * @author Enrico Grunitz
- * @version 0.2.1 (13.06.2012)
+ * @version 0.2.1 (26.06.2012)
  */
 public class SignalPanel extends JPanel {
 
@@ -38,24 +36,13 @@ public class SignalPanel extends JPanel {
 	 * Private singleton constructor.
 	 */
 	private SignalPanel() {
-		super(new SignalPanelLayoutManager(), false);
+	    super();
+	    // DEBUG SignalPanelLayoutManager maybe not necessary
+	//	super(new SignalPanelLayoutManager(), false);
 		this.addComponentListener(new SignalPanelComponentAdapter());
 		compArr.setPattern(ComponentArrangement.EVENHEIGHTS);
-		// DEBUGCODE this button only serves debug purposes
-		Sidebar.getInstance().addDbgButtonAL(new ActionListener() {
-												private int compind = 0;
-												public void actionPerformed(ActionEvent ae) {
-													compArr.setPattern(ComponentArrangement.ONEBIG);
-													compind++;
-													compind = (compind >= 4) ? 0 : compind;
-													compArr.select(ComponentArrangement.INDEX_ONEBIG, compind);
-													compArr.setPreferredSizes(new ArrayList<Component>(graphs), getWidth(), getHeight());
-													//doLayout();
-													SignalPanel.this.revalidate();
-													SignalPanel.this.repaint();
-												}
-											});
-		return;
+
+	    return;
 	}
 	
 	/**

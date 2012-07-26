@@ -229,7 +229,7 @@ public class UnisensDataset {
 	 */
 	public List<DataController> createControllers() {
 		List<Entry> entryList = this.us.getEntries();
-		ArrayList<DataController> ctrlList = new ArrayList();
+		ArrayList<DataController> ctrlList = new ArrayList<DataController>();
 		Iterator<Entry> it = entryList.iterator();
 		int numChannels;
 		Entry curEntry;

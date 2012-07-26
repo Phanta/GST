@@ -60,7 +60,7 @@ public class MainWindow extends JFrame {
 		
 		// basic chart of JFreeChart
 		this.add(SignalPanel.getInstance(), BorderLayout.CENTER);
-		
+	
 		// add statusbar
 		// FIXME i don't like this style of status bar, maybe replace it with some homebrew
 		this.add(StatusBar.getInstance(), BorderLayout.PAGE_END);

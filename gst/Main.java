@@ -21,13 +21,9 @@ import gst.data.UnisensDataset;
 import gst.test.DataTest;
 
 import gst.ui.MainWindow;
-import gst.ui.Menus;
-import gst.ui.Sidebar;
 import gst.ui.SignalPanel;
 import gst.ui.SignalView;
 import gst.ui.SignalViewFactory;
-import gst.ui.StatusBar;
-import gst.ui.Toolbar;
 
 /**
  * Class for the public static void main(String[] args) function.

@@ -4,8 +4,12 @@ package gst.ui;
  */
 
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import javax.swing.event.MouseInputAdapter;
 
 import gst.Settings;
 import gst.data.AnnotationList;
@@ -84,6 +88,8 @@ public class SignalView extends ChartPanel {
 		//this.addPropertyChangeListener(NEW_DATA_PROP, this);
 		ctrlList = new ArrayList<DataController>();
 		this.add(this.createPopupMenu(true, false, true, false, true));
+		this.addMouseListener(new SignalViewMouseAdapter("SignalView ML"));
+		this.addMouseMotionListener(new SignalViewMouseAdapter("SignalView MMotionL"));
 		return;
 	}
 	
@@ -272,6 +278,26 @@ public class SignalView extends ChartPanel {
 		SignalView sv = new SignalView(chart, true, 0.0, 30.0);
 		sv.addController(controller);
 		return sv;
+	}
+
+	/* * * intern classes * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	
+	public static class SignalViewMouseAdapter extends MouseInputAdapter {
+		private String name;
+		
+		public SignalViewMouseAdapter(String name) {
+			super();
+			this.name = name;
+			if(this.name == null) {
+				this.name = "-?-";
+			}
+		}
+		
+		public void mouseEntered(MouseEvent me) {
+			if(Settings.getInstance().ui.showSignalViewDebugMessages == true) {
+				System.out.println("DEBUG\tSignalViewMouseAdapter(" + this.name + ") detected entering mouse.");
+			}
+		}
 	}
 
 }
