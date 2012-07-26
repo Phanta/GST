@@ -78,6 +78,7 @@ public abstract class Main {
 		dt.testAnnotationZoom();
 		dt.testValueController();
 		dt.testAnnotationController();
+		dt.testMultiController();
 		main.revalidate();
 		main.repaint();
 		
@@ -137,6 +138,7 @@ public abstract class Main {
 		System.exit(0);
 	}
 	
+	@Deprecated
 	private static void generateSignalViews(int numSignals, int numDataPoints) {
 		for(int i = 0; i < numSignals; i++) {
 			sv[i] = SignalViewFactory.generateRandomChart(numDataPoints);

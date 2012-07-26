@@ -270,6 +270,25 @@ public class DataTest {
 		testEnd();
 		usds.close();
 	}
+	
+	public void testMultiController() {
+		testing("multiple Controllers for one View -> Example_003", 0);
+		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_003", true);
+		DataController annoCtrl = new AnnotationController((EventEntry) usds.getEntry("trigger_reference.csv"));
+		DataController sigCtrl1 = new SignalController((SignalEntry) usds.getEntry("ecg_padsy_250.bin"));
+		DataController sigCtrl2 = new SignalController((SignalEntry) usds.getEntry("ecg_padsy_250.bin"));
+		echo("loading data");
+		((SignalController) sigCtrl1).setChannelToControl(0);
+		SignalView csv = SignalView.createControlledView(sigCtrl1);
+		((SignalController) sigCtrl2).setChannelToControl(1);
+		csv.addController(sigCtrl2);
+		csv.addController(annoCtrl);
+		csv.setTimeAxisBounds(21.75, 23.545);
+		SignalPanel.getInstance().addSignal(csv);
+		echo("displaying data");
+		testEnd();
+		return;
+	}
 		
 	@Deprecated
 	public void arrayTest() {

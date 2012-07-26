@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import gst.Settings;
 import gst.data.AnnotationList;
 import gst.data.DataController;
 
@@ -172,11 +173,13 @@ public class SignalView extends ChartPanel {
 	 */
 	private void updateData() {
 		// DEBUGCODE updateData() EDT Test
-		String DBG_not = "";
-		if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
-			DBG_not = "NOT ";
+		if(Settings.getInstance().ui.showSignalViewDebugMessages == true) {
+			String DBG_not = "";
+			if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
+				DBG_not = "NOT ";
+			}
+			System.out.println("DEBUG\tSignalView().updateData() called and running " + DBG_not + "in EDT.");
 		}
-		System.out.println("DEBUG\tSignalView().updateData() called and running " + DBG_not + "in EDT.");
 		
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		Iterator<DataController> it = ctrlList.iterator();

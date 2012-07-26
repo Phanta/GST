@@ -93,7 +93,7 @@ public class SignalPanel extends JPanel {
 	}
 	
 	/**
-	 * Removes the given ChartPanel from the diplay.
+	 * Removes the given ChartPanel from the display.
 	 * @param element ChartPanel to be removed.
 	 * @return true if element was removed, false if the given element was not displayed (and so cannot be removed)
 	 */
@@ -144,23 +144,6 @@ public class SignalPanel extends JPanel {
 			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
 		}
 	}
-	
-	/**
-	 * @see java.awt.Container#validate()
-	 */
-	@Override
-	public void repaint() {
-		super.repaint();
-		// DEBUGCODE repaint call signer
-			String DBG_not = "";
-			if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
-				DBG_not = "NOT ";
-			}
-			System.out.println("DEBUG\tSignalPanel.repaint() called and running " + DBG_not + "in EDT.");
-		// end of debugcode
-		return;
-	}
-	
 	
 	/**
 	 * ComponentAdapter to save new size of panel after resizing.

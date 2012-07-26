@@ -17,7 +17,6 @@ public class Settings {
 	/** sub settings of the user interface */			public UI ui;
 	
 	/** default number of maximum signals */			private int signalCount;
-	
 
 	/**
 	 * Access to the instance of the Settings object.
@@ -60,6 +59,9 @@ public class Settings {
 	public static class UI {
 		/** Value for left aligned Sidebar. */			public static final boolean SIDEBAR_LEFT = true;
 		/** Value for right aligned Sidebar. */			public static final boolean SIDEBAR_RIGHT = false;
+		
+		/** switch for debug messages of SignalView */	public static final boolean showSignalViewDebugMessages = true;
+
 		
 		/** dimension of the main window */				private Dimension dimMainWindow;
 		/** title string of main window */				private String titleMainWindow;
