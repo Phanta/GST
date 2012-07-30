@@ -5,6 +5,7 @@
 package gst.ui;
 
 import gst.Settings;
+import gst.test.Debug;
 import gst.ui.layout.ComponentArrangement;
 import gst.ui.layout.SignalPanelLayoutManager;
 
@@ -12,6 +13,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -124,8 +127,8 @@ public class SignalPanel extends JPanel {
 			if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
 				DBG_not = "NOT ";
 			}
-			System.out.println("DEBUG\tSignalPanel.revalidate() called and running " + DBG_not + "in EDT.");
-		// end of debugcode
+			Debug.println(Debug.signalPanel, "SignalPanel.revalidate() called and running " + DBG_not + "in EDT.");
+
 		if(graphs != null) {
 			// this case happens after call of super() in constructor
 			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
@@ -152,6 +155,14 @@ public class SignalPanel extends JPanel {
 				//SignalPanel.this.revalidate();
 				//SignalPanel.this.repaint();
 			}
+		}
+	}
+	
+	// TODO implementation of SignalPanelMouseAdapter extending NamedMouseAdapter
+	private class SignalPanelMouseAdapter extends MouseAdapter {
+		public void mouseEntered(MouseEvent me) {
+			//	DEBUGCODE
+			Debug.println(Debug.signalPanelMouseAdapter, "mouse entered SignalPanel");
 		}
 	}
 }

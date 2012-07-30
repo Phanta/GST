@@ -1,0 +1,87 @@
+/**
+ * Debug.java created on 27.07.2012
+ */
+
+package gst.test;
+
+/**
+ * 
+ * @author Enrico Grunitz
+ * @version 0.1 (27.07.2012)
+ */
+public class Debug {
+	// gst
+	public static final int main = 0;
+	public static final int settings = 1;
+	//gst.data
+	public static final int annotationController = 2;
+	public static final int annotationList = 3;
+	public static final int controller = 4;
+	public static final int signalController = 5;
+	public static final int unisensDataset = 6;
+	public static final int valueController = 7;
+	// gst.test
+	public static final int dataTest = 8;
+	// gst.ui
+	public static final int mainWindow = 9;
+	public static final int 	mainWindowMouseForwarder = 10;
+	public static final int menus = 11;
+	public static final int namedMouseAdapter = 12;
+	public static final int sidebar = 13;
+	public static final int signalOverview = 14;
+	public static final int 	signalOverviewMouseAdapter = 15;
+	public static final int signalPanel = 16;
+	public static final int 	signalPanelComponentAdapter = 17;
+	public static final int 	signalPanelMouseAdapter = 18;
+	public static final int signalView = 19;
+	public static final int 	signalViewMouseAdapter = 20;
+	public static final int signalViewFactory = 21;
+	public static final int statusbar = 22;
+	public static final int toolbar = 23;
+	// gst.ui.layout
+	public static final int componentArrangement = 24;
+	public static final int multiSplit = 25;
+	public static final int signalPanelLayoutManager = 26;
+	public static final int verticalLayoutManager = 27;
+	public static final int END = 28;
+
+
+	private static final boolean isEnabled[] = {true,	//	main
+												false,	//	settings
+														//gst.data
+												false,	//	annotationController
+												false,	//	annotationList
+												false,	//	controller
+												false,	//	signalController
+												false,	//	unisensDataset
+												false,	//	valueController
+														//gst.test
+												false,	//	dataTest
+														//gst.ui
+												false,	//	mainWindow
+												true,	//		mainWindowMouseForwarder
+												false,	//	menus
+												false,	//	namedMouseAdapter
+												false,	//	sidebar
+												false,	//	signalOverview
+												false,	//		signalOverviewMouseAdapter
+												false,	//	signalPanel
+												false,	//		signalPanelComponentAdapter
+												false,	//		signalPanelMouseAdapter
+												true,	//	signalView
+												false,	//		signalViewMouseAdapter
+												false,	//	signalViewFactory
+												false,	//	statusbar
+												false,	//	toolbar
+														// gst.ui.layout
+												false,	//	componentArrangement
+												false,	//	multiSplit
+												false,	//	signalPanelLayoutManager
+												false};	//	verticalLayoutManager
+	
+	public static void println(int src, String msg) {
+		if(isEnabled[src]) {
+			System.out.println("DEBUG >\t" + msg);
+		}
+	}
+}

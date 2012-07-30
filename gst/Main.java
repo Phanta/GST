@@ -19,8 +19,10 @@ import gst.data.DataController;
 import gst.data.UnisensDataset;
 
 import gst.test.DataTest;
+import gst.test.Debug;
 
 import gst.ui.MainWindow;
+import gst.ui.Sidebar;
 import gst.ui.SignalPanel;
 import gst.ui.SignalView;
 import gst.ui.SignalViewFactory;
@@ -44,6 +46,11 @@ public abstract class Main {
 	public static void main(String[] args) {
 		datasets = new ArrayList<UnisensDataset>();
 		main = MainWindow.getInstance();
+		
+		Debug.println(Debug.main, "Mainwindow : " + main.toString());
+		Debug.println(Debug.main, "MainWindow content pane :" + main.getContentPane().toString());
+		Debug.println(Debug.main, "SignalPanel parent : " + SignalPanel.getInstance().getParent().toString());
+		Debug.println(Debug.main, "Sidebar parent : " + Sidebar.getInstance().getParent().toString());
 		
 		main.registerActionListener(MainWindow.IDOpenFile, new ActionListener() {
 																public void actionPerformed(ActionEvent ae) {

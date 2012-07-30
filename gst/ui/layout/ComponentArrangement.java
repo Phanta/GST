@@ -4,6 +4,8 @@
 
 package gst.ui.layout;
 
+import gst.test.Debug;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -113,9 +115,9 @@ public class ComponentArrangement {
 			if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
 				DBG_not = "NOT ";
 			}
-			System.out.println("DEBUG:\tsetPreferredSizes() "+ DBG_not + "running in EventDispatchThread.");
-		// end of debugcode
-		if(coll == null) {
+			Debug.println(Debug.componentArrangement, "ComponentArrangement.setPreferredSizes() "+ DBG_not + "running in EventDispatchThread.");
+
+			if(coll == null) {
 			throw new NullPointerException();
 		}
 		if(coll.isEmpty()) {

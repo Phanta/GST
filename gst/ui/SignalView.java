@@ -14,6 +14,7 @@ import javax.swing.event.MouseInputAdapter;
 import gst.Settings;
 import gst.data.AnnotationList;
 import gst.data.DataController;
+import gst.test.Debug;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -74,7 +75,9 @@ public class SignalView extends ChartPanel {
 			  /*enable save*/		true,
 			  /*enable print*/		false,
 			  /*enable zoom*/		true,
-			  /*enable tooltips*/	true);
+			  /*enable tooltips*/	false);
+		// FIXME tooltips cause an unhandled class cast exception for MainWindow cast to JComponent in context of mouse event forwarding
+		//																													in MainWindow
 		if(endTime < startTime) {
 			// swapping start and end time if needed 
 			double temp = endTime;
@@ -88,8 +91,7 @@ public class SignalView extends ChartPanel {
 		//this.addPropertyChangeListener(NEW_DATA_PROP, this);
 		ctrlList = new ArrayList<DataController>();
 		this.add(this.createPopupMenu(true, false, true, false, true));
-		this.addMouseListener(new SignalViewMouseAdapter("SignalView ML"));
-		this.addMouseMotionListener(new SignalViewMouseAdapter("SignalView MMotionL"));
+		this.addMouseListener(new NamedMouseAdapter("SignalView"));
 		return;
 	}
 	
@@ -179,13 +181,11 @@ public class SignalView extends ChartPanel {
 	 */
 	private void updateData() {
 		// DEBUGCODE updateData() EDT Test
-		if(Settings.getInstance().ui.showSignalViewDebugMessages == true) {
-			String DBG_not = "";
-			if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
-				DBG_not = "NOT ";
-			}
-			System.out.println("DEBUG\tSignalView().updateData() called and running " + DBG_not + "in EDT.");
+		String DBG_not = "";
+		if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
+			DBG_not = "NOT ";
 		}
+		Debug.println(Debug.signalView, "SignalView().updateData() called and running " + DBG_not + "in EventDispatchThread.");
 		
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		Iterator<DataController> it = ctrlList.iterator();
@@ -294,9 +294,8 @@ public class SignalView extends ChartPanel {
 		}
 		
 		public void mouseEntered(MouseEvent me) {
-			if(Settings.getInstance().ui.showSignalViewDebugMessages == true) {
-				System.out.println("DEBUG\tSignalViewMouseAdapter(" + this.name + ") detected entering mouse.");
-			}
+			// DEBUGCODE
+			Debug.println(Debug.signalViewMouseAdapter, "SignalViewMouseAdapter(" + this.name + ") detected entering mouse.");
 		}
 	}
 
