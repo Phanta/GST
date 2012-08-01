@@ -23,7 +23,7 @@ import javax.swing.JPanel;
 /**
  * The panel containing all signalgraphs and the controls to resize them. Implemented as Singleton.
  * @author Enrico Grunitz
- * @version 0.2.1 (26.06.2012)
+ * @version 0.2.2 (01.08.2012)
  */
 public class SignalPanel extends JPanel {
 
@@ -39,9 +39,7 @@ public class SignalPanel extends JPanel {
 	 * Private singleton constructor.
 	 */
 	private SignalPanel() {
-	    super();
-	    // DEBUG SignalPanelLayoutManager maybe not necessary
-	//	super(new SignalPanelLayoutManager(), false);
+		super(new SignalPanelLayoutManager(), false);
 		this.addComponentListener(new SignalPanelComponentAdapter());
 		compArr.setPattern(ComponentArrangement.EVENHEIGHTS);
 
@@ -101,6 +99,17 @@ public class SignalPanel extends JPanel {
 	}
 	
 	/**
+	 * Removes all {@link gst.ui.SignalView}s and resets the view mode to {@link gst.ui.layout.ComponentArrangement#EVENHEIGHTS}.
+	 */
+	public void removeAllSignals() {
+		this.removeAll();
+		graphs.clear();
+		compArr.setPattern(ComponentArrangement.EVENHEIGHTS);
+		this.revalidate();
+		this.repaint();
+	}
+	
+	/**
 	 * Returns the {@code ComponentArrangement} object of this panel.
 	 * @return the component arranger
 	 */
@@ -116,21 +125,19 @@ public class SignalPanel extends JPanel {
 		return graphs.size();
 	}
 
-	/**
-	 * @see java.awt.Container#validate()
-	 */
+	/** @see java.awt.Container#validate() */
 	@Override
 	public void revalidate() {
 		super.revalidate();
-		// DEBUGCODE revalidate call signer
+		// DEBUGCODE SignalPanel.revalidate() call signer
 			String DBG_not = "";
 			if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
 				DBG_not = "NOT ";
 			}
-			Debug.println(Debug.signalPanel, "SignalPanel.revalidate() called and running " + DBG_not + "in EDT.");
+			Debug.println(Debug.signalPanel, "SignalPanel.revalidate() called and running " + DBG_not + "in EventDispatchThread.");
 
 		if(graphs != null) {
-			// this case happens after call of super() in constructor
+			// null case happens after call of super() in constructor
 			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
 		}
 	}

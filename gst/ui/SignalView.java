@@ -3,17 +3,12 @@ package gst.ui;
  * SignalView.java created 31.05.2012
  */
 
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.InputEvent;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import javax.swing.event.MouseInputAdapter;
 
 import gst.Settings;
 import gst.data.AnnotationList;
@@ -39,7 +34,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.0.3 (26.07.2012)
+ * @version 0.0.4 (01.08.2012)
  */
 public class SignalView extends ChartPanel {
 
@@ -171,7 +166,7 @@ public class SignalView extends ChartPanel {
 	 * values.<br>
 	 * Example:<br>
 	 * time axis bounds are 40 .. 60; value = 50; new bounds -> (40 .. 60)  +  (60 - 40) * 50 / 100 = 50 .. 70
-	 * @param value percentage value of displayed time axis range
+	 * @param value percentage value of displayed time axis range to shift view for-/backward
 	 */
 	public void shiftTimeAxisRelative(double value) {
 		Range axisBounds = this.getTimeAxisBounds();
@@ -182,10 +177,10 @@ public class SignalView extends ChartPanel {
 	
 	/**
 	 * Shrinks or increases the range of the time axis by a relative value (percent point) of the displayed range. Positive values decreases
-	 * and negative values increases the range ignoring values {@code<= -100} and {@code >= 100}.<br>
+	 * and negative values increases the range ignoring values {@code <= -100} and {@code >= 100}.<br>
 	 * Example:<br>
 	 * time axis bounds are 40 .. 60; value = 50; new bounds -> (40 .. 60)  +-  (60 - 40) * (50/2) / 100 = 45 .. 55
-	 * @param value
+	 * @param value percentage value of displayed time axis range to zoom in/out
 	 */
 	public void zoomTimeAxisRelative(double value) {
 		if(value <= -100 || value >= 100) {

@@ -12,7 +12,7 @@ import org.unisens.SignalEntry;
 /**
  * {@code ViewController} implementation for {@code SignalEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1 (24.07.2012)
+ * @version 0.1.1 (01.08.2012)
  * @see gst.data.DataController
  */
 public class SignalController extends DataController {
@@ -81,6 +81,10 @@ public class SignalController extends DataController {
 		} catch(IOException ioe) {
 			System.out.println("couldn't read signal data from file");
 			System.exit(1);
+		}
+		if(dataArray == null) {
+			// happens if the view is not located on the data -> return empty series
+			return series;
 		}
 		// add data to collection
 		double timeStep = (endTime - startTime) / maxPoints;

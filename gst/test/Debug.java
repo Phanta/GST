@@ -1,13 +1,11 @@
-/**
- * Debug.java created on 27.07.2012
- */
+/** Debug.java created on 27.07.2012 */
 
 package gst.test;
 
 /**
  * 
  * @author Enrico Grunitz
- * @version 0.1 (27.07.2012)
+ * @version 1.0 (01.08.2012)
  */
 public class Debug {
 	// gst
@@ -68,8 +66,8 @@ public class Debug {
 												false,	//	signalPanel
 												false,	//		signalPanelComponentAdapter
 												false,	//		signalPanelMouseAdapter
-												true,	//	signalView
-												true,	//		signalViewMouseAdapter
+												false,	//	signalView
+												false,	//		signalViewMouseAdapter
 												false,	//	signalViewFactory
 												false,	//	statusbar
 												false,	//	toolbar

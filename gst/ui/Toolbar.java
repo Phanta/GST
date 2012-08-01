@@ -18,7 +18,7 @@ import javax.swing.JToolBar;
 /**
  * Toolbar of the main window.
  * @author Enrico Grunitz
- * @version 0.2 (23.07.2012)
+ * @version 0.2.1 (01.08.2012)
  */
 public class Toolbar extends JToolBar{
 	/** serialization ID */								private static final long serialVersionUID = 1L;
@@ -32,6 +32,7 @@ public class Toolbar extends JToolBar{
 	/** button for view mode of SignalPanel */			private JButton btnViewMode;
 	/** button for view mode index 1 */					private JButton btnViewModeIndex1;
 	/** button for view mode index 2 */					private JButton btnViewModeIndex2;
+	/** button for close all views */					private JButton btnCloseViews;
 	
 	/**
 	 * Returns Singleton instance of this class.
@@ -95,6 +96,15 @@ public class Toolbar extends JToolBar{
 		btnViewModeIndex2.addActionListener(al);
 		this.setViewModeIndex2ButtonText();
 		this.add(btnViewModeIndex2);
+		
+		btnCloseViews = new JButton("alle schlieﬂen [Strg]");
+		al = new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				alCloseViews(ae);
+			}
+		};
+		btnCloseViews.addActionListener(al);
+		this.add(btnCloseViews);
 		
 		this.setTextLabelVisibility();
 		this.setVisible(true);
@@ -282,4 +292,13 @@ public class Toolbar extends JToolBar{
 		return;
 	}
 
+	/**
+	 * Closes all views of the {@link gst.ui.SignalPanel} if the modifier ({@link gst.Settings.UI#getCloseViewsModifier()}) is pressed.
+	 * @param event the {@link java.awt.event.ActionEvent}
+	 */
+	private static void alCloseViews(ActionEvent event) {
+		if((event.getModifiers() & Settings.getInstance().ui.getCloseViewsModifier()) != 0) {
+			SignalPanel.getInstance().removeAllSignals();
+		}
+	}
 }

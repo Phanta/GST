@@ -5,6 +5,7 @@
 package gst;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 
 /**  
  * Settings is used to store global settings of the behavior of the program. Implemented as Singleton.
@@ -53,20 +54,22 @@ public class Settings {
 	
 	/**
 	 * Wrapper class for settings for the User Interface of the application.
-	 * @version 0.1.2 (29.05.2012)
+	 * @version 0.1.4 (01.08.2012)
 	 * @author Enrico Grunitz
 	 */
 	public static class UI {
 		/** Value for left aligned Sidebar. */			public static final boolean SIDEBAR_LEFT = true;
 		/** Value for right aligned Sidebar. */			public static final boolean SIDEBAR_RIGHT = false;
 		
-		/** switch for debug messages of SignalView */	public static final boolean showSignalViewDebugMessages = true;
+//		/** switch for debug messages of SignalView */	public static final boolean showSignalViewDebugMessages = true;
 
 		
 		/** dimension of the main window */				private Dimension dimMainWindow;
 		/** title string of main window */				private String titleMainWindow;
 		
 		/** show text labels in toolbar */				private boolean toolbarShowLabels;
+		/** modifiers needed for for close all views
+		 * @see java.awt.event.ActionEvent */			private int toolbarCloseViewsModifier;
 		
 		/** alignment of the sidebar */					private boolean sidebarAlignment;
 		/** width in pixel of sidebar */				private int sidebarWidth;
@@ -93,6 +96,7 @@ public class Settings {
 			titleMainWindow = new String("Signal Display Tool");
 			
 			toolbarShowLabels = true;
+			toolbarCloseViewsModifier = ActionEvent.CTRL_MASK;
 			
 			sidebarAlignment = SIDEBAR_LEFT;
 			sidebarWidth = 250;
@@ -159,9 +163,7 @@ public class Settings {
 			return relativeAxisZooming;
 		}
 		
-		/**
-		 * @return true if the toolbar should show text labels
-		 */
+		/** @return {@link #toolbarShowLabels} */
 		public boolean showToolbarLabels() {
 			return this.toolbarShowLabels;
 		}
@@ -173,6 +175,11 @@ public class Settings {
 		public void showToolbarLabels(boolean enable) {
 			this.toolbarShowLabels = enable;
 			return;
+		}
+		
+		/** @return {@link #toolbarCloseViewsModifier} */
+		public int getCloseViewsModifier() {
+			return this.toolbarCloseViewsModifier;
 		}
 	}
 }
