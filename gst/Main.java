@@ -50,7 +50,7 @@ public abstract class Main {
 		Debug.println(Debug.main, "Mainwindow : " + main.toString());
 		Debug.println(Debug.main, "MainWindow content pane :" + main.getContentPane().toString());
 		Debug.println(Debug.main, "SignalPanel parent : " + SignalPanel.getInstance().getParent().toString());
-		Debug.println(Debug.main, "Sidebar parent : " + Sidebar.getInstance().getParent().toString());
+		//Debug.println(Debug.main, "Sidebar parent : " + Sidebar.getInstance().getParent().toString());
 		
 		main.registerActionListener(MainWindow.IDOpenFile, new ActionListener() {
 																public void actionPerformed(ActionEvent ae) {
@@ -117,7 +117,7 @@ public abstract class Main {
 	}
 	
 	/**
-	 * Creates {@link gst.ui.SignalView}s for all {@code Entry}s of the given {@link gst.data.Unisensdataset} and adds them to the
+	 * Creates {@link gst.ui.SignalView}s for all {@code Entry}s of the given {@link gst.data.UnisensDataset} and adds them to the
 	 * {@link gst.ui.SignalPanel}.
 	 * @param ds {@code UnisensDataset} to use
 	 */

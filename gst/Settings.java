@@ -74,6 +74,9 @@ public class Settings {
 		/** width of signaloverview */					private int signalOverviewWidth;
 		/** height of signaloverview */					private int signalOverviewHeight;
 		
+		/** percentage of axis movement on scrollwheel */	private double relativeAxisScrolling;
+		/** percentage of axis zooming on scrollwheel */	private double relativeAxisZooming;
+		
 		/**
 		 * Standard Constructor. Initializes UI with default Values.
 		 */
@@ -96,6 +99,9 @@ public class Settings {
 			
 			signalOverviewWidth = sidebarWidth;
 			signalOverviewHeight = 80;
+			
+			relativeAxisScrolling = 15.0;
+			relativeAxisZooming = 15.0;
 			return;
 		}
 		
@@ -141,6 +147,16 @@ public class Settings {
 		 */
 		public int getSignalOverviewHeight() {
 			return signalOverviewHeight;
+		}
+		
+		/** @return {@link #relativeAxisScrolling} */
+		public double getRelativeAxisScrolling() {
+			return relativeAxisScrolling;
+		}
+		
+		/** @return {@link #relativeAxisZooming} */
+		public double getRelativeAxisZooming() {
+			return relativeAxisZooming;
 		}
 		
 		/**

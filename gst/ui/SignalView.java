@@ -3,8 +3,12 @@ package gst.ui;
  * SignalView.java created 31.05.2012
  */
 
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,6 +29,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 
+import org.jfree.data.Range;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -74,9 +79,9 @@ public class SignalView extends ChartPanel {
 			  /*enable copy*/		false,
 			  /*enable save*/		true,
 			  /*enable print*/		false,
-			  /*enable zoom*/		true,
+			  /*enable zoom*/		false,		// function implemented, no need for built-in version
 			  /*enable tooltips*/	false);
-		// FIXME tooltips cause an unhandled class cast exception for MainWindow cast to JComponent in context of mouse event forwarding
+		// NOTE tooltips cause an unhandled class cast exception for MainWindow cast to JComponent in context of mouse event forwarding
 		//																													in MainWindow
 		if(endTime < startTime) {
 			// swapping start and end time if needed 
@@ -90,8 +95,10 @@ public class SignalView extends ChartPanel {
 		needNewData = false;	// there is no controller yet
 		//this.addPropertyChangeListener(NEW_DATA_PROP, this);
 		ctrlList = new ArrayList<DataController>();
-		this.add(this.createPopupMenu(true, false, true, false, true));
-		this.addMouseListener(new NamedMouseAdapter("SignalView"));
+		//this.add(this.createPopupMenu(true, false, true, false, true));
+		SignalViewMouseAdapter mAdapt = new SignalViewMouseAdapter("");
+		this.addMouseListener(mAdapt);
+		this.addMouseWheelListener(mAdapt);
 		return;
 	}
 	
@@ -142,6 +149,53 @@ public class SignalView extends ChartPanel {
 			this.needNewData = true;
 		}
 		return;
+	}
+	
+	/**
+	 * Sets the numerical range for the time-axis. Convenience method for {@link #setTimeAxisBounds(double, double)}.
+	 */
+	public void setTimeAxisBounds(Range range) {
+		this.setTimeAxisBounds(range.getLowerBound(), range.getUpperBound());
+	}
+	
+	/**
+	 * Returns the numerical range for the time-axis.
+	 * @return upper and lower bound of the time axis of this chart
+	 */
+	public Range getTimeAxisBounds() {
+		return new Range(this.startTime, this.endTime);
+	}
+	
+	/**
+	 * Moves the view over the time axis by given percentage of displayed range. Positive values increase the bounds, negatives decrease the
+	 * values.<br>
+	 * Example:<br>
+	 * time axis bounds are 40 .. 60; value = 50; new bounds -> (40 .. 60)  +  (60 - 40) * 50 / 100 = 50 .. 70
+	 * @param value percentage value of displayed time axis range
+	 */
+	public void shiftTimeAxisRelative(double value) {
+		Range axisBounds = this.getTimeAxisBounds();
+		double range = axisBounds.getUpperBound() - axisBounds.getLowerBound();
+		axisBounds = Range.shift(axisBounds, range * value / 100, true);
+		this.setTimeAxisBounds(axisBounds);
+	}
+	
+	/**
+	 * Shrinks or increases the range of the time axis by a relative value (percent point) of the displayed range. Positive values decreases
+	 * and negative values increases the range ignoring values {@code<= -100} and {@code >= 100}.<br>
+	 * Example:<br>
+	 * time axis bounds are 40 .. 60; value = 50; new bounds -> (40 .. 60)  +-  (60 - 40) * (50/2) / 100 = 45 .. 55
+	 * @param value
+	 */
+	public void zoomTimeAxisRelative(double value) {
+		if(value <= -100 || value >= 100) {
+			return;
+		}
+		Range axisBounds = this.getTimeAxisBounds();
+		double range = axisBounds.getUpperBound() - axisBounds.getLowerBound();
+		double newStart = axisBounds.getLowerBound() + value / 100 * range / 2;
+		double newEnd = axisBounds.getUpperBound() - value / 100 * range / 2;
+		this.setTimeAxisBounds(newStart, newEnd);
 	}
 	
 	/**
@@ -282,20 +336,34 @@ public class SignalView extends ChartPanel {
 
 	/* * * intern classes * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
-	public static class SignalViewMouseAdapter extends MouseInputAdapter {
-		private String name;
-		
-		public SignalViewMouseAdapter(String name) {
-			super();
-			this.name = name;
-			if(this.name == null) {
-				this.name = "-?-";
-			}
+	private static class SignalViewMouseAdapter extends NamedMouseAdapter {
+		public SignalViewMouseAdapter(String nameExtension) {
+			super("SignalView" + nameExtension);
 		}
 		
-		public void mouseEntered(MouseEvent me) {
-			// DEBUGCODE
-			Debug.println(Debug.signalViewMouseAdapter, "SignalViewMouseAdapter(" + this.name + ") detected entering mouse.");
+		/** @see java.awt.event.MouseAdapter#mouseWheelMoved(java.awt.event.MouseWheelEvent) */
+		@Override
+		public void mouseWheelMoved(MouseWheelEvent event) {
+			Debug.println(Debug.signalViewMouseAdapter, this.getComponentName() + " detected mousewheel motion -> " + event.toString());
+			if((event.getComponent() instanceof SignalView) == false) {
+				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
+				return;
+			}
+			SignalView target = (SignalView)event.getComponent();
+			int modifiers = event.getModifiersEx();
+			if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {
+				// shift was pressed -> zoom view
+				double shiftValue = event.getWheelRotation() * Settings.getInstance().ui.getRelativeAxisZooming();
+				target.zoomTimeAxisRelative(shiftValue);
+				target.revalidate();
+				target.repaint();
+			} else {
+				// shift wasn't pressed -> scroll view
+				double shiftValue = event.getWheelRotation() * Settings.getInstance().ui.getRelativeAxisScrolling();
+				target.shiftTimeAxisRelative(shiftValue);
+				target.revalidate();
+				target.repaint();
+			}
 		}
 	}
 

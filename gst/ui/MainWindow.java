@@ -9,6 +9,7 @@ import gst.test.Debug;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Toolkit;	// Screenresolution
 import java.awt.Dimension;	// Screenresolution
@@ -19,6 +20,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -52,8 +54,9 @@ public class MainWindow extends JFrame {
 		int x = (dimScreenResolution.width - settings.ui.getMainWindowDimension().width) / 2;
 		int y = (dimScreenResolution.height - settings.ui.getMainWindowDimension().height) / 2;
 		this.setBounds(x, y, settings.ui.getMainWindowDimension().width, settings.ui.getMainWindowDimension().height);
+		Debug.println(Debug.mainWindow, "MainWindow.size: " + this.getWidth() + ", " + this.getHeight());
 		// register listener for event-forwarding
-		this.addMouseListener(new MainWindowMouseForwarder());
+		//this.addMouseListener(new MainWindowMouseForwarder());
 
 		// define default behavior
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -61,28 +64,42 @@ public class MainWindow extends JFrame {
 		
 		// add Menus
 		this.setJMenuBar(Menus.getInstance());
-		//Menus.getInstance().addMouseListener(new DefaultMouseAdapter("Menus"));
+		Menus.getInstance().addMouseListener(new NamedMouseAdapter("Menus"));
 		
 		// add Toolbar
 		this.add(Toolbar.getInstance(), BorderLayout.PAGE_START);
-		//Toolbar.getInstance().addMouseListener(new DefaultMouseAdapter("Toolbar"));
+		//Toolbar.getInstance().addMouseListener(new NamedMouseAdapter("Toolbar"));
 		
 		// add Sidebar
-		this.add(Sidebar.getInstance(), BorderLayout.LINE_START);
-		//Sidebar.getInstance().addMouseListener(new DefaultMouseAdapter("Sidebar"));
+		// DEBUG debugpanel for west (SideBar replacement) 
+		// FIXME Sidebar causes MouseEvent loss on CENTER component
+				JPanel debugPanelWest = new JPanel();
+				debugPanelWest.setBackground(Color.red);
+				debugPanelWest.addMouseListener(new NamedMouseAdapter("DebugPanelWest"));
+				debugPanelWest.setSize(200, 400);
+				this.add(debugPanelWest, BorderLayout.LINE_START);
+		//this.add(Sidebar.getInstance(), BorderLayout.LINE_START);
+		//Sidebar.getInstance().addMouseListener(new NamedMouseAdapter("Sidebar"));
 		
 		// basic chart of JFreeChart
+		//this.getContentPane().add(SignalPanel.getInstance());
+		// DEBUG debugpanel for center
+//				JPanel debugPanelCent = new JPanel();
+//				debugPanelCent.setBackground(Color.green);
+//				debugPanelCent.addMouseListener(new NamedMouseAdapter("DebugPanelCenter"));
+//				this.add(debugPanelCent, BorderLayout.CENTER);
+		Debug.println(Debug.mainWindow, "SignalPanel: " + SignalPanel.getInstance().hashCode());
 		this.add(SignalPanel.getInstance(), BorderLayout.CENTER);
-		//SignalPanel.getInstance().addMouseListener(new DefaultMouseAdapter("SignalPanel"));
+		SignalPanel.getInstance().addMouseListener(new NamedMouseAdapter("SignalPanel"));
 
 		// add statusbar
 		// FIXME i don't like this style of status bar, maybe replace it with some homebrew
 		this.add(StatusBar.getInstance(), BorderLayout.PAGE_END);
-		//StatusBar.getInstance().addMouseListener(new DefaultMouseAdapter("StatusBar"));
+		StatusBar.getInstance().addMouseListener(new NamedMouseAdapter("StatusBar"));
 		
 		// show me what u got!
 		this.setVisible(true);
-		//this.revalidate();
+		return;
 	}
 	
 	/**
@@ -131,6 +148,7 @@ public class MainWindow extends JFrame {
 	 * @author Enrico Grunitz
 	 * @version 0.1 (30.07.2012)
 	 */
+	@Deprecated
 	private class MainWindowMouseForwarder extends NamedMouseAdapter {
 		/** basic constructor */ 
 		public MainWindowMouseForwarder() {
@@ -187,6 +205,8 @@ public class MainWindow extends JFrame {
 		/** @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent) */
 		@Override
 		public void mouseReleased(MouseEvent event) {
+			Debug.println(Debug.mainWindowMouseForwarder, "Mouse released @" + event.getX() + "," + event.getY());
+			Debug.println(Debug.mainWindowMouseForwarder, "SignalPanel position: " + SignalPanel.getInstance().getBounds().toString());
 			if(forward(event) != true) {
 				Debug.println(Debug.mainWindowMouseForwarder, "MouseReleased on " + this.getComponentName() +
 						  									  " NOT forwarded! Event: " + event.toString());
@@ -199,11 +219,18 @@ public class MainWindow extends JFrame {
 		 * @return true if forward is successful, false if deepest {@code Component} is {@link gst.ui.MainWindow} 
 		 */
 		private boolean forward(MouseEvent event) {
+			
 			Component target = SwingUtilities.getDeepestComponentAt(MainWindow.getInstance(), event.getPoint().x, event.getPoint().y);
 			if(target != (Component)MainWindow.getInstance()) {
-				Debug.println(Debug.mainWindowMouseForwarder, "forwarding to " + target.toString());
-				target.dispatchEvent(event);
-				return true;
+				if(target != null) {
+					Debug.println(Debug.mainWindowMouseForwarder, "forwarding " + event.toString() + "\n\tto " + target.toString());
+					//event.setSource(this);
+					target.dispatchEvent(event);
+					return true;
+				} else {
+					Debug.println(Debug.mainWindowMouseForwarder, "target is null");
+					return false;
+				}
 			}
 			return false;
 		}

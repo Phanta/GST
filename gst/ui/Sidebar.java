@@ -54,7 +54,7 @@ public class Sidebar extends JPanel {
 		leftAligned = Settings.getInstance().ui.getSidebarAlignment();
 		
 		// upper panel
-		panNorth = new JPanel();
+/*		panNorth = new JPanel();
 		panNorth.setLayout(new BoxLayout(panNorth, BoxLayout.LINE_AXIS));
 		glueNorth = Box.createHorizontalGlue();
 		btnSideSwitch = new JButton();
@@ -65,9 +65,9 @@ public class Sidebar extends JPanel {
 										});		// Listener for redesigning Sidebar
 		designNorthPanel();
 		this.add(panNorth, BorderLayout.NORTH);
-
+*/
 		// center panel
-		panCenter = new JPanel();
+/*		panCenter = new JPanel();
 		panCenter.setLayout(new BorderLayout());
 		btnSize = new JButton("+");
 		panCenter.add(btnSize, BorderLayout.NORTH);
@@ -80,11 +80,11 @@ public class Sidebar extends JPanel {
 									});
 		this.add(panCenter, BorderLayout.CENTER);
 		designCenterCenterMultiSplit();
-		
+*/		
 		// lower panel
-		panSouth = SignalOverview.getInstance();
+/*		panSouth = SignalOverview.getInstance();
 		this.add(panSouth, BorderLayout.SOUTH);
-	
+*/	
 		return;
 	}
 	

@@ -58,10 +58,10 @@ public class Debug {
 														//gst.test
 												false,	//	dataTest
 														//gst.ui
-												false,	//	mainWindow
+												true,	//	mainWindow
 												true,	//		mainWindowMouseForwarder
 												false,	//	menus
-												false,	//	namedMouseAdapter
+												true,	//	namedMouseAdapter
 												false,	//	sidebar
 												false,	//	signalOverview
 												false,	//		signalOverviewMouseAdapter
@@ -69,7 +69,7 @@ public class Debug {
 												false,	//		signalPanelComponentAdapter
 												false,	//		signalPanelMouseAdapter
 												true,	//	signalView
-												false,	//		signalViewMouseAdapter
+												true,	//		signalViewMouseAdapter
 												false,	//	signalViewFactory
 												false,	//	statusbar
 												false,	//	toolbar
