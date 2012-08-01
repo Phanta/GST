@@ -12,7 +12,7 @@ import org.unisens.SignalEntry;
 /**
  * {@code ViewController} implementation for {@code SignalEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1.1 (01.08.2012)
+ * @version 0.1.2 (01.08.2012)
  * @see gst.data.DataController
  */
 public class SignalController extends DataController {
@@ -132,5 +132,11 @@ public class SignalController extends DataController {
 	@Override
 	public AnnotationList getAnnotations(double startTime, double endTime) {
 		return null;
+	}
+
+	/** @see gst.data.DataController#getFullName() */
+	@Override
+	public String getFullName() {
+		return super.getFullName() + DataController.SEPERATOR + (((SignalEntry)this.entry).getChannelNames())[this.channelIndex];
 	}
 }

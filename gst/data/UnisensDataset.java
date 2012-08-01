@@ -33,7 +33,7 @@ public class UnisensDataset {
 	/**
 	 * Enumeration of different {@code Entry}-types.
 	 * @author Enrico Grunitz
-	 * @version 1.0 (27.06.2012)
+	 * @version 1.0.2 (01.08.2012)
 	 */
 	public enum EntryType {
 		/** instanceof SignalEntry */ 					SIGNAL,
@@ -81,7 +81,7 @@ public class UnisensDataset {
 	
 	/** name of this dataset */						private String name = "";
 	/** the unisens object enclosed */				private Unisens us = null;
-	
+	/** list of controllers of the data */			private ArrayList<DataController> ctrlList;
 	
 	/**
 	 * Convenience constructor. Constructs the dataset with a relative path to the current working directory.
@@ -129,6 +129,7 @@ public class UnisensDataset {
 		name = "UnisensDataset" + datasetCount;
 		us.addCustomAttribute(KEY_NAME, name);
 		datasetCount++;
+		ctrlList = this.createControllers();
 		return;
 	}
 	
@@ -173,6 +174,7 @@ public class UnisensDataset {
 	 * Returns the data of this dataset.
 	 * @return a {@link java.util.List List} of the data-IDs
 	 */
+	@Deprecated
 	public List<String> getDataIds() {
 		List<Entry> entries = us.getEntries();
 		List<String> ids = new ArrayList<String>(entries.size());
@@ -188,6 +190,7 @@ public class UnisensDataset {
 	 * @param entryId the ID of the requested entry
 	 * @return the entry object
 	 */
+	@Deprecated
 	public Entry getEntry(String entryId) {
 		if(entryId == null) {
 			throw new NullPointerException("ID of a dataset entry cannot be null");
@@ -199,6 +202,7 @@ public class UnisensDataset {
 	 * Returns a {@link java.util.List List} of content class strings of the entries of this dataset.
 	 * @return {@code List<String>} of classes of the entries
 	 */
+	@Deprecated
 	public List<String> getContentClasses() {
 		List<Entry> entries = us.getEntries();
 		List<String> classes = new ArrayList<String>(entries.size());
@@ -227,7 +231,7 @@ public class UnisensDataset {
 	 * Creates {@link gst.data.DataController}s for all data in this {@code UnisensDataset}.
 	 * @return list of created {@code DataController}
 	 */
-	public List<DataController> createControllers() {
+	private ArrayList<DataController> createControllers() {
 		List<Entry> entryList = this.us.getEntries();
 		ArrayList<DataController> ctrlList = new ArrayList<DataController>();
 		Iterator<Entry> it = entryList.iterator();
@@ -261,6 +265,14 @@ public class UnisensDataset {
 			}
 		}
 		return ctrlList;
+	}
+	
+	/**
+	 * Returns a {@code List} with a {@link gst.data.DataController} for each entry and channel.
+	 * @return controller list
+	 */
+	public List<DataController> getControllerList() {
+		return this.ctrlList;
 	}
 	
 	/**

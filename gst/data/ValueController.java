@@ -16,7 +16,7 @@ import org.unisens.ValuesEntry;
 /**
  * {@code ViewController} implementation for {@code ValuesEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1 (24.07.2012)
+ * @version 0.1.1 (01.08.2012)
  * @see gst.data.DataController
  */
 public class ValueController extends DataController {
@@ -72,9 +72,7 @@ public class ValueController extends DataController {
 		throw new IllegalArgumentException("could not find channel named '" + channelName + "'");
 	}
 
-	/**
-	 * @see gst.data.DataController#getDataPoints(double, double, int)
-	 */
+	/** @see gst.data.DataController#getDataPoints(double, double, int) */
 	@Override
 	public XYSeries getDataPoints(double startTime, double endTime, int maxPoints) {
 		double sampleRate = ((ValuesEntry)this.entry).getSampleRate();
@@ -142,35 +140,33 @@ public class ValueController extends DataController {
 		return series;
 	}
 
-	/**
-	 * @see gst.data.DataController#getMaxX()
-	 */
+	/** @see gst.data.DataController#getMaxX() */
 	@Override
 	public double getMaxX() {
 		return this.basetime + (this.lastSampleNumber / ((ValuesEntry)this.entry).getSampleRate());
 	}
 
-	/**
-	 * @see gst.data.DataController#getMinX()
-	 */
+	/** @see gst.data.DataController#getMinX() */
 	@Override
 	public double getMinX() {
 		return this.basetime + (this.firstSampleNumber / ((ValuesEntry)this.entry).getSampleRate());
 	}
 
-	/**
-	 * @see gst.data.DataController#getPhysicalUnit()
-	 */
+	/** @see gst.data.DataController#getPhysicalUnit() */
 	@Override
 	public String getPhysicalUnit() {
 		return ((ValuesEntry)this.entry).getUnit();
 	}
 
-	/**
-	 * @see gst.data.DataController#getAnnotations(double, double)
-	 */
+	/** @see gst.data.DataController#getAnnotations(double, double) */
 	@Override
 	public AnnotationList getAnnotations(double startTime, double endTime) {
 		return null;
+	}
+	
+	/** @see gst.data.DataController#getFullName() */
+	@Override
+	public String getFullName() {
+		return super.getFullName() + DataController.SEPERATOR + (((ValuesEntry)this.entry).getChannelNames())[this.channelIndex];
 	}
 }

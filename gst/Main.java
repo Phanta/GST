@@ -12,6 +12,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JFileChooser;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -22,7 +25,6 @@ import gst.test.DataTest;
 import gst.test.Debug;
 
 import gst.ui.MainWindow;
-import gst.ui.Sidebar;
 import gst.ui.SignalPanel;
 import gst.ui.SignalView;
 import gst.ui.SignalViewFactory;
@@ -30,7 +32,7 @@ import gst.ui.SignalViewFactory;
 /**
  * Class for the public static void main(String[] args) function.
  * @author Enrico Grunitz
- * @version 0.1 (19.07.2012)
+ * @version 0.1.1 (01.08.2012)
  */
 public abstract class Main {
 	
@@ -113,6 +115,8 @@ public abstract class Main {
 			main.revalidate();
 			main.repaint();
 		}
+		//listEntryNames();
+		selectDataDialog();
 		return;
 	}
 	
@@ -120,13 +124,15 @@ public abstract class Main {
 	 * Creates {@link gst.ui.SignalView}s for all {@code Entry}s of the given {@link gst.data.UnisensDataset} and adds them to the
 	 * {@link gst.ui.SignalPanel}.
 	 * @param ds {@code UnisensDataset} to use
+	 * @return the list of generated controllers
 	 */
-	private static void createSignalViews(UnisensDataset ds) {
-		List<DataController> ctrlList = ds.createControllers();
+	private static List<DataController> createSignalViews(UnisensDataset ds) {
+		List<DataController> ctrlList = ds.getControllerList();
 		Iterator<DataController> it = ctrlList.iterator();
 		while(it.hasNext()) {
 			SignalPanel.getInstance().addSignal(SignalView.createControlledView(it.next()));
 		}
+		return ctrlList;
 	}
 	
 	/**
@@ -139,6 +145,38 @@ public abstract class Main {
 			it.next().close();
 		}
 		System.exit(0);
+	}
+	
+	private static List<DataController> selectDataDialog() {
+		// collect all controller
+		Iterator<UnisensDataset> itds = datasets.iterator();
+		ArrayList<DataController> ctrlList = new ArrayList<DataController>();
+		while(itds.hasNext()) {
+			ctrlList.addAll(itds.next().getControllerList());
+		}
+		if(ctrlList.isEmpty()) {
+			return ctrlList;
+		}
+		// generate string array of full names
+		String[] fullNames = new String[ctrlList.size()];
+		for(int i = 0; i < ctrlList.size(); i++) {
+			fullNames[i] = ctrlList.get(i).getFullName();
+		}
+		// create JList component
+		JList<String> list = new JList<String>(fullNames);
+		list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		// create and show dialog
+		JOptionPane optionPane = new JOptionPane();
+		optionPane.setMessage(list);
+		optionPane.setMessageType(JOptionPane.INFORMATION_MESSAGE);
+		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
+		int returnValue = JOptionPane.showConfirmDialog(MainWindow.getInstance(), list, "title string", JOptionPane.OK_CANCEL_OPTION);
+		if(returnValue == JOptionPane.OK_OPTION) {
+			// TODO implement selected data processing
+		}
+	    
+		// TODO usefull returnvalue 
+		return null;
 	}
 	
 	@Deprecated

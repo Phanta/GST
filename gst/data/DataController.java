@@ -12,9 +12,11 @@ import org.unisens.Entry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1 (18.07.2012)
+ * @version 0.1.1 (01.08.2012)
  */
 public abstract class DataController {
+	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
+	
 	/** the entry of this controller */				protected Entry entry;
 	/** type of the controlled entry */				protected EntryType type;
 	/** measurement time of the first entry */		protected double basetime;
@@ -27,11 +29,11 @@ public abstract class DataController {
 	 */
 	protected DataController(UnisensDataset ds, String entryId) {
 		if(ds == null) {
-			throw new NullPointerException();
+			throw new NullPointerException("constructor from null UnisensDataset failed");
 		}
 		this.entry = ds.getEntry(entryId);
 		if(this.entry == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("constructor from entryId '" + entryId + "' of UnisensDataset '" + ds.toString() + "' failed");
 		}
 		this.type = EntryType.getType(this.entry);
 		basetime = 0.0;
@@ -45,7 +47,7 @@ public abstract class DataController {
 	 */
 	protected DataController(Entry entry) {
 		if(entry == null) {
-			throw new NullPointerException();
+			throw new NullPointerException("constructor from null Entry failed");
 		}
 		this.entry = entry;
 		this.type = EntryType.getType(this.entry);
@@ -72,6 +74,22 @@ public abstract class DataController {
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * @return name of the controlled entry
+	 */
+	public String getEntryName() {
+		return entry.getName();
+	}
+	
+	/**
+	 * Generates the full name of this entry. Has to be overwritten by subclasses that handle channels. Generated as Unisens +
+	 * {@link #SEPERATOR} + EntryId (+ {@link #SEPERATOR} + Channel). 
+	 * @return the full name of this entry 
+	 */
+	public String getFullName() {
+		return this.entry.getUnisens().getMeasurementId() + SEPERATOR + this.entry.getId();
 	}
 	
 	/**
