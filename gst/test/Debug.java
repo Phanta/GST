@@ -5,7 +5,7 @@ package gst.test;
 /**
  * 
  * @author Enrico Grunitz
- * @version 1.0.1 (02.08.2012)
+ * @version 1.0.2 (02.08.2012)
  */
 public class Debug {
 	// gst
@@ -43,8 +43,9 @@ public class Debug {
 	public static final int verticalLayoutManager = 27;
 	
 	public static final int /* gst.ui */ dataSelectionDialog = 28;
+	public static final int /* gst.ui.SignalView */ signalViewKeyAdapter = 29;
 	
-	public static final int END = 29;
+	public static final int END = 30;
 
 
 	private static final boolean isEnabled[] = {true,	//	main
@@ -70,7 +71,7 @@ public class Debug {
 												false,	//		signalPanelComponentAdapter
 												false,	//		signalPanelMouseAdapter
 												false,	//	signalView
-												false,	//		signalViewMouseAdapter
+												true,	//		signalViewMouseAdapter
 												false,	//	signalViewFactory
 												false,	//	statusbar
 												false,	//	toolbar
@@ -80,6 +81,7 @@ public class Debug {
 												false,	//	signalPanelLayoutManager
 												false,	//	verticalLayoutManager
 												true,	// gst.ui.DataSelectionDialog
+												true,	// gst.ui.SignalView.SignalViewKeyAdapter
 												false};	// END
 	
 	public static void println(int src, String msg) {

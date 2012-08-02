@@ -5,10 +5,14 @@ package gst.ui;
 
 import java.awt.Graphics;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import gst.Settings;
 import gst.data.AnnotationList;
@@ -94,6 +98,7 @@ public class SignalView extends ChartPanel {
 		SignalViewMouseAdapter mAdapt = new SignalViewMouseAdapter("");
 		this.addMouseListener(mAdapt);
 		this.addMouseWheelListener(mAdapt);
+		this.addKeyListener(new SignalViewKeyAdapter());
 		return;
 	}
 	
@@ -226,6 +231,26 @@ public class SignalView extends ChartPanel {
 	}
 	
 	/**
+	 * Opens a dialog for selecting data to display.
+	 */
+	public void openDataSelection() {
+		DataSelectionDialog dialog = new DataSelectionDialog(this.ctrlList);
+		List<DataController> newList = dialog.show();
+		if(newList.isEmpty()) {
+			// ignore zero selection
+			return;
+		}
+		ctrlList.clear();
+		Iterator<DataController> it = newList.iterator();
+		while(it.hasNext()) {
+			this.addController(it.next());
+		}
+		this.removeTimeAxisMarker();		// needed for removed ValueController
+		this.revalidate();
+		this.repaint();
+	}
+	
+	/**
 	 * Collects all data points from controllers and adds them to the chart. Sets {@code needNewData} to false.
 	 */
 	private void updateData() {
@@ -331,9 +356,39 @@ public class SignalView extends ChartPanel {
 
 	/* * * intern classes * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
-	private static class SignalViewMouseAdapter extends NamedMouseAdapter {
+	protected static class SignalViewKeyAdapter extends KeyAdapter {
+		public void keyReleased(KeyEvent event) {
+			if((event.getComponent() instanceof SignalView) == false) {
+				Debug.println(Debug.signalViewKeyAdapter, "target of key-release event is not a signalview. Event: " + event.toString());
+				return;
+			}
+			SignalView target = (SignalView)event.getComponent();
+			switch(event.getKeyCode()) {
+			case KeyEvent.VK_E:
+				target.openDataSelection();
+				break;
+			}
+			return;
+		}
+	}
+	
+	protected static class SignalViewMouseAdapter extends NamedMouseAdapter {
 		public SignalViewMouseAdapter(String nameExtension) {
 			super("SignalView" + nameExtension);
+		}
+		
+		@Override
+		public void mouseEntered(MouseEvent event) {
+			Debug.println(Debug.signalViewMouseAdapter, "mouse entered " + this.getComponentName());
+			if((event.getComponent() instanceof SignalView) == false) {
+				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
+				return;
+			}
+			SignalView target = (SignalView)event.getComponent();
+			boolean retval = target.requestFocusInWindow();
+			if(retval == false) {
+				Debug.println(Debug.signalViewMouseAdapter, "focus will fail/failed");
+			}
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseWheelMoved(java.awt.event.MouseWheelEvent) */
