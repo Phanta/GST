@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 
 /**  
  * Settings is used to store global settings of the behavior of the program. Implemented as Singleton.
- * @version 0.2.1 (27 06.2012)
+ * @version 0.2.2 (02.08.2012)
  * @author Enrico Grunitz 
  */
 public class Settings {

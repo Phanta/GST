@@ -3,7 +3,6 @@ package gst.ui;
  * SignalView.java created 31.05.2012
  */
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
@@ -39,7 +38,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.0.4 (01.08.2012)
+ * @version 0.0.5 (02.08.2012)
  */
 public class SignalView extends ChartPanel {
 
@@ -115,8 +114,6 @@ public class SignalView extends ChartPanel {
 			needNewData = true;
 		}
 		super.setBounds(x, y, width, height);
-		if(needNewData == true) {
-		}
 		return;
 	}
 	
@@ -251,6 +248,10 @@ public class SignalView extends ChartPanel {
 		this.repaint();
 	}
 	
+	/**
+	 * Changes the background color of view.
+	 * @param on true -> highlight color, false -> default background color
+	 */
 	public void focusHighlight(boolean on) {
 		if(on == true) {
 			this.getChart().setBackgroundPaint(Settings.getInstance().ui.getHighlightColor());
@@ -366,6 +367,7 @@ public class SignalView extends ChartPanel {
 	/* * * intern classes * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
 	protected static class SignalViewKeyAdapter extends KeyAdapter {
+		@Override
 		public void keyReleased(KeyEvent event) {
 			if((event.getComponent() instanceof SignalView) == false) {
 				Debug.println(Debug.signalViewKeyAdapter, "target of key-release event is not a signalview. Event: " + event.toString());

@@ -177,38 +177,6 @@ public abstract class Main {
 		System.exit(0);
 	}
 	
-	private static List<DataController> selectDataDialog() {
-		// collect all controller
-		Iterator<UnisensDataset> itds = datasets.iterator();
-		ArrayList<DataController> ctrlList = new ArrayList<DataController>();
-		while(itds.hasNext()) {
-			ctrlList.addAll(itds.next().getControllerList());
-		}
-		if(ctrlList.isEmpty()) {
-			return ctrlList;
-		}
-		// generate string array of full names
-		String[] fullNames = new String[ctrlList.size()];
-		for(int i = 0; i < ctrlList.size(); i++) {
-			fullNames[i] = ctrlList.get(i).getFullName();
-		}
-		// create JList component
-		JList<String> list = new JList<String>(fullNames);
-		list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		// create and show dialog
-		JOptionPane optionPane = new JOptionPane();
-		optionPane.setMessage(list);
-		optionPane.setMessageType(JOptionPane.INFORMATION_MESSAGE);
-		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
-		int returnValue = JOptionPane.showConfirmDialog(MainWindow.getInstance(), list, "title string", JOptionPane.OK_CANCEL_OPTION);
-		if(returnValue == JOptionPane.OK_OPTION) {
-			// TODO implement selected data processing
-		}
-	    
-		// TODO usefull returnvalue 
-		return null;
-	}
-	
 	@Deprecated
 	private static void generateSignalViews(int numSignals, int numDataPoints) {
 		for(int i = 0; i < numSignals; i++) {
