@@ -18,7 +18,7 @@ import javax.swing.JToolBar;
 /**
  * Toolbar of the main window.
  * @author Enrico Grunitz
- * @version 0.2.1 (01.08.2012)
+ * @version 0.2.2 (02.08.2012)
  */
 public class Toolbar extends JToolBar{
 	/** serialization ID */								private static final long serialVersionUID = 1L;
@@ -33,6 +33,7 @@ public class Toolbar extends JToolBar{
 	/** button for view mode index 1 */					private JButton btnViewModeIndex1;
 	/** button for view mode index 2 */					private JButton btnViewModeIndex2;
 	/** button for close all views */					private JButton btnCloseViews;
+	/** button for opening a new view */				private JButton btnNewView;
 	
 	/**
 	 * Returns Singleton instance of this class.
@@ -55,19 +56,19 @@ public class Toolbar extends JToolBar{
 		this.setSize(800,50);
 		
 		// system section
-		labels[0] = new JLabel("System");		// text label
+		labels[0] = new JLabel("System");											// text label
 		this.add(labels[0]);
-		this.add(Box.createHorizontalStrut(space));
-		btnClose = new JButton("Beenden");		// close button
+		this.add(Box.createHorizontalStrut(space));									// space
+		btnClose = new JButton("Beenden");											// close button
 		this.add(btnClose);
-		this.add(Box.createHorizontalStrut(space));
-		this.addSeparator();
+		this.add(Box.createHorizontalStrut(space));									// space
+		this.addSeparator();														// separator
 
 		// views
-		labels[1] = new JLabel("Ansicht");	// text label
+		labels[1] = new JLabel("Ansicht");											// text label
 		this.add(labels[1]);
-		this.add(Box.createHorizontalStrut(space));
-		btnViewMode = new JButton();		// mode select button
+		this.add(Box.createHorizontalStrut(space));									// space
+		btnViewMode = new JButton();												// mode select button
 		al = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				alViewModeSelection(ae);
@@ -76,8 +77,8 @@ public class Toolbar extends JToolBar{
 		btnViewMode.addActionListener(al);
 		this.setViewModeButtonText();
 		this.add(btnViewMode);
-		this.add(Box.createHorizontalStrut(space));
-		btnViewModeIndex1 = new JButton();		// index 1 button
+		this.add(Box.createHorizontalStrut(space));									// space
+		btnViewModeIndex1 = new JButton();											// index 1 button
 		al = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				alViewModeIndex1Selection(ae);
@@ -86,8 +87,8 @@ public class Toolbar extends JToolBar{
 		btnViewModeIndex1.addActionListener(al);
 		this.setViewModeIndex1ButtonText();
 		this.add(btnViewModeIndex1);
-		this.add(Box.createHorizontalStrut(space));
-		btnViewModeIndex2 = new JButton();		// index 2 button
+		this.add(Box.createHorizontalStrut(space));									// space
+		btnViewModeIndex2 = new JButton();											// index 2 button
 		al = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				alViewModeIndex2Selection(ae);
@@ -96,8 +97,11 @@ public class Toolbar extends JToolBar{
 		btnViewModeIndex2.addActionListener(al);
 		this.setViewModeIndex2ButtonText();
 		this.add(btnViewModeIndex2);
-		
-		btnCloseViews = new JButton("alle schlieﬂen [Strg]");
+		this.add(Box.createHorizontalStrut(space));									// space
+		btnNewView = new JButton("Neu...");											// new view ...
+		this.add(btnNewView);
+		this.add(Box.createHorizontalStrut(space));									// space
+		btnCloseViews = new JButton("alle schlieﬂen [Strg]");						// close all views
 		al = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				alCloseViews(ae);
@@ -105,6 +109,7 @@ public class Toolbar extends JToolBar{
 		};
 		btnCloseViews.addActionListener(al);
 		this.add(btnCloseViews);
+		this.add(Box.createHorizontalStrut(space));									// space
 		
 		this.setTextLabelVisibility();
 		this.setVisible(true);
@@ -117,6 +122,20 @@ public class Toolbar extends JToolBar{
 		for(int i = 0; i < labels.length; i++) {
 			labels[i].setVisible(Settings.getInstance().ui.showToolbarLabels());
 		}
+	}
+	
+	/**
+	 * Registers an {@code ActionListener} that opens a new view.
+	 * @param al the {@code ActionListener}
+	 * @return true if successful, else false
+	 */
+	boolean registerNewView(ActionListener al) {
+		if(btnNewView == null) {
+			System.out.println("ERROR\ttoolbar new view button doesn't exist - cannot register actionlistener");
+			return false;
+		}
+		btnNewView.addActionListener(al);
+		return true;
 	}
 	
 	/**

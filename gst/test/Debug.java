@@ -5,7 +5,7 @@ package gst.test;
 /**
  * 
  * @author Enrico Grunitz
- * @version 1.0 (01.08.2012)
+ * @version 1.0.1 (02.08.2012)
  */
 public class Debug {
 	// gst
@@ -41,7 +41,10 @@ public class Debug {
 	public static final int multiSplit = 25;
 	public static final int signalPanelLayoutManager = 26;
 	public static final int verticalLayoutManager = 27;
-	public static final int END = 28;
+	
+	public static final int /* gst.ui */ dataSelectionDialog = 28;
+	
+	public static final int END = 29;
 
 
 	private static final boolean isEnabled[] = {true,	//	main
@@ -75,7 +78,9 @@ public class Debug {
 												false,	//	componentArrangement
 												false,	//	multiSplit
 												false,	//	signalPanelLayoutManager
-												false};	//	verticalLayoutManager
+												false,	//	verticalLayoutManager
+												true,	// gst.ui.DataSelectionDialog
+												false};	// END
 	
 	public static void println(int src, String msg) {
 		if(isEnabled[src]) {

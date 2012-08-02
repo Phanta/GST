@@ -24,14 +24,22 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+/**
+ * The main window of the application.
+ * @author Enrico Grunitz
+ * @version 0.2.1 (02.08.2012)
+ */
 public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private static Settings settings = Settings.getInstance();
 	private static final MainWindow myself = new MainWindow();
 	
-	/** ID for open-file-dialog */				public static final int IDOpenFile = 1;
-	/** ID for close program */					public static final int IDCloseProgram = 2;
+	public static enum ID {
+		openFile,
+		closeProgram,
+		openNewView;
+	}
 	
 	public static MainWindow getInstance() {
 		return myself;
@@ -123,18 +131,21 @@ public class MainWindow extends JFrame {
 	 * @param al the {@code ActionListener}
 	 * @return true if registering was successful, else false
 	 */
-	public boolean registerActionListener(int ID, ActionListener al) {
+	public boolean registerActionListener(ID id, ActionListener al) {
 		if(al == null) {
 			throw new NullPointerException("ActionListener must be non-null");
 		}
 		boolean retVal = true;
-		switch(ID) {
-		case IDOpenFile:
+		switch(id) {
+		case openFile:
 			retVal &= Menus.getInstance().registerOpenFileDialog(al);
 			break;
-		case IDCloseProgram:
+		case closeProgram:
 			retVal &= Menus.getInstance().registerCloseProgram(al);
 			retVal &= Toolbar.getInstance().registerCloseProgram(al);
+			break;
+		case openNewView:
+			retVal &= Toolbar.getInstance().registerNewView(al);
 			break;
 		default:
 			retVal = false;

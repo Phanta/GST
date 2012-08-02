@@ -24,6 +24,7 @@ import gst.data.UnisensDataset;
 import gst.test.DataTest;
 import gst.test.Debug;
 
+import gst.ui.DataSelectionDialog;
 import gst.ui.MainWindow;
 import gst.ui.SignalPanel;
 import gst.ui.SignalView;
@@ -32,7 +33,7 @@ import gst.ui.SignalViewFactory;
 /**
  * Class for the public static void main(String[] args) function.
  * @author Enrico Grunitz
- * @version 0.1.1 (01.08.2012)
+ * @version 0.1.2 (02.08.2012)
  */
 public abstract class Main {
 	
@@ -54,16 +55,22 @@ public abstract class Main {
 		Debug.println(Debug.main, "SignalPanel parent : " + SignalPanel.getInstance().getParent().toString());
 		//Debug.println(Debug.main, "Sidebar parent : " + Sidebar.getInstance().getParent().toString());
 		
-		main.registerActionListener(MainWindow.IDOpenFile, new ActionListener() {
+		main.registerActionListener(MainWindow.ID.openFile, new ActionListener() {
 																public void actionPerformed(ActionEvent ae) {
 																	loadUnisensData(ae);
 																}
 															});
-		main.registerActionListener(MainWindow.IDCloseProgram, new ActionListener() {
+		main.registerActionListener(MainWindow.ID.closeProgram, new ActionListener() {
 																	public void actionPerformed(ActionEvent ae) {
 																		closeProgram(ae);
 																	}
 																});
+		main.registerActionListener(MainWindow.ID.openNewView, new ActionListener() {
+																public void actionPerformed(ActionEvent ae) {
+																	openNewSignalView(ae);
+																}
+															   });
+		
 		
 		sv = new SignalView[MAXSIGNALS];
 		generateSignalViews(MAXSIGNALS, 2000);
@@ -115,9 +122,32 @@ public abstract class Main {
 			main.revalidate();
 			main.repaint();
 		}
-		//listEntryNames();
-		selectDataDialog();
+		
+		// DEBUG DataSelectionDialog
+/*		DataSelectionDialog dsd = new DataSelectionDialog(null);
+		List<DataController> ret = dsd.show();
+		Debug.println(Debug.main, "" + ret);
+*/		
 		return;
+	}
+	
+	private static void openNewSignalView(ActionEvent ae) {
+		DataSelectionDialog dialog = new DataSelectionDialog(null);
+		List<DataController> ctrl = dialog.show();
+		if(ctrl.isEmpty() == true) {
+			// nothing to do here
+			return;
+		}
+		SignalView view = SignalView.createControlledView(ctrl.get(0));
+		for(int i = 1; i < ctrl.size(); i++) {
+			view.addController(ctrl.get(i));
+		}
+		SignalPanel.getInstance().addSignal(view, true);
+	}
+	
+	/** @return a list of all loaded datasets */
+	public static List<UnisensDataset> getDatasets() {
+		return datasets;
 	}
 	
 	/**
