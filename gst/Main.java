@@ -71,7 +71,6 @@ public abstract class Main {
 																}
 															   });
 		
-		
 		sv = new SignalView[MAXSIGNALS];
 		generateSignalViews(MAXSIGNALS, 2000);
 		

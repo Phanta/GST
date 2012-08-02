@@ -3,6 +3,7 @@ package gst.ui;
  * SignalView.java created 31.05.2012
  */
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
@@ -13,6 +14,8 @@ import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.JColorChooser;
 
 import gst.Settings;
 import gst.data.AnnotationList;
@@ -249,6 +252,22 @@ public class SignalView extends ChartPanel {
 	}
 	
 	/**
+	 * Ask the user for a new color for a specific data.
+	 */
+	public void openColorSelection() {
+		DataSelectionDialog dialog = new DataSelectionDialog(this.ctrlList, null);
+		DataController selectedController = dialog.showSingleSelection();
+		if(selectedController == null) {
+			return;
+		}
+		Color newColor = JColorChooser.showDialog(MainWindow.getInstance(), "Farbauswahl", null);
+		if(newColor == null) {
+			return;
+		}
+		selectedController.setPreferredColor(newColor);
+	}
+	
+	/**
 	 * Changes the background color of view.
 	 * @param on true -> highlight color, false -> default background color
 	 */
@@ -274,6 +293,9 @@ public class SignalView extends ChartPanel {
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		Iterator<DataController> it = ctrlList.iterator();
 		XYSeries curSeries;	// current series
+		
+		// TODO implement custom color
+		
 		while(it.hasNext()) {
 			DataController ctrl = it.next();
 			if(ctrl.isAnnotation()) {
@@ -367,6 +389,10 @@ public class SignalView extends ChartPanel {
 	/* * * intern classes * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
 	protected static class SignalViewKeyAdapter extends KeyAdapter {
+		private static final int ALL_MODIFIERS = InputEvent.ALT_DOWN_MASK |
+												 InputEvent.CTRL_DOWN_MASK |
+												 InputEvent.META_DOWN_MASK |
+												 InputEvent.SHIFT_DOWN_MASK;
 		@Override
 		public void keyReleased(KeyEvent event) {
 			if((event.getComponent() instanceof SignalView) == false) {
@@ -374,9 +400,18 @@ public class SignalView extends ChartPanel {
 				return;
 			}
 			SignalView target = (SignalView)event.getComponent();
+			int modifiers = event.getModifiersEx();
+			boolean noModifier = ((modifiers & ALL_MODIFIERS) == 0);
 			switch(event.getKeyCode()) {
 			case KeyEvent.VK_E:
-				target.openDataSelection();
+				if(noModifier ==  true) {
+					target.openDataSelection();
+				}
+				break;
+			case KeyEvent.VK_C:
+				if(noModifier ==  true) {
+					target.openColorSelection();
+				}
 				break;
 			}
 			return;

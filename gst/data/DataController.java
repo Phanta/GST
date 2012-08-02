@@ -4,6 +4,8 @@
 
 package gst.data;
 
+import java.awt.Color;
+
 import gst.data.UnisensDataset.EntryType;
 
 import org.jfree.data.xy.XYSeries;
@@ -12,7 +14,7 @@ import org.unisens.Entry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.1 (01.08.2012)
+ * @version 0.1.2 (02.08.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -21,6 +23,7 @@ public abstract class DataController {
 	/** type of the controlled entry */				protected EntryType type;
 	/** measurement time of the first entry */		protected double basetime;
 	/** number of channels of the entry */			protected int channelCount;
+	/** preferred color for this data */			private Color prefColor;
 	
 	/**
 	 * Constructs the controller object for an entry with the given ID of the dataset.
@@ -38,6 +41,7 @@ public abstract class DataController {
 		this.type = EntryType.getType(this.entry);
 		basetime = 0.0;
 		channelCount = 1;
+		prefColor = Color.red;
 		return;
 	}
 	
@@ -53,6 +57,7 @@ public abstract class DataController {
 		this.type = EntryType.getType(this.entry);
 		basetime = 0.0;
 		channelCount = 1;
+		prefColor = Color.red;
 		return;
 	}
 	
@@ -90,6 +95,23 @@ public abstract class DataController {
 	 */
 	public String getFullName() {
 		return this.entry.getUnisens().getMeasurementId() + SEPERATOR + this.entry.getId();
+	}
+	
+	/** @return {@link #prefColor} */
+	public Color getPreferredColor() {
+		return this.prefColor;
+	}
+	
+	/**
+	 * Sets the preferred color for this data.
+	 * @param color the new color
+	 * @throws {@code NullPointerException} if {@code color} is null
+	 */
+	public void setPreferredColor(Color color) {
+		if(color == null) {
+			throw new NullPointerException("null preferred color not possible");
+		}
+		this.prefColor = color;
 	}
 	
 	/**
