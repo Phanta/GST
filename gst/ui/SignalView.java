@@ -3,6 +3,7 @@ package gst.ui;
  * SignalView.java created 31.05.2012
  */
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
@@ -250,6 +251,14 @@ public class SignalView extends ChartPanel {
 		this.repaint();
 	}
 	
+	public void focusHighlight(boolean on) {
+		if(on == true) {
+			this.getChart().setBackgroundPaint(Settings.getInstance().ui.getHighlightColor());
+		} else {
+			this.getChart().setBackgroundPaint(JFreeChart.DEFAULT_BACKGROUND_PAINT);
+		}
+	}
+	
 	/**
 	 * Collects all data points from controllers and adds them to the chart. Sets {@code needNewData} to false.
 	 */
@@ -385,10 +394,24 @@ public class SignalView extends ChartPanel {
 				return;
 			}
 			SignalView target = (SignalView)event.getComponent();
+			// focus request
 			boolean retval = target.requestFocusInWindow();
 			if(retval == false) {
 				Debug.println(Debug.signalViewMouseAdapter, "focus will fail/failed");
 			}
+			// change background
+			target.focusHighlight(true);
+		}
+		
+		@Override
+		public void mouseExited(MouseEvent event) {
+			if((event.getComponent() instanceof SignalView) == false) {
+				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
+				return;
+			}
+			SignalView target = (SignalView)event.getComponent();
+			// change background
+			target.focusHighlight(false);
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseWheelMoved(java.awt.event.MouseWheelEvent) */

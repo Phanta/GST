@@ -4,6 +4,7 @@
 
 package gst;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
@@ -74,6 +75,8 @@ public class Settings {
 		/** alignment of the sidebar */					private boolean sidebarAlignment;
 		/** width in pixel of sidebar */				private int sidebarWidth;
 		
+		/** highlight color for SignalView */			private Color signalViewHighlightColor;
+		
 		/** width of signaloverview */					private int signalOverviewWidth;
 		/** height of signaloverview */					private int signalOverviewHeight;
 		
@@ -100,6 +103,8 @@ public class Settings {
 			
 			sidebarAlignment = SIDEBAR_LEFT;
 			sidebarWidth = 250;
+			
+			signalViewHighlightColor = new Color(183, 208, 176);
 			
 			signalOverviewWidth = sidebarWidth;
 			signalOverviewHeight = 80;
@@ -180,6 +185,11 @@ public class Settings {
 		/** @return {@link #toolbarCloseViewsModifier} */
 		public int getCloseViewsModifier() {
 			return this.toolbarCloseViewsModifier;
+		}
+		
+		/** @return {@link #signalViewHighlightColor} */
+		public Color getHighlightColor() {
+			return signalViewHighlightColor;
 		}
 	}
 }
