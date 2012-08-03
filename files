@@ -1,9 +1,17 @@
 ../src/gst/Main.java
 ../src/gst/Settings.java
+../src/gst/data/AnnotationController.java
+../src/gst/data/AnnotationList.java
+../src/gst/data/DataController.java
+../src/gst/data/SignalController.java
 ../src/gst/data/UnisensDataset.java
+../src/gst/data/ValueController.java
 ../src/gst/test/DataTest.java
+../src/gst/test/Debug.java
+../src/gst/ui/DataSelectionDialog.java
 ../src/gst/ui/MainWindow.java
 ../src/gst/ui/Menus.java
+../src/gst/ui/NamedMouseAdapter.java
 ../src/gst/ui/Sidebar.java
 ../src/gst/ui/SignalOverview.java
 ../src/gst/ui/SignalPanel.java
