@@ -21,16 +21,18 @@ import javax.swing.KeyStroke;
 /**
  * Menus represent the Menubar of the Application. Implemented as Singleton.
  * 
- * @version 0.1.3 (02.08.2012)
+ * @version 0.1.4 (06.08.2012)
  * @author Enrico Grunitz
  */
 public class Menus extends JMenuBar {
 	
 	private static final long serialVersionUID = 1L;
 	private static final Menus myself = new Menus();
+	private static final String PREFIX_FAIL = "ERROR\tcouldn't register ";
 	
 	private JMenuItem miCloseProgram;
 	private JMenuItem miFileLoad;
+	private JMenuItem miSaveAll;
 	
 	/**
 	 * @return the Instance of the Menubar
@@ -52,6 +54,9 @@ public class Menus extends JMenuBar {
 		m.add(miFileLoad);
 		mi = new JMenuItem("Annotationen laden...", KeyEvent.VK_A);
 		m.add(mi);
+		m.addSeparator();
+		miSaveAll = new JMenuItem("alles speichern", KeyEvent.VK_S);
+		m.add(miSaveAll);
 		m.addSeparator();
 		miCloseProgram = new JMenuItem("Beenden",KeyEvent.VK_B);
 		miCloseProgram.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
@@ -97,7 +102,7 @@ public class Menus extends JMenuBar {
 	 */
 	/* package visibility */boolean registerOpenFileDialog(ActionListener al) {
 		if(miFileLoad == null) {
-			System.out.println("ERROR\tcouldn't register open-file-dialog");
+			System.out.println(PREFIX_FAIL + "open-file-dialog");
 			return false;
 		}
 		miFileLoad.addActionListener(al);
@@ -111,11 +116,24 @@ public class Menus extends JMenuBar {
 	 */
 	/* package visibility */boolean registerCloseProgram(ActionListener al) {
 		if(miCloseProgram == null) {
-			System.out.println("ERROR\tcouldn't register close-program-operation");
+			System.out.println(PREFIX_FAIL + "close-program-operation");
 			return false;
 		}
 		miCloseProgram.addActionListener(al);
 		return true;
 	}
 
+	/**
+	 * Registers an {@code ActionListener} for saving all data.
+	 * @param al the {@code ActionListener} to register
+	 * @return true if successful else false
+	 */
+	/* package visibility */boolean registerSaveAllData(ActionListener al) {
+		if(miSaveAll == null) {
+			System.out.println(PREFIX_FAIL + "save-all-datasets-operation");
+			return false;
+		}
+		miSaveAll.addActionListener(al);
+		return true;
+	}
 }

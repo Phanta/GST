@@ -12,18 +12,17 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JFileChooser;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import gst.data.AnnotationController;
 import gst.data.DataController;
 import gst.data.UnisensDataset;
 
 import gst.test.DataTest;
 import gst.test.Debug;
 
+import gst.ui.AnnotationSelectionDialog;
 import gst.ui.DataSelectionDialog;
 import gst.ui.MainWindow;
 import gst.ui.SignalPanel;
@@ -33,7 +32,7 @@ import gst.ui.SignalViewFactory;
 /**
  * Class for the public static void main(String[] args) function.
  * @author Enrico Grunitz
- * @version 0.1.2 (02.08.2012)
+ * @version 0.1.3 (06.08.2012)
  */
 public abstract class Main {
 	
@@ -41,6 +40,7 @@ public abstract class Main {
 	private static final int MAXSIGNALS = 0;
 	private static MainWindow main;
 	private static ArrayList<UnisensDataset> datasets;
+	private static AnnotationController selectedAnnotation;
 	
 	/**
 	 * I give you three chances to guess the purpose of this function. Hint: !cigam s'tI
@@ -49,6 +49,7 @@ public abstract class Main {
 	public static void main(String[] args) {
 		datasets = new ArrayList<UnisensDataset>();
 		main = MainWindow.getInstance();
+		selectedAnnotation = null;
 		
 		Debug.println(Debug.main, "Mainwindow : " + main.toString());
 		Debug.println(Debug.main, "MainWindow content pane :" + main.getContentPane().toString());
@@ -57,19 +58,24 @@ public abstract class Main {
 		
 		main.registerActionListener(MainWindow.ID.openFile, new ActionListener() {
 																public void actionPerformed(ActionEvent ae) {
-																	loadUnisensData(ae);
+																	Main.loadUnisensData(ae);
 																}
 															});
 		main.registerActionListener(MainWindow.ID.closeProgram, new ActionListener() {
 																	public void actionPerformed(ActionEvent ae) {
-																		closeProgram(ae);
+																		Main.closeProgram(ae);
 																	}
 																});
 		main.registerActionListener(MainWindow.ID.openNewView, new ActionListener() {
 																public void actionPerformed(ActionEvent ae) {
-																	openNewSignalView(ae);
+																	Main.openNewSignalView(ae);
 																}
 															   });
+		main.registerActionListener(MainWindow.ID.saveAllDatasets, new ActionListener() {
+																	   public void actionPerformed(ActionEvent ae) {
+																		   Main.saveAllDatasets();
+																	   }
+															   	   });
 		
 		sv = new SignalView[MAXSIGNALS];
 		generateSignalViews(MAXSIGNALS, 2000);
@@ -125,11 +131,20 @@ public abstract class Main {
 		// DEBUG DataSelectionDialog
 /*		DataSelectionDialog dsd = new DataSelectionDialog(null);
 		List<DataController> ret = dsd.show();
-		Debug.println(Debug.main, "" + ret);
+		Debug.println(Debug.main, "" + ret.getFullName());
 */		
+		// DEBUG AnnotationSelectionDialog
+		AnnotationSelectionDialog asd = new AnnotationSelectionDialog();
+		AnnotationController ret = asd.show();
+		Debug.println(Debug.main, "" + ret.getFullName());
+
 		return;
 	}
 	
+	/**
+	 * Asks the user to select data of loaded datasets and creates a new {@link gst.ui.SignalView} to display them.
+	 * @param ae {@code ActionEvent} fired
+	 */
 	private static void openNewSignalView(ActionEvent ae) {
 		DataSelectionDialog dialog = new DataSelectionDialog(null);
 		List<DataController> ctrl = dialog.show();
@@ -142,6 +157,31 @@ public abstract class Main {
 			view.addController(ctrl.get(i));
 		}
 		SignalPanel.getInstance().addSignal(view, true);
+	}
+	
+	/**
+	 * Asks the user to select an {@code EventEntry} to edit and selects it.
+	 */
+	private static void uiSelectAnnotation() {
+		AnnotationSelectionDialog dialog = new AnnotationSelectionDialog();
+		AnnotationController selectedAC = dialog.show();
+		if(selectedAC != null) {
+			Main.selectedAnnotation = selectedAC; 
+			Debug.println(Debug.main, "selected Annotation: " + selectedAC.getFullName());
+		} else {
+			Debug.println(Debug.main, "no new annotation selected");
+		}
+		return;
+	}
+	
+	/**
+	 * Saves all datasets.
+	 */
+	private static void saveAllDatasets() {
+		Iterator<UnisensDataset> it = Main.datasets.iterator();
+		while(it.hasNext()) {
+			it.next().save();
+		}
 	}
 	
 	/** @return a list of all loaded datasets */

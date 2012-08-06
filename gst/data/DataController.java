@@ -14,7 +14,7 @@ import org.unisens.Entry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.2 (02.08.2012)
+ * @version 0.1.3 (06.08.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -84,8 +84,8 @@ public abstract class DataController {
 	/**
 	 * @return name of the controlled entry
 	 */
-	public String getEntryName() {
-		return entry.getName();
+	public String getEntryId() {
+		return entry.getId();
 	}
 	
 	/**

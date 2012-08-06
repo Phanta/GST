@@ -23,7 +23,7 @@ import javax.swing.UIManager;
 /**
  * The main window of the application.
  * @author Enrico Grunitz
- * @version 0.2.1 (02.08.2012)
+ * @version 0.2.2 (06.08.2012)
  */
 public class MainWindow extends JFrame {
 
@@ -34,7 +34,8 @@ public class MainWindow extends JFrame {
 	public static enum ID {
 		openFile,
 		closeProgram,
-		openNewView;
+		openNewView,
+		saveAllDatasets;
 	}
 	
 	public static MainWindow getInstance() {
@@ -142,6 +143,9 @@ public class MainWindow extends JFrame {
 			break;
 		case openNewView:
 			retVal &= Toolbar.getInstance().registerNewView(al);
+			break;
+		case saveAllDatasets:
+			retVal &= Menus.getInstance().registerSaveAllData(al);
 			break;
 		default:
 			retVal = false;
