@@ -76,7 +76,8 @@ public class ValueController extends DataController {
 	@Override
 	public XYSeries getDataPoints(double startTime, double endTime, int maxPoints) {
 		double sampleRate = ((ValuesEntry)this.entry).getSampleRate();
-		XYSeries series = new XYSeries(this.entry.getName() + ((ValuesEntry)this.entry).getChannelNames()[this.channelIndex]);
+		// name of series is interpreted as ID so it has to be unique, full name should do that
+		XYSeries series = new XYSeries(this.getFullName());
 		if(maxPoints <= 0) {
 			return series;
 		}

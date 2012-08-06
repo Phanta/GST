@@ -61,7 +61,8 @@ public class SignalController extends DataController {
 	@Override
 	public XYSeries getDataPoints(double startTime, double endTime, int maxPoints) {
 		double sampleRate = ((SignalEntry)this.entry).getSampleRate();
-		XYSeries series = new XYSeries(this.entry.getName() + ((SignalEntry)this.entry).getChannelNames()[this.channelIndex]);
+		// name of series is interpreted as ID so it has to be unique, full name should do that
+		XYSeries series = new XYSeries(this.getFullName());
 		if(maxPoints <= 0) {
 			return series;
 		}
