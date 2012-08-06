@@ -10,6 +10,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.geom.Rectangle2D;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,10 +18,12 @@ import java.util.List;
 
 import javax.swing.JColorChooser;
 
+import gst.Main;
 import gst.Settings;
 import gst.data.AnnotationList;
 import gst.data.DataController;
 import gst.test.Debug;
+import gst.ui.dialog.EditEventDialog;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -42,7 +45,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.0.6 (06.08.2012)
+ * @version 0.0.7 (06.08.2012)
  */
 public class SignalView extends ChartPanel {
 
@@ -309,7 +312,7 @@ public class SignalView extends ChartPanel {
 		XYSeries curSeries;	// current series
 		
 		// TODO implement custom color
-		
+		removeTimeAxisMarker();
 		while(it.hasNext()) {
 			DataController ctrl = it.next();
 			if(ctrl.isAnnotation()) {
@@ -329,12 +332,22 @@ public class SignalView extends ChartPanel {
 		return;
 	}
 	
+	public void updateTimeAxisMarkers() {
+		Iterator<DataController> it = ctrlList.iterator();
+		removeTimeAxisMarker();
+		while(it.hasNext()) {
+			DataController ctrl = it.next();
+			if(ctrl.isAnnotation()) {
+				this.paintTimeAxisMarkers(ctrl);
+			}
+		}
+	}
+	
 	/**
 	 * Sets for all annotations given by the {@code DataController} DomainMarkers.
 	 * @param ctrl
 	 */
 	private void paintTimeAxisMarkers(DataController ctrl) {
-		removeTimeAxisMarker();
 		AnnotationList annoList = ctrl.getAnnotations(startTime, endTime);
 		for(int i = 0; i < annoList.size(); i++) {
 			ValueMarker marker = new ValueMarker(annoList.getTime(i));
@@ -474,8 +487,52 @@ public class SignalView extends ChartPanel {
 	 * @version 0.1.0 (06.08.2012)
 	 */
 	protected static class SignalViewMouseAdapter extends NamedMouseAdapter {
+		private static String eventType;
+		private static String eventComment;
+		
 		public SignalViewMouseAdapter(String nameExtension) {
 			super("SignalView" + nameExtension);
+			SignalViewMouseAdapter.eventType = "N";
+			SignalViewMouseAdapter.eventComment = "";
+		}
+		
+		/** @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent) */
+		@Override
+		public void mouseClicked(MouseEvent event) {
+			Debug.println(Debug.signalViewMouseAdapter, "mouse entered " + this.getComponentName());
+			if((event.getComponent() instanceof SignalView) == false) {
+				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
+				return;
+			}
+			SignalView target = (SignalView)event.getComponent();
+			int modifiers = event.getModifiersEx();
+			switch(event.getButton()) {
+			case MouseEvent.BUTTON2:
+				if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {
+					EditEventDialog eed = new EditEventDialog(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
+					if(eed.show() == true) {
+						SignalViewMouseAdapter.eventType = eed.getType();
+						SignalViewMouseAdapter.eventComment = eed.getComment();
+					}
+				}	// no else, so the event is added even when editing
+				if(Main.getSelectedAnnotation() != null) {
+					Rectangle2D dataRect = target.getScreenDataArea();
+					if(dataRect.contains(event.getPoint())) {
+						// calculate time
+						Range timeAxis = target.getTimeAxisBounds();
+						double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
+						Main.getSelectedAnnotation().addAnnotation(time, SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
+						// hack updateing without checking
+						target.updateTimeAxisMarkers();
+					}
+				} else {
+					Debug.println(Debug.signalViewMouseAdapter, "adding canceled due to missing annotation selection");
+				}
+				break;
+			default:
+				Debug.println(Debug.signalViewMouseAdapter, "unhandled button click");
+			}
+			
 		}
 		
 		/** @see gst.ui.NamedMouseAdapter#mouseEntered(java.awt.event.MouseEvent) */

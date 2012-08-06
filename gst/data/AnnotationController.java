@@ -4,6 +4,8 @@
 
 package gst.data;
 
+import gst.test.Debug;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import org.unisens.EventEntry;
 /**
  * {@code ViewController} implementation for {@code EventEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1.1 (06.08.2012)
+ * @version 0.1.2 (06.08.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -46,6 +48,21 @@ public class AnnotationController extends DataController {
 		}
 		startSampleNumber = borderEvents.get(0).getSampleStamp();
 		endSampleNumber = borderEvents.get(1).getSampleStamp();
+	}
+	
+	public void addAnnotation(double time, String type, String comment) {
+		if(type == null) {
+			type = "";
+		}
+		if(comment == null) {
+			comment = "";
+		}
+		long sampleStamp = (long)Math.ceil((time - this.basetime) * ((EventEntry)this.entry).getSampleRate());
+		try {
+			((EventEntry)this.entry).append(new Event(sampleStamp, type, comment));
+		} catch(IOException ioe) {
+			Debug.println(Debug.annotationController, "ioe while adding entry");
+		}
 	}
 	
 	/**
