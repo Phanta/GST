@@ -413,6 +413,8 @@ public class SignalView extends ChartPanel {
 					target.openColorSelection();
 				}
 				break;
+			case KeyEvent.VK_Q:
+				SignalPanel.getInstance().removeSignal(target);
 			}
 			return;
 		}
