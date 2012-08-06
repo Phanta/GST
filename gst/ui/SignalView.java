@@ -30,6 +30,7 @@ import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.title.LegendTitle;
 
 import org.jfree.data.Range;
 import org.jfree.data.xy.XYSeries;
@@ -41,7 +42,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.0.5 (02.08.2012)
+ * @version 0.0.6 (06.08.2012)
  */
 public class SignalView extends ChartPanel {
 
@@ -280,6 +281,19 @@ public class SignalView extends ChartPanel {
 	}
 	
 	/**
+	 * Switches the display of the legend.
+	 * @param on if true legend will be shown
+	 */
+	public void showLegend(boolean on) {
+		if(on == true && this.getChart().getLegend() == null) {
+			this.getChart().addLegend(new LegendTitle(this.getChart().getXYPlot()));
+		}
+		if(on == false) {
+			this.getChart().removeLegend();
+		}
+	}
+	
+	/**
 	 * Collects all data points from controllers and adds them to the chart. Sets {@code needNewData} to false.
 	 */
 	private void updateData() {
@@ -388,11 +402,17 @@ public class SignalView extends ChartPanel {
 
 	/* * * intern classes * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
+	/**
+	 * Keyboard event handler for {@code SignalView}.
+	 * @author Enrico Grunitz
+	 * @version 0.1.0 (06.08.2012)
+	 */
 	protected static class SignalViewKeyAdapter extends KeyAdapter {
 		private static final int ALL_MODIFIERS = InputEvent.ALT_DOWN_MASK |
 												 InputEvent.CTRL_DOWN_MASK |
 												 InputEvent.META_DOWN_MASK |
 												 InputEvent.SHIFT_DOWN_MASK;
+		/** @see java.awt.event.KeyAdapter#keyReleased(java.awt.event.KeyEvent) */
 		@Override
 		public void keyReleased(KeyEvent event) {
 			if((event.getComponent() instanceof SignalView) == false) {
@@ -404,27 +424,61 @@ public class SignalView extends ChartPanel {
 			boolean noModifier = ((modifiers & ALL_MODIFIERS) == 0);
 			switch(event.getKeyCode()) {
 			case KeyEvent.VK_E:
-				if(noModifier ==  true) {
+				if(noModifier == true) {
 					target.openDataSelection();
 				}
 				break;
 			case KeyEvent.VK_C:
-				if(noModifier ==  true) {
+				if(noModifier == true) {
 					target.openColorSelection();
 				}
 				break;
 			case KeyEvent.VK_Q:
-				SignalPanel.getInstance().removeSignal(target);
+				if(noModifier == true) {
+					SignalPanel.getInstance().removeSignal(target);
+				}
+				break;
+			case KeyEvent.VK_L:
+				if(noModifier == true) {
+					target.showLegend(false);
+				}
+				break;
+			}
+			return;
+		}
+		
+		/** @see java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent) */
+		@Override
+		public void keyPressed(KeyEvent event) {
+			if((event.getComponent() instanceof SignalView) == false) {
+				Debug.println(Debug.signalViewKeyAdapter, "target of key-press event is not a signalview. Event: " + event.toString());
+				return;
+			}
+			SignalView target = (SignalView)event.getComponent();
+			int modifiers = event.getModifiersEx();
+			boolean noModifier = ((modifiers & ALL_MODIFIERS) == 0);
+			switch(event.getKeyCode()) {
+			case KeyEvent.VK_L:
+				if(noModifier == true) {
+					target.showLegend(true);
+				}
+				break;
 			}
 			return;
 		}
 	}
 	
+	/**
+	 * Mouse action handler for {@code SignalView}.
+	 * @author Enrico Grunitz
+	 * @version 0.1.0 (06.08.2012)
+	 */
 	protected static class SignalViewMouseAdapter extends NamedMouseAdapter {
 		public SignalViewMouseAdapter(String nameExtension) {
 			super("SignalView" + nameExtension);
 		}
 		
+		/** @see gst.ui.NamedMouseAdapter#mouseEntered(java.awt.event.MouseEvent) */
 		@Override
 		public void mouseEntered(MouseEvent event) {
 			Debug.println(Debug.signalViewMouseAdapter, "mouse entered " + this.getComponentName());
@@ -442,6 +496,7 @@ public class SignalView extends ChartPanel {
 			target.focusHighlight(true);
 		}
 		
+		/** @see java.awt.event.MouseAdapter#mouseExited(java.awt.event.MouseEvent) */
 		@Override
 		public void mouseExited(MouseEvent event) {
 			if((event.getComponent() instanceof SignalView) == false) {
