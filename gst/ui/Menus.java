@@ -21,7 +21,7 @@ import javax.swing.KeyStroke;
 /**
  * Menus represent the Menubar of the Application. Implemented as Singleton.
  * 
- * @version 0.1.4 (06.08.2012)
+ * @version 0.1.5 (06.08.2012)
  * @author Enrico Grunitz
  */
 public class Menus extends JMenuBar {
@@ -33,6 +33,9 @@ public class Menus extends JMenuBar {
 	private JMenuItem miCloseProgram;
 	private JMenuItem miFileLoad;
 	private JMenuItem miSaveAll;
+	
+	private JMenuItem miCreateNewAnnotation;
+	private JMenuItem miSelectAnnotation;
 	
 	/**
 	 * @return the Instance of the Menubar
@@ -77,6 +80,15 @@ public class Menus extends JMenuBar {
 		m.add(mi);
 		this.add(m);
 		
+		// --- ANNOTATIONEN ----------------------------------------------------------
+		m = new JMenu("Annotationen");
+		m.setMnemonic(KeyEvent.VK_N);
+		this.miCreateNewAnnotation = new JMenuItem("Kanal hinzufügen...");
+		m.add(this.miCreateNewAnnotation);
+		this.miSelectAnnotation = new JMenuItem("Kanal auswählen...");
+		m.add(miSelectAnnotation);
+		this.add(m);
+		
 		// --- ANSICHT ----------------------------------------------------------
 		m = new JMenu("Ansicht");
 		m.setMnemonic(KeyEvent.VK_A);
@@ -95,45 +107,26 @@ public class Menus extends JMenuBar {
 		this.add(m);
 	}
 	
-	/**
-	 * Registers an {@code ActionListener} for opening files.
-	 * @param al the {@code ActionListener} to register
-	 * @return true if successful else false
-	 */
-	/* package visibility */boolean registerOpenFileDialog(ActionListener al) {
-		if(miFileLoad == null) {
-			System.out.println(PREFIX_FAIL + "open-file-dialog");
+	public boolean registerActionListener(MainWindow.ID id, ActionListener al) {
+		switch(id) {
+		case openFile:
+			miFileLoad.addActionListener(al);
+			return true;
+		case closeProgram:
+			miCloseProgram.addActionListener(al);
+			return true;
+		case saveAllDatasets:
+			miSaveAll.addActionListener(al);
+			return true;
+		case newAnnotationFile:
+			this.miCreateNewAnnotation.addActionListener(al);
+			return true;
+		case selectAnnotationFile:
+			this.miSelectAnnotation.addActionListener(al);
+			return true;
+		default:
 			return false;
 		}
-		miFileLoad.addActionListener(al);
-		return true;
 	}
 
-	/**
-	 * Registers an {@code ActionListener} for closing the program.
-	 * @param al the {@code ActionListener} to register
-	 * @return true if successful else false
-	 */
-	/* package visibility */boolean registerCloseProgram(ActionListener al) {
-		if(miCloseProgram == null) {
-			System.out.println(PREFIX_FAIL + "close-program-operation");
-			return false;
-		}
-		miCloseProgram.addActionListener(al);
-		return true;
-	}
-
-	/**
-	 * Registers an {@code ActionListener} for saving all data.
-	 * @param al the {@code ActionListener} to register
-	 * @return true if successful else false
-	 */
-	/* package visibility */boolean registerSaveAllData(ActionListener al) {
-		if(miSaveAll == null) {
-			System.out.println(PREFIX_FAIL + "save-all-datasets-operation");
-			return false;
-		}
-		miSaveAll.addActionListener(al);
-		return true;
-	}
 }

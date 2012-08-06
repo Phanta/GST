@@ -15,6 +15,8 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.unisens.Event;
+
 import gst.data.AnnotationController;
 import gst.data.DataController;
 import gst.data.UnisensDataset;
@@ -28,11 +30,13 @@ import gst.ui.MainWindow;
 import gst.ui.SignalPanel;
 import gst.ui.SignalView;
 import gst.ui.SignalViewFactory;
+import gst.ui.dialog.DatasetSelectionDialog;
+import gst.ui.dialog.EnterFileNameDialog;
 
 /**
  * Class for the public static void main(String[] args) function.
  * @author Enrico Grunitz
- * @version 0.1.3 (06.08.2012)
+ * @version 0.1.4 (06.08.2012)
  */
 public abstract class Main {
 	
@@ -76,6 +80,16 @@ public abstract class Main {
 																		   Main.saveAllDatasets();
 																	   }
 															   	   });
+		main.registerActionListener(MainWindow.ID.newAnnotationFile, new ActionListener() {
+																		 public void actionPerformed(ActionEvent ae) {
+																			 Main.uiCreateNewAnnotationFile();
+																		 }
+																   	 });
+		main.registerActionListener(MainWindow.ID.selectAnnotationFile, new ActionListener() {
+																		    public void actionPerformed(ActionEvent ae) {
+																			    Main.uiSelectAnnotation();
+																		    }
+																   	    });
 		
 		sv = new SignalView[MAXSIGNALS];
 		generateSignalViews(MAXSIGNALS, 2000);
@@ -134,10 +148,10 @@ public abstract class Main {
 		Debug.println(Debug.main, "" + ret.getFullName());
 */		
 		// DEBUG AnnotationSelectionDialog
-		AnnotationSelectionDialog asd = new AnnotationSelectionDialog();
+/*		AnnotationSelectionDialog asd = new AnnotationSelectionDialog();
 		AnnotationController ret = asd.show();
 		Debug.println(Debug.main, "" + ret.getFullName());
-
+*/
 		return;
 	}
 	
@@ -172,6 +186,35 @@ public abstract class Main {
 			Debug.println(Debug.main, "no new annotation selected");
 		}
 		return;
+	}
+	
+	private static void uiCreateNewAnnotationFile() {
+		DatasetSelectionDialog dialog = new DatasetSelectionDialog();
+		UnisensDataset selectedDs = dialog.show();
+		if(selectedDs == null) {
+			Debug.println(Debug.main, "no dataset selected");
+		} else {
+			Debug.println(Debug.main, "dataset '" + selectedDs.getName() + "' selected");
+			EnterFileNameDialog dialog2 = new EnterFileNameDialog();
+			boolean finished = false;
+			while(finished != true) {
+				String fileName = dialog2.show();
+				if(fileName != null) {
+					AnnotationController newAnnoCtrl = selectedDs.addNewAnnotation(fileName);
+					if(newAnnoCtrl != null) {
+						// creation successful
+						Main.selectedAnnotation = newAnnoCtrl;
+						finished = true;
+					}
+				} else {
+					finished = true;
+				}
+			}
+		}
+	}
+	
+	public static AnnotationController getSelectedAnnotation() {
+		return Main.selectedAnnotation;
 	}
 	
 	/**

@@ -23,7 +23,7 @@ import javax.swing.UIManager;
 /**
  * The main window of the application.
  * @author Enrico Grunitz
- * @version 0.2.2 (06.08.2012)
+ * @version 0.2.4 (06.08.2012)
  */
 public class MainWindow extends JFrame {
 
@@ -35,7 +35,9 @@ public class MainWindow extends JFrame {
 		openFile,
 		closeProgram,
 		openNewView,
-		saveAllDatasets;
+		saveAllDatasets,
+		newAnnotationFile,
+		selectAnnotationFile;
 	}
 	
 	public static MainWindow getInstance() {
@@ -108,21 +110,6 @@ public class MainWindow extends JFrame {
 	}
 	
 	/**
-	 * Registers an open-file-dialog to this window and all it's sub-components. 
-	 * @param al the {@code ActionListener}
-	 * @return true if successful
-	 */
-	@Deprecated
-	public boolean registerOpenFileDialog(ActionListener al) {
-		if(al == null) {
-			throw new NullPointerException("ActionListener must be non-null");
-		}
-		boolean retVal = true;
-		retVal &= Menus.getInstance().registerOpenFileDialog(al);
-		return retVal;
-	}
-	
-	/**
 	 * Registers an {@code ActioinListener} to this window and all it's sub components for the specified action-ID.
 	 * @param ID ID specifying the action to perform
 	 * @param al the {@code ActionListener}
@@ -132,20 +119,22 @@ public class MainWindow extends JFrame {
 		if(al == null) {
 			throw new NullPointerException("ActionListener must be non-null");
 		}
+		// retVal makes no sense using unified registration
+		Menus.getInstance().registerActionListener(id, al);
 		boolean retVal = true;
 		switch(id) {
 		case openFile:
-			retVal &= Menus.getInstance().registerOpenFileDialog(al);
+			//retVal &= Menus.getInstance().registerOpenFileDialog(al);
 			break;
 		case closeProgram:
-			retVal &= Menus.getInstance().registerCloseProgram(al);
+			//retVal &= Menus.getInstance().registerCloseProgram(al);
 			retVal &= Toolbar.getInstance().registerCloseProgram(al);
 			break;
 		case openNewView:
 			retVal &= Toolbar.getInstance().registerNewView(al);
 			break;
 		case saveAllDatasets:
-			retVal &= Menus.getInstance().registerSaveAllData(al);
+			//retVal &= Menus.getInstance().registerSaveAllData(al);
 			break;
 		default:
 			retVal = false;

@@ -4,6 +4,7 @@
 
 package gst.data;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,7 +17,7 @@ import org.unisens.EventEntry;
 /**
  * {@code ViewController} implementation for {@code EventEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1 (24.07.2012)
+ * @version 0.1.1 (06.08.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -33,13 +34,15 @@ public class AnnotationController extends DataController {
 		try {
 			borderEvents.addAll(entry.read(0, 1));
 			borderEvents.addAll(entry.read(entry.getCount() - 1, 1));
+		} catch(FileNotFoundException fnfe) {
+			System.out.println("coouldn't find file " + this.entry.getName());
 		} catch(IOException ioe) {
 			System.out.println("couldn't read first and last event entry of " + entry.getId());
 			return;
 		}
 		if(borderEvents.size() != 2) {
 			System.out.println("error while reading two events");
-			System.exit(1);
+			//System.exit(1);
 		}
 		startSampleNumber = borderEvents.get(0).getSampleStamp();
 		endSampleNumber = borderEvents.get(1).getSampleStamp();

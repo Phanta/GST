@@ -26,7 +26,7 @@ import gst.test.Debug;
 /**
  * A dialog that asks the user to select an annotation-entry of all datasets.
  * @author Enrico Grunitz
- * @version 0.1.0 (06.08.2012)
+ * @version 0.1.1 (06.08.2012)
  */
 public class AnnotationSelectionDialog {
 	
@@ -105,10 +105,10 @@ public class AnnotationSelectionDialog {
 														 "Annotationsauswahl",			// title string
 														 JOptionPane.OK_CANCEL_OPTION,	// option type
 														 JOptionPane.PLAIN_MESSAGE);	// message type
-		if(dialogReturn != JOptionPane.OK_OPTION) {
-			return null;
+		if(dialogReturn == JOptionPane.OK_OPTION && message instanceof JPanel) {
+			return annotation.get(this.selectedDsIndex).get(this.annoComboBox.getSelectedIndex());
 		}
-		return annotation.get(this.selectedDsIndex).get(this.annoComboBox.getSelectedIndex());
+		return null;
 	}
 	
 	/**

@@ -4,14 +4,18 @@
 
 package gst.data;
 
+import gst.test.Debug;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.unisens.DuplicateIdException;
 import org.unisens.Entry;
 import org.unisens.CustomEntry;
+import org.unisens.Event;
 import org.unisens.EventEntry;
 import org.unisens.MeasurementEntry;
 import org.unisens.SignalEntry;
@@ -23,7 +27,7 @@ import org.unisens.ri.UnisensImpl;
 /**
  * This is a convenience wrapper class for org.unisens.Unisens objects.
  * @author Enrico Grunitz
- * @version 0.1 (27.06.2012)
+ * @version 0.1.1 (06.08.2012)
  */
 public class UnisensDataset {
 	/** key for custom attribute: name */			protected static final String KEY_NAME = "DatasetName";
@@ -228,6 +232,32 @@ public class UnisensDataset {
 	}
 	
 	/**
+	 * 
+	 */
+	public AnnotationController addNewAnnotation(String fileName) {
+		EventEntry newEntry = null;
+		try {
+			newEntry = us.createEventEntry(fileName, 1000.0);
+		} catch(DuplicateIdException die) {
+			System.out.println("ERROR\tcouldn't create new EventEntry - DuplicatedId");
+			return null;
+		}
+		if(newEntry == null) {
+			System.out.println("ERROR\tcouldn't create new EventEntry");
+			return null;
+		}
+		// FIXME create dummy file here to work around nasty unisens implementation, can't remove events
+		try {
+			newEntry.append(new Event(0, "-", ""));
+		} catch(IOException ioe) {
+			Debug.println(Debug.unisensDataset, "couldn't write dummy data");
+		}
+		AnnotationController ctrl = new AnnotationController(newEntry);
+		this.ctrlList.add(ctrl);
+		return ctrl;
+	}
+
+	/**
 	 * Creates {@link gst.data.DataController}s for all data in this {@code UnisensDataset}.
 	 * @return list of created {@code DataController}
 	 */
@@ -322,4 +352,5 @@ public class UnisensDataset {
 			return 0;
 		}
 	}
+
 }
