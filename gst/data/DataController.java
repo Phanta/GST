@@ -14,7 +14,7 @@ import org.unisens.Entry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.3 (06.08.2012)
+ * @version 0.1.4 (07.08.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -23,6 +23,7 @@ public abstract class DataController {
 	/** type of the controlled entry */				protected EntryType type;
 	/** measurement time of the first entry */		protected double basetime;
 	/** number of channels of the entry */			protected int channelCount;
+	/** true if the controller is buffered */		protected boolean isBuffered;
 	/** preferred color for this data */			private Color prefColor;
 	
 	/**
@@ -31,17 +32,7 @@ public abstract class DataController {
 	 * @param entryId ID of the entry inside the dataset
 	 */
 	protected DataController(UnisensDataset ds, String entryId) {
-		if(ds == null) {
-			throw new NullPointerException("constructor from null UnisensDataset failed");
-		}
-		this.entry = ds.getEntry(entryId);
-		if(this.entry == null) {
-			throw new IllegalArgumentException("constructor from entryId '" + entryId + "' of UnisensDataset '" + ds.toString() + "' failed");
-		}
-		this.type = EntryType.getType(this.entry);
-		basetime = 0.0;
-		channelCount = 1;
-		prefColor = Color.red;
+		this(ds.getEntry(entryId));
 		return;
 	}
 	
@@ -55,9 +46,10 @@ public abstract class DataController {
 		}
 		this.entry = entry;
 		this.type = EntryType.getType(this.entry);
-		basetime = 0.0;
-		channelCount = 1;
-		prefColor = Color.red;
+		this.basetime = 0.0;
+		this.channelCount = 1;
+		this.isBuffered = false;
+		this.prefColor = Color.red;
 		return;
 	}
 	
@@ -78,6 +70,12 @@ public abstract class DataController {
 			return true;
 		} else {
 			return false;
+		}
+	}
+	
+	public void save() {
+		if(this.isBuffered) {
+			this.saveImpl();
 		}
 	}
 	
@@ -145,4 +143,8 @@ public abstract class DataController {
 	 * @return physical unit as {@code String}
 	 */
 	abstract public String getPhysicalUnit();
+	/**
+	 * This function saves the data to its corresponding file. Called if {@link #isBuffered} is set to true.
+	 */
+	abstract protected void saveImpl();
 }

@@ -11,7 +11,7 @@ import org.unisens.Event;
 /**
  * Wrapper class for a {@code List<Event>} to store time information. Despite it's name it does note implement the {@code List}-interface. 
  * @author Enrico Grunitz
- * @version 0.1 (19.07.2012)
+ * @version 0.1.1 (07.08.2012)
  */
 public class AnnotationList {
 	/** list of the encapsuled events */				private List<Event> events = null;
@@ -26,6 +26,10 @@ public class AnnotationList {
 		this.baseTime = baseTime;
 		this.inverseSampleRate = 1 / sampleRate;
 		return;
+	}
+	
+	/* package visible */ Event getEvent(int index) {
+		return events.get(index);
 	}
 	
 	public int size() {

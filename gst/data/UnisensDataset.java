@@ -37,7 +37,7 @@ public class UnisensDataset {
 	/**
 	 * Enumeration of different {@code Entry}-types.
 	 * @author Enrico Grunitz
-	 * @version 1.0.2 (01.08.2012)
+	 * @version 1.0.3 (07.08.2012)
 	 */
 	public enum EntryType {
 		/** instanceof SignalEntry */ 					SIGNAL,
@@ -247,12 +247,12 @@ public class UnisensDataset {
 			return null;
 		}
 		// FIXME create dummy file here to work around nasty unisens implementation, can't remove events
-		try {
+/*		try {
 			newEntry.append(new Event(0, "-", ""));
 		} catch(IOException ioe) {
 			Debug.println(Debug.unisensDataset, "couldn't write dummy data");
 		}
-		AnnotationController ctrl = new AnnotationController(newEntry);
+*/		AnnotationController ctrl = new AnnotationController(newEntry);
 		this.ctrlList.add(ctrl);
 		return ctrl;
 	}
@@ -310,12 +310,14 @@ public class UnisensDataset {
 	 * @return true if successful, else false
 	 */
 	public boolean save() {
+		// save all buffered data
+		Iterator<DataController> it = this.ctrlList.iterator();
+		while(it.hasNext()) {
+			it.next().save();
+		}
+		// save unisens object
 		try {
 			us.save();
-		} catch(FileNotFoundException fnfe) {
-			// TODO this block doesn't catch anything (catched by UnisensImpl)
-			System.out.println("Couldn't save unisens dataset '" + name + "'. File not found or access denied!");
-			return false;
 		} catch(IOException ioe) {
 			System.out.println("couldn't save unisens dataset '" + name + "'");
 			ioe.printStackTrace();

@@ -6,6 +6,7 @@ package gst.data;
 
 import gst.test.Debug;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,18 +14,21 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.jfree.data.xy.XYSeries;
+import org.unisens.Entry;
 import org.unisens.Event;
 import org.unisens.EventEntry;
 
 /**
- * {@code ViewController} implementation for {@code EventEntry}-type data in an {@code UnisensDataset}.
+ * Buffered {@link gst.data.DataController} implementation for {@code EventEntry}-type data in an {@link gst.data.UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1.2 (06.08.2012)
+ * @version 0.2.0 (06.08.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
-	/** sample number of the first event */						private long startSampleNumber = 0;
-	/** sample number of the last event */						private long endSampleNumber = 0;
+	/** sample number of the first event */						private long startSampleNumber;
+	/** sample number of the last event */						private long endSampleNumber;
+	/** {@code ArrayList} of all {@code Event}s */				private ArrayList<Event> buffer;
+	/** exists the file? */										private boolean fileExists;
 
 	/**
 	 * Creates the {@code AnnotationController} object for the given {@code EventEntry}.
@@ -32,24 +36,28 @@ public class AnnotationController extends DataController {
 	 */
 	public AnnotationController(EventEntry entry) {
 		super(entry);
-		ArrayList<Event> borderEvents = new ArrayList<Event>(2);
-		try {
-			borderEvents.addAll(entry.read(0, 1));
-			borderEvents.addAll(entry.read(entry.getCount() - 1, 1));
-		} catch(FileNotFoundException fnfe) {
-			System.out.println("coouldn't find file " + this.entry.getName());
-		} catch(IOException ioe) {
-			System.out.println("couldn't read first and last event entry of " + entry.getId());
-			return;
+		this.buffer = new ArrayList<Event>();
+		// check if the file exists
+		String fileName = this.entry.getUnisens().getPath();
+		if(fileName.endsWith("unisens.xml")) {
+			fileName.substring(0, fileName.length() - 11);
 		}
-		if(borderEvents.size() != 2) {
-			System.out.println("error while reading two events");
-			//System.exit(1);
+		fileName += this.entry.getId();
+		File testFile = new File(fileName);
+		this.fileExists = testFile.exists(); 
+		if(this.fileExists) {
+			this.fillBuffer();
 		}
-		startSampleNumber = borderEvents.get(0).getSampleStamp();
-		endSampleNumber = borderEvents.get(1).getSampleStamp();
+		this.initBorderSampleNumbers();
+		this.isBuffered = true;
 	}
 	
+	/**
+	 * addAnnotatioin implementation
+	 * @param time
+	 * @param type
+	 * @param comment
+	 */
 	public void addAnnotation(double time, String type, String comment) {
 		if(type == null) {
 			type = "";
@@ -58,10 +66,76 @@ public class AnnotationController extends DataController {
 			comment = "";
 		}
 		long sampleStamp = (long)Math.ceil((time - this.basetime) * ((EventEntry)this.entry).getSampleRate());
+		this.buffer.add(new Event(sampleStamp, type, comment));
+	}
+	
+	public AnnotationList getAnnotation(double time) {
+		long sampleStamp = (long)Math.round((time - this.basetime) * ((EventEntry)this.entry).getSampleRate());
+		ArrayList<Event> events = new ArrayList<Event>(1);
+		Iterator<Event> it = buffer.iterator();
+		while(it.hasNext()) {
+			Event event = it.next();
+			if(event.getSampleStamp() == sampleStamp) {
+				events.add(event);
+			}
+		}
+		Debug.println(Debug.annotationController, "found " + events.size() + " events");
+		return new AnnotationList(events, this.basetime, ((EventEntry)this.entry).getSampleRate());
+	}
+	
+	public void removeAnnotation(AnnotationList annoList) {
+		for(int i = 0; i < annoList.size(); i++) {
+			if(this.buffer.remove(annoList.getEvent(i))) {
+				Debug.println(Debug.annotationController, "item successful removed");
+			} else {
+				Debug.println(Debug.annotationController, "item NOT removed");
+			}
+			
+		}
+	}
+	
+	/**
+	 * Reads data from entry and adds them to the buffer. Doesn't check for existing file.
+	 */
+	private void fillBuffer() {
 		try {
-			((EventEntry)this.entry).append(new Event(sampleStamp, type, comment));
+			buffer.addAll(((EventEntry)this.entry).read(0, (int)((EventEntry)this.entry).getCount()));
 		} catch(IOException ioe) {
-			Debug.println(Debug.annotationController, "ioe while adding entry");
+			Debug.println(Debug.annotationController, "IOException while filling buffer");
+		}
+	}
+	
+	/**
+	 * Adds reasonable data to the fields {@link #startSampleNumber} and {@link #endSampleNumber}.
+	 */
+	private void initBorderSampleNumbers() {
+		switch(this.buffer.size()) {
+		case 0:
+			this.startSampleNumber = 0;
+			this.endSampleNumber = 0;
+			break;
+		case 1:
+			this.startSampleNumber = this.buffer.get(0).getSampleStamp();
+			this.endSampleNumber = this.startSampleNumber;
+			break;
+		default:
+			Iterator<Event> it = this.buffer.iterator();
+			this.startSampleNumber = it.next().getSampleStamp();
+			long temp = it.next().getSampleStamp();
+			if(temp >= this.startSampleNumber) {
+				this.endSampleNumber = temp;
+			} else {
+				this.endSampleNumber = this.startSampleNumber;
+				this.startSampleNumber = temp;
+			}
+			while(it.hasNext()) {
+				temp = it.next().getSampleStamp();
+				if(temp < this.startSampleNumber) {
+					this.startSampleNumber = temp;
+				} else if(temp > this.endSampleNumber) {
+					this.endSampleNumber = temp;
+				}
+			}
 		}
 	}
 	
@@ -70,7 +144,6 @@ public class AnnotationController extends DataController {
 	 */
 	@Override
 	public AnnotationList getAnnotations(double startTime, double endTime) {
-		//ArrayList<Event> list = new ArrayList<Event>();
 		if(endTime < startTime) {
 			// i can handle negative time-spans
 			double temp = startTime;
@@ -80,37 +153,17 @@ public class AnnotationController extends DataController {
 		// calculate sample numbers from times
 		long startSample = (long)Math.ceil((startTime - this.basetime) * ((EventEntry)this.entry).getSampleRate());
 		long endSample = (long)Math.round((endTime - this.basetime) * ((EventEntry)this.entry).getSampleRate());
-		// read data from file
-		List<Event> data = null;
-		try {
-			data = ((EventEntry)this.entry).read(0, (int)((EventEntry)this.entry).getCount());
-		} catch(IOException ioe) {
-			System.out.println("couldn't read data from file '" + this.entry.getId() + "'");
-		}
-		// search for sample indices
-		Iterator<Event> it = data.iterator();
-		int startIndex = -1, endIndex = -1;
+		// create list of interesting events
+		Iterator<Event> it = this.buffer.iterator();
+		ArrayList<Event> events = new ArrayList<Event>();
 		Event event = null;
-		for(int i = 0; it.hasNext(); i++) {
+		while(it.hasNext()) {
 			event = it.next();
-			if(startIndex == -1 && event.getSampleStamp() >= startSample) {
-				startIndex = i;
-			} else if(event.getSampleStamp() > endSample) {
-				endIndex = i;	// List.subList(startIndex, endIndex) has an exclusive endIndex, so no -1
-				break;	// found end sample
+			if(isInside(event.getSampleStamp(), startSample, endSample)) {
+				events.add(event);
 			}
 		}
-		// fill the return List
-		if(startIndex == -1) {
-			// found no start so there are no valid annotations
-			return new AnnotationList(new ArrayList<Event>(0)/*list*/, this.basetime, ((EventEntry)this.entry).getSampleRate());
-		}
-		if(endIndex == -1) {
-			// there is a start but no end - so end of data is the end
-			endIndex = data.size();	// List.subList(startIndex, endIndex) has an exclusive endIndex, so no -1
-		}
-		//list.addAll(data.subList(startIndex, endIndex));
-		return new AnnotationList(data.subList(startIndex, endIndex)/*list*/, this.basetime, ((EventEntry)this.entry).getSampleRate());
+		return new AnnotationList(events, this.basetime, ((EventEntry)this.entry).getSampleRate());
 	}
 
 	/**
@@ -146,4 +199,21 @@ public class AnnotationController extends DataController {
 		return "";		// annotation do not have any physical units (hopefully)
 	}
 	
+	/**
+	 * Clears the data from the {@code Entry} and appends the whole buffer.
+	 * @see gst.data.DataController#saveImpl()
+	 */
+	@Override
+	protected void saveImpl() {
+		try {
+			((EventEntry)this.entry).empty();
+			((EventEntry)this.entry).append(this.buffer);
+		} catch(IOException ioe) {
+			Debug.println(Debug.annotationController, "IOException while saving");
+		}
+	}
+	
+	private static boolean isInside(long test, long low, long high) {
+		return (test >= low && test <= high);
+	}
 }

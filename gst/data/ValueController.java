@@ -16,7 +16,7 @@ import org.unisens.ValuesEntry;
 /**
  * {@code ViewController} implementation for {@code ValuesEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1.1 (01.08.2012)
+ * @version 0.1.2 (07.08.2012)
  * @see gst.data.DataController
  */
 public class ValueController extends DataController {
@@ -170,4 +170,8 @@ public class ValueController extends DataController {
 	public String getFullName() {
 		return super.getFullName() + DataController.SEPERATOR + (((ValuesEntry)this.entry).getChannelNames())[this.channelIndex];
 	}
+	/** @see gst.data.DataController#saveImpl() */
+	@Override
+	protected void saveImpl() {}
+
 }
