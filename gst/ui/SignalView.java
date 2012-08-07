@@ -45,7 +45,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.1.1 (07.08.2012)
+ * @version 0.1.2 (07.08.2012)
  */
 public class SignalView extends ChartPanel {
 
@@ -104,8 +104,14 @@ public class SignalView extends ChartPanel {
 		//this.add(this.createPopupMenu(true, false, true, false, true));
 		SignalViewMouseAdapter mAdapt = new SignalViewMouseAdapter("");
 		this.addMouseListener(mAdapt);
+		this.addMouseMotionListener(mAdapt);
 		this.addMouseWheelListener(mAdapt);
 		this.addKeyListener(new SignalViewKeyAdapter());
+		
+		this.getChart().getXYPlot().setDomainCrosshairLockedOnData(false);
+		this.getChart().getXYPlot().setDomainCrosshairPaint(Color.orange);
+		this.getChart().getXYPlot().setDomainCrosshairVisible(true);
+		
 		return;
 	}
 	
@@ -122,6 +128,10 @@ public class SignalView extends ChartPanel {
 		}
 		super.setBounds(x, y, width, height);
 		return;
+	}
+	
+	public void updateDomainCrosshair(double pos) {
+		this.getChart().getXYPlot().setDomainCrosshairValue(pos);
 	}
 	
 	/**
@@ -332,6 +342,9 @@ public class SignalView extends ChartPanel {
 		return;
 	}
 	
+	/**
+	 * Clears all time axis markers and requests new data from all controllers. 
+	 */
 	public void updateTimeAxisMarkers() {
 		Iterator<DataController> it = ctrlList.iterator();
 		removeTimeAxisMarker();
@@ -484,7 +497,7 @@ public class SignalView extends ChartPanel {
 	/**
 	 * Mouse action handler for {@code SignalView}.
 	 * @author Enrico Grunitz
-	 * @version 0.1.0 (06.08.2012)
+	 * @version 0.1.1 (07.08.2012)
 	 */
 	protected static class SignalViewMouseAdapter extends NamedMouseAdapter {
 		private static String eventType;
@@ -576,6 +589,24 @@ public class SignalView extends ChartPanel {
 			SignalView target = (SignalView)event.getComponent();
 			// change background
 			target.focusHighlight(false);
+		}
+		
+		/** @see java.awt.event.MouseAdapter#mouseMoved(java.awt.event.MouseEvent) */
+		@Override
+		public void mouseMoved(MouseEvent event) {
+			Debug.println(Debug.signalViewMouseAdapter, "mouseMove");
+			if((event.getComponent() instanceof SignalView) == false) {
+				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
+				return;
+			}
+			SignalView target = (SignalView)event.getComponent();
+			Rectangle2D dataRect = target.getScreenDataArea();
+			if(dataRect.contains(event.getPoint())) {
+				// calculate time
+				Range timeAxis = target.getTimeAxisBounds();
+				double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
+				SignalPanel.getInstance().updateDomainCrosshairs(time);
+			}
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseWheelMoved(java.awt.event.MouseWheelEvent) */

@@ -11,19 +11,21 @@ import gst.ui.layout.SignalPanelLayoutManager;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.JPanel;
 
 /**
  * The panel containing all signalgraphs and the controls to resize them. Implemented as Singleton.
  * @author Enrico Grunitz
- * @version 0.2.2 (01.08.2012)
+ * @version 0.2.3 (07.08.2012)
  */
 public class SignalPanel extends JPanel {
 
@@ -124,7 +126,20 @@ public class SignalPanel extends JPanel {
 	public int getNumSignalViews() {
 		return graphs.size();
 	}
+	
+	public void updateDomainCrosshairs(double time) {
+		Iterator<SignalView> it = this.graphs.iterator();
+		while(it.hasNext()) {
+			it.next().updateDomainCrosshair(time);
+		}
+	}
 
+	/** @see javax.swing.JComponent#paintComponent(java.awt.Graphics) */
+	@Override
+	protected void paintComponent(Graphics g) {
+		
+	}
+	
 	/** @see java.awt.Container#validate() */
 	@Override
 	public void revalidate() {
