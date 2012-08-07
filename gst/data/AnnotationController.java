@@ -21,7 +21,7 @@ import org.unisens.EventEntry;
 /**
  * Buffered {@link gst.data.DataController} implementation for {@code EventEntry}-type data in an {@link gst.data.UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.2.0 (06.08.2012)
+ * @version 0.2.1 (06.08.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -66,6 +66,7 @@ public class AnnotationController extends DataController {
 			comment = "";
 		}
 		long sampleStamp = (long)Math.ceil((time - this.basetime) * ((EventEntry)this.entry).getSampleRate());
+		this.updateBorderSampleNumbers(sampleStamp);
 		this.buffer.add(new Event(sampleStamp, type, comment));
 	}
 	
@@ -102,6 +103,14 @@ public class AnnotationController extends DataController {
 			buffer.addAll(((EventEntry)this.entry).read(0, (int)((EventEntry)this.entry).getCount()));
 		} catch(IOException ioe) {
 			Debug.println(Debug.annotationController, "IOException while filling buffer");
+		}
+	}
+	
+	private void updateBorderSampleNumbers(long sampleStamp) {
+		if(this.startSampleNumber > sampleStamp) {
+			this.startSampleNumber = sampleStamp;
+		} else if(this.endSampleNumber < sampleStamp) {
+			this.endSampleNumber = sampleStamp;
 		}
 	}
 	
