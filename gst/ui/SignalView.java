@@ -45,7 +45,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.1.0 (07.08.2012)
+ * @version 0.1.1 (07.08.2012)
  */
 public class SignalView extends ChartPanel {
 
@@ -494,6 +494,7 @@ public class SignalView extends ChartPanel {
 			super("SignalView" + nameExtension);
 			SignalViewMouseAdapter.eventType = "N";
 			SignalViewMouseAdapter.eventComment = "";
+			StatusBar.getInstance().updateText(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent) */
@@ -516,6 +517,7 @@ public class SignalView extends ChartPanel {
 							Range timeAxis = target.getTimeAxisBounds();
 							double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
 							Main.getSelectedAnnotation().removeAnnotation(Main.getSelectedAnnotation().getAnnotation(time));
+							target.updateTimeAxisMarkers();
 						}
 						return;	// CTRL means only delete, no adding
 					}
@@ -524,6 +526,7 @@ public class SignalView extends ChartPanel {
 						if(eed.show() == true) {
 							SignalViewMouseAdapter.eventType = eed.getType();
 							SignalViewMouseAdapter.eventComment = eed.getComment();
+							StatusBar.getInstance().updateText(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
 						}
 					}	// no else, so the event is added even when editing
 					Rectangle2D dataRect = target.getScreenDataArea();

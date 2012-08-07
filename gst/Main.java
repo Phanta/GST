@@ -30,13 +30,14 @@ import gst.ui.MainWindow;
 import gst.ui.SignalPanel;
 import gst.ui.SignalView;
 import gst.ui.SignalViewFactory;
+import gst.ui.StatusBar;
 import gst.ui.dialog.DatasetSelectionDialog;
 import gst.ui.dialog.EnterFileNameDialog;
 
 /**
  * Class for the public static void main(String[] args) function.
  * @author Enrico Grunitz
- * @version 0.1.4 (06.08.2012)
+ * @version 0.1.5 (07.08.2012)
  */
 public abstract class Main {
 	
@@ -90,6 +91,7 @@ public abstract class Main {
 																			    Main.uiSelectAnnotation();
 																		    }
 																   	    });
+		StatusBar.getInstance().updateText("keiner");
 		
 		sv = new SignalView[MAXSIGNALS];
 		generateSignalViews(MAXSIGNALS, 2000);
@@ -181,6 +183,7 @@ public abstract class Main {
 		AnnotationController selectedAC = dialog.show();
 		if(selectedAC != null) {
 			Main.selectedAnnotation = selectedAC; 
+			StatusBar.getInstance().updateText(Main.selectedAnnotation.getFullName());
 			Debug.println(Debug.main, "selected Annotation: " + selectedAC.getFullName());
 		} else {
 			Debug.println(Debug.main, "no new annotation selected");
@@ -204,6 +207,7 @@ public abstract class Main {
 					if(newAnnoCtrl != null) {
 						// creation successful
 						Main.selectedAnnotation = newAnnoCtrl;
+						StatusBar.getInstance().updateText(Main.selectedAnnotation.getFullName());
 						finished = true;
 					}
 				} else {

@@ -21,7 +21,7 @@ import javax.swing.KeyStroke;
 /**
  * Menus represent the Menubar of the Application. Implemented as Singleton.
  * 
- * @version 0.1.5 (06.08.2012)
+ * @version 0.1.6 (07.08.2012)
  * @author Enrico Grunitz
  */
 public class Menus extends JMenuBar {
@@ -59,6 +59,7 @@ public class Menus extends JMenuBar {
 		m.add(mi);
 		m.addSeparator();
 		miSaveAll = new JMenuItem("alles speichern", KeyEvent.VK_S);
+		miSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
 		m.add(miSaveAll);
 		m.addSeparator();
 		miCloseProgram = new JMenuItem("Beenden",KeyEvent.VK_B);

@@ -1,4 +1,5 @@
 package gst.ui;
+
 /*
  * Copyright 2002 Sun Microsystems, Inc. All rights reserved.
  * 
@@ -37,6 +38,7 @@ package gst.ui;
  * maintenance of any nuclear facility.
  */
 
+import gst.Main;
 
 import java.awt.*;
 
@@ -48,147 +50,176 @@ import javax.swing.*;
 /**
  * Single instance status bar.
  * <p>
- * This class is also a MouseListener which listens to MOUSE_ENTERED
- * and MOUSE_EXITED events from Action derived components so that
- * the value of the Action.LONG_DESCRIPTION key is sent as a message
- * to the status bar. 
+ * This class is also a MouseListener which listens to MOUSE_ENTERED and 
+ * MOUSE_EXITED events from Action derived components so that the value of the
+ * Action.LONG_DESCRIPTION key is sent as a message to the status bar.
  * <p>
- * To enable this behavior, add the StatusBar
- * instance as a MouseListener to the component that was created from 
- * an Action.
- *
- * @version 1.6 01/15/03
- * @author  Mark Davidson
+ * To enable this behavior, add the StatusBar instance as a MouseListener to the
+ * component that was created from an Action.
+ * 
+ * edited by Enrico Grunitz
+ * 
+ * @version 0.1.0 (07.08.2012)
+ * @author Mark Davidson
+ * @author Enrico Grunitz
  */
 public class StatusBar extends JPanel implements MouseListener {
-  
-    private JLabel label;
-    private Dimension preferredSize;
 
-    private static StatusBar INSTANCE;
-  
-    public StatusBar()  {
-  this.setLayout(new FlowLayout(FlowLayout.LEFT));
-  this.setBorder(BorderFactory.createEtchedBorder());
-                               
-  // Set a large blank label to set the preferred size.
-  label = new JLabel("                                                                                        ");
-  preferredSize = new Dimension(getWidth(label.getText()), 2 * getFontHeight());
-      
-  this.add(label);
-    }
+	private JLabel label;
+	private Dimension preferredSize;
+	private String annoChannel;
+	private String annoType;
+	private String annoComment;
 
+	private static StatusBar INSTANCE;
+	private static final String prefixAnnoChannel = "Annotationen   -   Kanal: ";
+	private static final String prefixAnnoType = "   -   Typ: ";
+	private static final String prefixAnnoComment = "   -   Kommentar: ";
 
-    /**
-     * Return the instance of the StatusBar. If this has not been explicity
-     * set then it will be created.
-     *
-     * @return the StatusBar instance.
-     * @see #setInstance
-     */
-    public static StatusBar getInstance() {
-  if (INSTANCE == null) {
-      INSTANCE = new StatusBar();
-  }
-        return INSTANCE;
-    }
+	public StatusBar() {
+		this.setLayout(new FlowLayout(FlowLayout.LEFT));
+		this.setBorder(BorderFactory.createEtchedBorder());
 
-    /**
-     * Sets the StatusBar instance.
-     */
-    public static void setInstance(StatusBar status) {
-  INSTANCE = status;
-    }
+		// Set a large blank label to set the preferred size.
+		label = new JLabel(
+				"                                                                                        ");
+		preferredSize = new Dimension(getWidth(label.getText()),
+				2 * getFontHeight());
 
-    /**
-     * Returns the string width
-     * @param s the string
-     * @return the string width
-     */
-    protected int getWidth(String s) {
-  FontMetrics fm = this.getFontMetrics(this.getFont());
-  if (fm == null) {
-      return 0;
-  }
-  return fm.stringWidth(s);
-    }
+		this.add(label);
+		
+		this.annoChannel = "keiner";
+		this.annoType = "-";
+		this.annoComment = "";
+		this.setMessage(prefixAnnoChannel + this.annoChannel + prefixAnnoType + this.annoType + prefixAnnoComment + this.annoComment);
+	}
 
-    /**
-     * Returns the height of a line of text
-     * @return the height of a line of text
-     */
-    protected int getFontHeight() {
-  FontMetrics fm = this.getFontMetrics(this.getFont());
-  if (fm == null) {
-      return 0;
-  }
-  return fm.getHeight();
-    }
+	/**
+	 * Return the instance of the StatusBar. If this has not been explicity set
+	 * then it will be created.
+	 * @return the StatusBar instance.
+	 * @see #setInstance
+	 */
+	public static StatusBar getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new StatusBar();
+		}
+		return INSTANCE;
+	}
+	
+	public void updateText(String annoChannel) {
+		this.annoChannel = annoChannel;
+		this.setMessage(prefixAnnoChannel + this.annoChannel + prefixAnnoType + this.annoType + prefixAnnoComment + this.annoComment);
+	}
+	
+	public void updateText(String annoType, String annoComment) {
+		this.annoType = annoType;
+		this.annoComment = annoComment;
+		this.setMessage(prefixAnnoChannel + annoChannel + prefixAnnoType + annoType + prefixAnnoComment + annoComment);
+	}
 
-    /**
-     * Returns the perferred size
-     * @return the preferred size
-     */
-    public Dimension getPreferredSize() {
-  return preferredSize;
-    }
+	/**
+	 * Sets the StatusBar instance.
+	 */
+	public static void setInstance(StatusBar status) {
+		INSTANCE = status;
+	}
 
-    /**
-     * Sets non-transient status bar message
-     * @param message the message to display on the status bar
-     */
-    public void setMessage(String message) {
-  label.setText(message);
-    }    
+	/**
+	 * Returns the string width
+	 * @param s the string
+	 * @return the string width
+	 */
+	protected int getWidth(String s) {
+		FontMetrics fm = this.getFontMetrics(this.getFont());
+		if (fm == null) {
+			return 0;
+		}
+		return fm.stringWidth(s);
+	}
 
-    //
-    // MouseListener methods 
-    //
+	/**
+	 * Returns the height of a line of text
+	 * @return the height of a line of text
+	 */
+	protected int getFontHeight() {
+		FontMetrics fm = this.getFontMetrics(this.getFont());
+		if (fm == null) {
+			return 0;
+		}
+		return fm.getHeight();
+	}
 
-    public void mouseClicked(MouseEvent evt) {}
-    public void mousePressed(MouseEvent evt) {}
-    public void mouseReleased(MouseEvent evt) {}
+	/**
+	 * Returns the perferred size
+	 * @return the preferred size
+	 */
+	public Dimension getPreferredSize() {
+		return preferredSize;
+	}
 
-    public void mouseExited(MouseEvent evt) {
-  setMessage("");
-    }
+	/**
+	 * Sets non-transient status bar message
+	 * @param message the message to display on the status bar
+	 */
+	public void setMessage(String message) {
+		label.setText(message);
+	}
 
-    /**
-     * Takes the LONG_DESCRIPTION of the Action based components
-     * and sends them to the Status bar
-     */
-    public void mouseEntered(MouseEvent evt) {
-  if (evt.getSource() instanceof AbstractButton)  {
-      AbstractButton button = (AbstractButton)evt.getSource();
-      Action action = button.getAction();
-      if (action != null)  {
-    String message = (String)action.getValue(Action.LONG_DESCRIPTION);
-    setMessage(message);
-      }
-  }
-    }
+	//
+	// MouseListener methods
+	//
 
-    /**
-     * Helper method to recursively register all MenuElements with 
-     * a mouse listener.
-     */
-    public void registerMouseListener(MenuElement[] elements) {
-  for (int i = 0; i < elements.length; i++) {
-      if (elements[i] instanceof JMenuItem) {
-    ((JMenuItem)elements[i]).addMouseListener(this);
-      }
-      registerMouseListener(elements[i].getSubElements());
-  }
-    }
+	public void mouseClicked(MouseEvent evt) {
+	}
 
-    /**
-     * Helper method to register all components with a mouse listener.
-     */
-    public void registerMouseListener(Component[] components) {
-  for (int i = 0; i < components.length; i++) {
-      if (components[i] instanceof AbstractButton) {
-    ((AbstractButton)components[i]).addMouseListener(this);
-      }
-  }
-    }
+	public void mousePressed(MouseEvent evt) {
+	}
+
+	public void mouseReleased(MouseEvent evt) {
+	}
+
+	public void mouseExited(MouseEvent evt) {
+		setMessage("");
+	}
+
+	/**
+	 * Takes the LONG_DESCRIPTION of the Action based components and sends them
+	 * to the Status bar
+	 */
+	public void mouseEntered(MouseEvent evt) {
+		if (evt.getSource() instanceof AbstractButton) {
+			AbstractButton button = (AbstractButton) evt.getSource();
+			Action action = button.getAction();
+			if (action != null) {
+				String message = (String) action
+						.getValue(Action.LONG_DESCRIPTION);
+				setMessage(message);
+			}
+		}
+	}
+
+	/**
+	 * Helper method to recursively register all MenuElements with a mouse
+	 * listener.
+	 */
+	public void registerMouseListener(MenuElement[] elements) {
+		for (int i = 0; i < elements.length; i++) {
+			if (elements[i] instanceof JMenuItem) {
+				((JMenuItem) elements[i]).addMouseListener(this);
+			}
+			registerMouseListener(elements[i].getSubElements());
+		}
+	}
+
+	/**
+	 * Helper method to register all components with a mouse listener.
+	 */
+	public void registerMouseListener(Component[] components) {
+		for (int i = 0; i < components.length; i++) {
+			if (components[i] instanceof AbstractButton) {
+				((AbstractButton) components[i]).addMouseListener(this);
+			}
+		}
+	}
 } // end class StatusBar
