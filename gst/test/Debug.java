@@ -52,7 +52,7 @@ public class Debug {
 	private static final boolean isEnabled[] = {true,	//	main
 												false,	//	settings
 														//gst.data
-												false,	//	annotationController
+												true,	//	annotationController
 												false,	//	annotationList
 												false,	//	controller
 												false,	//	signalController
@@ -72,7 +72,7 @@ public class Debug {
 												false,	//		signalPanelComponentAdapter
 												false,	//		signalPanelMouseAdapter
 												false,	//	signalView
-												true,	//		signalViewMouseAdapter
+												false,	//		signalViewMouseAdapter
 												false,	//	signalViewFactory
 												false,	//	statusbar
 												false,	//	toolbar

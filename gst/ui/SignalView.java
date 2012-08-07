@@ -45,7 +45,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.0.7 (06.08.2012)
+ * @version 0.1.0 (07.08.2012)
  */
 public class SignalView extends ChartPanel {
 
@@ -508,14 +508,24 @@ public class SignalView extends ChartPanel {
 			int modifiers = event.getModifiersEx();
 			switch(event.getButton()) {
 			case MouseEvent.BUTTON2:
-				if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {
-					EditEventDialog eed = new EditEventDialog(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
-					if(eed.show() == true) {
-						SignalViewMouseAdapter.eventType = eed.getType();
-						SignalViewMouseAdapter.eventComment = eed.getComment();
-					}
-				}	// no else, so the event is added even when editing
 				if(Main.getSelectedAnnotation() != null) {
+					if((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {		// CTRL down
+						Rectangle2D dataRect = target.getScreenDataArea();
+						if(dataRect.contains(event.getPoint())) {
+							// calculate time
+							Range timeAxis = target.getTimeAxisBounds();
+							double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
+							Main.getSelectedAnnotation().removeAnnotation(Main.getSelectedAnnotation().getAnnotation(time));
+						}
+						return;	// CTRL means only delete, no adding
+					}
+					if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {		// SHIFT down
+						EditEventDialog eed = new EditEventDialog(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
+						if(eed.show() == true) {
+							SignalViewMouseAdapter.eventType = eed.getType();
+							SignalViewMouseAdapter.eventComment = eed.getComment();
+						}
+					}	// no else, so the event is added even when editing
 					Rectangle2D dataRect = target.getScreenDataArea();
 					if(dataRect.contains(event.getPoint())) {
 						// calculate time
