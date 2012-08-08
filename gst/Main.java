@@ -15,9 +15,8 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.unisens.Event;
-
 import gst.data.AnnotationController;
+import gst.data.AnnotationManager;
 import gst.data.DataController;
 import gst.data.UnisensDataset;
 
@@ -37,15 +36,16 @@ import gst.ui.dialog.EnterFileNameDialog;
 /**
  * Class for the public static void main(String[] args) function.
  * @author Enrico Grunitz
- * @version 0.1.5 (07.08.2012)
+ * @version 0.1.6 (08.08.2012)
  */
 public abstract class Main {
 	
 	private static SignalView[] sv;
 	private static final int MAXSIGNALS = 0;
+
 	private static MainWindow main;
 	private static ArrayList<UnisensDataset> datasets;
-	private static AnnotationController selectedAnnotation;
+	private static AnnotationManager annotationManager;
 	
 	/**
 	 * I give you three chances to guess the purpose of this function. Hint: !cigam s'tI
@@ -54,7 +54,7 @@ public abstract class Main {
 	public static void main(String[] args) {
 		datasets = new ArrayList<UnisensDataset>();
 		main = MainWindow.getInstance();
-		selectedAnnotation = null;
+		annotationManager = new AnnotationManager();
 		
 		Debug.println(Debug.main, "Mainwindow : " + main.toString());
 		Debug.println(Debug.main, "MainWindow content pane :" + main.getContentPane().toString());
@@ -116,6 +116,10 @@ public abstract class Main {
 		main.repaint();
 		
 		return;
+	}
+	
+	public static AnnotationManager getAnnotationManager() {
+		return annotationManager;
 	}
 	
 	/**
@@ -182,8 +186,7 @@ public abstract class Main {
 		AnnotationSelectionDialog dialog = new AnnotationSelectionDialog();
 		AnnotationController selectedAC = dialog.show();
 		if(selectedAC != null) {
-			Main.selectedAnnotation = selectedAC; 
-			StatusBar.getInstance().updateText(Main.selectedAnnotation.getFullName());
+			getAnnotationManager().selectController(selectedAC); 
 			Debug.println(Debug.main, "selected Annotation: " + selectedAC.getFullName());
 		} else {
 			Debug.println(Debug.main, "no new annotation selected");
@@ -206,8 +209,7 @@ public abstract class Main {
 					AnnotationController newAnnoCtrl = selectedDs.addNewAnnotation(fileName);
 					if(newAnnoCtrl != null) {
 						// creation successful
-						Main.selectedAnnotation = newAnnoCtrl;
-						StatusBar.getInstance().updateText(Main.selectedAnnotation.getFullName());
+						getAnnotationManager().selectController(newAnnoCtrl);
 						finished = true;
 					}
 				} else {
@@ -215,10 +217,6 @@ public abstract class Main {
 				}
 			}
 		}
-	}
-	
-	public static AnnotationController getSelectedAnnotation() {
-		return Main.selectedAnnotation;
 	}
 	
 	/**

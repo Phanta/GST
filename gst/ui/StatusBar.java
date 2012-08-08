@@ -38,14 +38,20 @@ package gst.ui;
  * maintenance of any nuclear facility.
  */
 
-import gst.Main;
-
-import java.awt.*;
-
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.FontMetrics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.MenuElement;
 
 /**
  * Single instance status bar.
@@ -59,7 +65,7 @@ import javax.swing.*;
  * 
  * edited by Enrico Grunitz
  * 
- * @version 0.1.0 (07.08.2012)
+ * @version 0.1.1 (08.08.2012)
  * @author Mark Davidson
  * @author Enrico Grunitz
  */
@@ -70,11 +76,16 @@ public class StatusBar extends JPanel implements MouseListener {
 	private String annoChannel;
 	private String annoType;
 	private String annoComment;
+	private String infoType;
+	private String infoComment;
 
 	private static StatusBar INSTANCE;
 	private static final String prefixAnnoChannel = "Annotationen   -   Kanal: ";
 	private static final String prefixAnnoType = "   -   Typ: ";
 	private static final String prefixAnnoComment = "   -   Kommentar: ";
+	private static final String prefixInfoType = "          << Typ: ";
+	private static final String prefixInfoComment = "   -   Kommentar: ";
+	private static final String suffixInfoComment = " >>";
 
 	public StatusBar() {
 		this.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -88,10 +99,12 @@ public class StatusBar extends JPanel implements MouseListener {
 
 		this.add(label);
 		
-		this.annoChannel = "keiner";
-		this.annoType = "-";
-		this.annoComment = "";
-		this.setMessage(prefixAnnoChannel + this.annoChannel + prefixAnnoType + this.annoType + prefixAnnoComment + this.annoComment);
+		this.setAnnoChannel(null);
+		this.setAnnoType(null);
+		this.setAnnoComment(null);
+		this.setInfoType(null);
+		this.setInfoComment(null);
+		this.setMessage();
 	}
 
 	/**
@@ -108,14 +121,69 @@ public class StatusBar extends JPanel implements MouseListener {
 	}
 	
 	public void updateText(String annoChannel) {
-		this.annoChannel = annoChannel;
-		this.setMessage(prefixAnnoChannel + this.annoChannel + prefixAnnoType + this.annoType + prefixAnnoComment + this.annoComment);
+		this.setAnnoChannel(annoChannel);
+		this.setMessage();
 	}
 	
 	public void updateText(String annoType, String annoComment) {
-		this.annoType = annoType;
-		this.annoComment = annoComment;
-		this.setMessage(prefixAnnoChannel + annoChannel + prefixAnnoType + annoType + prefixAnnoComment + annoComment);
+		this.setAnnoType(annoType);
+		this.setAnnoComment(annoComment);
+		this.setMessage();
+	}
+	
+	public void updateInfoText(String type, String comment) {
+		this.setInfoType(type);
+		this.setInfoComment(comment);
+		this.setMessage();
+	}
+	
+	private void setAnnoChannel(String str) {
+		if(str == null || str.isEmpty()) {
+			this.annoChannel = "=keine Auswahl=";
+		} else {
+			this.annoChannel = str;
+		}
+	}
+	
+	private void setAnnoType(String str) {
+		if(str == null || str.isEmpty()) {
+			this.annoType = " = ";
+		} else {
+			this.annoType = str;
+		}
+	}
+	
+	private void setAnnoComment(String str) {
+		if(str == null) {
+			this.annoComment = "";
+		} else {
+			this.annoComment = str;
+		}
+	}
+	
+	private void setInfoType(String str) {
+		if(str == null || str.isEmpty()) {
+			this.infoType = " = ";
+		} else {
+			this.infoType = str;
+		}
+	}
+	
+	private void setInfoComment(String str) {
+		if(str == null) {
+			this.infoComment = "";
+		} else {
+			this.infoComment = str;
+		}
+	}
+	
+	private void setMessage() {
+		this.setMessage(prefixAnnoChannel + this.annoChannel +
+						prefixAnnoType + this.annoType +
+						prefixAnnoComment + this.annoComment +
+						prefixInfoType + this.infoType +
+						prefixInfoComment + this.infoComment +
+						suffixInfoComment);
 	}
 
 	/**

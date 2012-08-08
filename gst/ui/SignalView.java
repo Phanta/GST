@@ -21,6 +21,7 @@ import javax.swing.JColorChooser;
 import gst.Main;
 import gst.Settings;
 import gst.data.AnnotationList;
+import gst.data.AnnotationManager;
 import gst.data.DataController;
 import gst.test.Debug;
 import gst.ui.dialog.EditEventDialog;
@@ -458,7 +459,7 @@ public class SignalView extends ChartPanel {
 	/**
 	 * Keyboard event handler for {@code SignalView}.
 	 * @author Enrico Grunitz
-	 * @version 0.1.0 (06.08.2012)
+	 * @version 0.1.1 (08.08.2012)
 	 */
 	protected static class SignalViewKeyAdapter extends KeyAdapter {
 		private static final int ALL_MODIFIERS = InputEvent.ALT_DOWN_MASK |
@@ -496,6 +497,18 @@ public class SignalView extends ChartPanel {
 					target.showLegend(false);
 				}
 				break;
+			case KeyEvent.VK_NUMPAD1:
+				Main.getAnnotationManager().selectPreset(AnnotationManager.Preset.N);
+				break;
+			case KeyEvent.VK_NUMPAD2:
+				Main.getAnnotationManager().selectPreset(AnnotationManager.Preset.V);
+				break;
+			case KeyEvent.VK_NUMPAD3:
+				Main.getAnnotationManager().selectPreset(AnnotationManager.Preset.B);
+				break;
+			case KeyEvent.VK_NUMPAD4:
+				Main.getAnnotationManager().selectPreset(AnnotationManager.Preset.E);
+				break;
 			}
 			return;
 		}
@@ -524,7 +537,7 @@ public class SignalView extends ChartPanel {
 	/**
 	 * Mouse action handler for {@code SignalView}.
 	 * @author Enrico Grunitz
-	 * @version 0.1.2 (08.08.2012)
+	 * @version 0.1.3 (08.08.2012)
 	 */
 	protected static class SignalViewMouseAdapter extends NamedMouseAdapter {
 		private static String eventType;
@@ -549,40 +562,44 @@ public class SignalView extends ChartPanel {
 			int modifiers = event.getModifiersEx();
 			switch(event.getButton()) {
 			case MouseEvent.BUTTON2:
-				if(Main.getSelectedAnnotation() != null) {
-					if((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {		// CTRL down
-						// delete annotation
-						Rectangle2D dataRect = target.getScreenDataArea();
-						if(dataRect.contains(event.getPoint())) {
-							// calculate time
-							Range timeAxis = target.getTimeAxisBounds();
-							double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
-							Main.getSelectedAnnotation().removeAnnotation(Main.getSelectedAnnotation().getAnnotation(time));
-							target.updateTimeAxisMarkers();
-						}
-						return;	// CTRL means only delete, no adding
-					}
-					if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {		// SHIFT down
-						// edit annotation to set
-						EditEventDialog eed = new EditEventDialog(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
-						if(eed.show() == true) {
-							SignalViewMouseAdapter.eventType = eed.getType();
-							SignalViewMouseAdapter.eventComment = eed.getComment();
-							StatusBar.getInstance().updateText(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
-						}
-					}	// no else, so the event is added even when editing
-					// adding annotation
+				if((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {		// CTRL down
+					// delete annotation
 					Rectangle2D dataRect = target.getScreenDataArea();
 					if(dataRect.contains(event.getPoint())) {
 						// calculate time
 						Range timeAxis = target.getTimeAxisBounds();
 						double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
-						Main.getSelectedAnnotation().addAnnotation(time, SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
+						Main.getAnnotationManager().removeAnnotation(time);
+						target.updateTimeAxisMarkers();
+					}
+					return;	// CTRL means only delete, no adding
+				}
+				if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {		// SHIFT down
+					// edit annotation to set
+					EditEventDialog eed = new EditEventDialog(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
+					if(eed.show() == true) {
+						// adding new edited annotation
+						Rectangle2D dataRect = target.getScreenDataArea();
+						if(dataRect.contains(event.getPoint())) {
+							// calculate time
+							Range timeAxis = target.getTimeAxisBounds();
+							double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
+							Main.getAnnotationManager().addAnnotation(time, eed.getType(), eed.getComment());
+							// hack updateing without checking
+							target.updateTimeAxisMarkers();
+						}
+					}
+				} else { // no SHIFT down
+					// adding preset annotation
+					Rectangle2D dataRect = target.getScreenDataArea();
+					if(dataRect.contains(event.getPoint())) {
+						// calculate time
+						Range timeAxis = target.getTimeAxisBounds();
+						double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
+						Main.getAnnotationManager().addAnnotation(time);
 						// hack updateing without checking
 						target.updateTimeAxisMarkers();
 					}
-				} else {
-					Debug.println(Debug.signalViewMouseAdapter, "adding canceled due to missing annotation selection");
 				}
 				break;
 			default:
@@ -636,6 +653,7 @@ public class SignalView extends ChartPanel {
 				Range timeAxis = target.getTimeAxisBounds();
 				double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
 				SignalPanel.getInstance().updateDomainCrosshairs(time);
+				Main.getAnnotationManager().updateStatusAnnotationNear(time);
 			}
 		}
 		
