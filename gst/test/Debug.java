@@ -45,8 +45,9 @@ public class Debug {
 	public static final int /* gst.ui */ dataSelectionDialog = 28;
 	public static final int /* gst.ui.SignalView */ signalViewKeyAdapter = 29;
 	public static final int /* gst.ui */ annotationSelectionDialog = 30;
+	public static final int /* gst.ui */ signalPanelScrollLockManager = 31;
 	
-	public static final int END = 31;
+	public static final int END = 32;
 
 
 	private static final boolean isEnabled[] = {true,	//	main
@@ -84,6 +85,7 @@ public class Debug {
 												true,	// gst.ui.DataSelectionDialog
 												true,	// gst.ui.SignalView.SignalViewKeyAdapter
 												true,	// gst.ui.AnnotationSelectionDialog
+												true,	// gst.ui.SignalPanel.ScrollLockManager
 												false};	// END
 	
 	public static void println(int src, String msg) {

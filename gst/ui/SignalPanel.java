@@ -12,6 +12,8 @@ import gst.ui.layout.SignalPanelLayoutManager;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -23,14 +25,16 @@ import java.util.Iterator;
 import javax.swing.JPanel;
 
 /**
- * The panel containing all signalgraphs and the controls to resize them. Implemented as Singleton.
+ * The panel containing all signalgraphs and the controls to resize them. Implemented as Singleton. Supports ActionListener.
  * @author Enrico Grunitz
- * @version 0.2.3 (07.08.2012)
+ * @version 0.2.4 (08.08.2012)
  */
 public class SignalPanel extends JPanel {
 
 	/** serialization ID */						private static final long serialVersionUID = 1L;
 	/** the singleton instance */				private static final SignalPanel myself = new SignalPanel();
+	
+	/** collection of ActionListeners */		private Collection<ActionListener> actionListenerCollection;
 	
 	/** collection of the signalgraphs */		private Collection<SignalView> graphs = new ArrayList<SignalView>(Settings.getInstance().getMaxSignals());
 	/** collection of resize controls */		private Collection controls;
@@ -42,9 +46,10 @@ public class SignalPanel extends JPanel {
 	 */
 	private SignalPanel() {
 		super(new SignalPanelLayoutManager(), false);
+		this.actionListenerCollection = new ArrayList<ActionListener>();
 		this.addComponentListener(new SignalPanelComponentAdapter());
+		this.addActionListener(new ScrollLockManager());
 		compArr.setPattern(ComponentArrangement.EVENHEIGHTS);
-
 	    return;
 	}
 	
@@ -127,13 +132,60 @@ public class SignalPanel extends JPanel {
 		return graphs.size();
 	}
 	
+	/**
+	 * Prompts all {@link gst.ui.SignalView}s to update their crosshair to the given time.
+	 * @param time point in time
+	 */
 	public void updateDomainCrosshairs(double time) {
 		Iterator<SignalView> it = this.graphs.iterator();
 		while(it.hasNext()) {
 			it.next().updateDomainCrosshair(time);
 		}
 	}
+	
+	/**
+	 * Prompts all {@link gst.ui.SignalView}s to center their view on the given point in time.
+	 * @param time point in time
+	 */
+	public void centerViews(double time) {
+		Iterator<SignalView> it = this.graphs.iterator();
+		while(it.hasNext()) {
+			it.next().centerTimeAxisOn(time);
+		}
+	}
 
+	// methods for ActionListener support
+	/**
+	 * Adds the {@code ActionListener} to this {@code JPanel}.
+	 * @param al the {@code ActionListener} to add
+	 */
+	public void addActionListener(ActionListener al) {
+		if(!this.actionListenerCollection.contains(al)) {
+			this.actionListenerCollection.add(al);
+		}
+	}
+	
+	/**
+	 * Removes the given {@code ActionListener} from this {@SignalPanel}.
+	 * @param al the {@code ActionListener} to remove
+	 */
+	public void removeActionListener(ActionListener al) {
+		this.actionListenerCollection.remove(al);
+	}
+	
+	/**
+	 * Notifies all registered {@code ActionListener} of the given {@code ActionEvent}.
+	 * @param event the {@code ActionEvent}
+	 */
+	public void fireActionEvent(ActionEvent event) {
+		Debug.println(Debug.signalPanel, "firering AE: " + event.toString());
+		Iterator<ActionListener> it = this.actionListenerCollection.iterator();
+		while(it.hasNext()) {
+			it.next().actionPerformed(event);
+		}
+	}
+	
+	
 	/** @see javax.swing.JComponent#paintComponent(java.awt.Graphics) */
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -177,6 +229,85 @@ public class SignalPanel extends JPanel {
 				//SignalPanel.this.revalidate();
 				//SignalPanel.this.repaint();
 			}
+		}
+	}
+	
+	/**
+	 * {@code ActionListener} that reacts on {@code ScrollActionEvent}s and updates all {@link gst.ui.SignalView}s that are scroll locked.
+	 * @author Enrico Grunitz
+	 * @version 0.1.0 (08.08.2012)
+	 */
+	private class ScrollLockManager implements ActionListener {
+		/** @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent) */
+		@Override
+		public void actionPerformed(ActionEvent event) {
+			if(!(event instanceof ScrollToActionEvent)) {
+				Debug.println(Debug.signalPanelScrollLockManager, "event isn't ScrollToActionEvent");
+				return;	// nothing to do here
+			}
+			if(!(event.getSource() instanceof SignalView)) {
+				Debug.println(Debug.signalPanelScrollLockManager, "source of ScrollToActionEvent is not a SignalView");
+				return;	// nothing to do here
+			}
+			SignalView source = (SignalView)event.getSource();
+			if(source.isScrollLocked()) {
+				Iterator<SignalView> it = graphs.iterator();
+				while(it.hasNext()) {
+					SignalView view = it.next();
+					if(view.isScrollLocked()) {
+						view.centerTimeAxisOn(((ScrollToActionEvent)event).getTime());
+					}
+				}
+			} else {	// source SignalView not scrollLocked
+				source.centerTimeAxisOn(((ScrollToActionEvent)event).getTime());
+			}
+		}
+	}
+	
+	/**
+	 * An {@code ActionEvent} that occurs when a {@link SignalView} should scroll to a specific point in time (domain axis wise). The source
+	 * of this event should be the {@code SignalView}.
+	 * @author Enrico Grunitz
+	 * @version 0.1.0 (08.08.2012)
+	 */
+	public class ScrollToActionEvent extends ActionEvent {
+		/** serialization ID */					private static final long serialVersionUID = 208364504719887182L;
+		/** default command string */			private static final String ACTIONCOMMAND = "scrollTo";
+		/** point in time to scroll to */		private double pointInTime;
+		
+		/**
+		 * Constructor implementation.
+		 * @param source object that the action originates from
+		 * @param when point in time the action occured
+		 * @param modifiers modifier keys down during event
+		 * @param targetTime point in time to scroll to
+		 */
+		public ScrollToActionEvent(Object source, long when, int modifiers, double targetTime) {
+			super(source, ActionEvent.ACTION_PERFORMED, ACTIONCOMMAND, when, modifiers);
+			this.pointInTime = targetTime;
+		}
+		
+		/**
+		 * Convenience constructor for events at the current point in time.
+		 * @see gst.ui.ScrollToActionEvent#ScrollToActionEvent(object, long, int, double)
+		 */
+		public ScrollToActionEvent(Object source, int modifiers, double targetTime) {
+			this(source, System.currentTimeMillis(), modifiers, targetTime);
+		}
+		
+		/**
+		 * Convenience constructor for events at the current point in time and without any modifiers.
+		 * @see gst.ui.ScrollToActionEvent#ScrollToActionEvent(object, long, int, double)
+		 */
+		public ScrollToActionEvent(Object source, double targetTime) {
+			this(source, System.currentTimeMillis(), 0, targetTime);
+		}
+		
+		/**
+		 * @return the point in time to scroll to
+		 */
+		public double getTime() {
+			return this.pointInTime;
 		}
 	}
 	

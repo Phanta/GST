@@ -45,7 +45,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.1.2 (07.08.2012)
+ * @version 0.1.3 (08.08.2012)
  */
 public class SignalView extends ChartPanel {
 
@@ -55,7 +55,8 @@ public class SignalView extends ChartPanel {
 	/** starting time of x-axis in seconds*/			private double startTime;
 	/** ending time of x-axis in seconds*/				private double endTime;
 	/** new data required */							private boolean needNewData;
-
+	/** time-axis scroll lock switch */					private boolean isScrollLocked;
+	
 	/* * * Constructors * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
 	/**
@@ -97,7 +98,10 @@ public class SignalView extends ChartPanel {
 		}
 		this.startTime = startTime;
 		this.endTime = endTime;
-		chart.getXYPlot().getDomainAxis().setRange(startTime, endTime);
+		this.getChart().getXYPlot().setDomainCrosshairLockedOnData(false);
+		this.getChart().getXYPlot().setDomainCrosshairPaint(Color.black);
+		this.getChart().getXYPlot().setDomainCrosshairVisible(true);
+		this.getChart().getXYPlot().getDomainAxis().setRange(startTime, endTime);
 		needNewData = false;	// there is no controller yet
 		//this.addPropertyChangeListener(NEW_DATA_PROP, this);
 		ctrlList = new ArrayList<DataController>();
@@ -107,10 +111,7 @@ public class SignalView extends ChartPanel {
 		this.addMouseMotionListener(mAdapt);
 		this.addMouseWheelListener(mAdapt);
 		this.addKeyListener(new SignalViewKeyAdapter());
-		
-		this.getChart().getXYPlot().setDomainCrosshairLockedOnData(false);
-		this.getChart().getXYPlot().setDomainCrosshairPaint(Color.orange);
-		this.getChart().getXYPlot().setDomainCrosshairVisible(true);
+		this.isScrollLocked = true;
 		
 		return;
 	}
@@ -130,6 +131,10 @@ public class SignalView extends ChartPanel {
 		return;
 	}
 	
+	/**
+	 * Sets the domain-axis-crosshair to the given (domain-axis-) location.
+	 * @param pos the point in time
+	 */
 	public void updateDomainCrosshair(double pos) {
 		this.getChart().getXYPlot().setDomainCrosshairValue(pos);
 	}
@@ -144,6 +149,19 @@ public class SignalView extends ChartPanel {
 			ctrlList.add(dataCtrl);
 			this.needNewData = true;
 		}
+	}
+	
+	/** @return {@link #isScrollLocked} */
+	public boolean isScrollLocked() {
+		return this.isScrollLocked;
+	}
+	
+	/**
+	 * Enables or disables the scroll lock of this {@code SignalView}.
+	 * @param on true to enable, false to disable
+	 */
+	public void setScrollLock(boolean on) {
+		this.isScrollLocked = on;
 	}
 	
 	/**
@@ -179,6 +197,15 @@ public class SignalView extends ChartPanel {
 	 */
 	public Range getTimeAxisBounds() {
 		return new Range(this.startTime, this.endTime);
+	}
+	
+	/**
+	 * Centers the diagram on the given (domain-axis-) location. Doesn't change the overall range of the domain-axis.
+	 * @param centerPoint point in time to center on
+	 */
+	public void centerTimeAxisOn(double centerPoint) {
+		double diff = centerPoint - this.getTimeAxisBounds().getCentralValue();
+		this.setTimeAxisBounds(Range.shift(this.getTimeAxisBounds(), diff, true));
 	}
 	
 	/**
@@ -497,7 +524,7 @@ public class SignalView extends ChartPanel {
 	/**
 	 * Mouse action handler for {@code SignalView}.
 	 * @author Enrico Grunitz
-	 * @version 0.1.1 (07.08.2012)
+	 * @version 0.1.2 (08.08.2012)
 	 */
 	protected static class SignalViewMouseAdapter extends NamedMouseAdapter {
 		private static String eventType;
@@ -524,6 +551,7 @@ public class SignalView extends ChartPanel {
 			case MouseEvent.BUTTON2:
 				if(Main.getSelectedAnnotation() != null) {
 					if((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {		// CTRL down
+						// delete annotation
 						Rectangle2D dataRect = target.getScreenDataArea();
 						if(dataRect.contains(event.getPoint())) {
 							// calculate time
@@ -535,6 +563,7 @@ public class SignalView extends ChartPanel {
 						return;	// CTRL means only delete, no adding
 					}
 					if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {		// SHIFT down
+						// edit annotation to set
 						EditEventDialog eed = new EditEventDialog(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
 						if(eed.show() == true) {
 							SignalViewMouseAdapter.eventType = eed.getType();
@@ -542,6 +571,7 @@ public class SignalView extends ChartPanel {
 							StatusBar.getInstance().updateText(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
 						}
 					}	// no else, so the event is added even when editing
+					// adding annotation
 					Rectangle2D dataRect = target.getScreenDataArea();
 					if(dataRect.contains(event.getPoint())) {
 						// calculate time
@@ -627,10 +657,10 @@ public class SignalView extends ChartPanel {
 				target.repaint();
 			} else {
 				// shift wasn't pressed -> scroll view
-				double shiftValue = event.getWheelRotation() * Settings.getInstance().ui.getRelativeAxisScrolling();
-				target.shiftTimeAxisRelative(shiftValue);
-				target.revalidate();
-				target.repaint();
+				double shiftValue = event.getWheelRotation() * Settings.getInstance().ui.getRelativeAxisScrolling() / 100;
+				Range timeAxisRange = target.getTimeAxisBounds();
+				double time = timeAxisRange.getCentralValue() + timeAxisRange.getLength() * shiftValue;
+				SignalPanel.getInstance().fireActionEvent(SignalPanel.getInstance().new ScrollToActionEvent(target, time));
 			}
 		}
 	}
