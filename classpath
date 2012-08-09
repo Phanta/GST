@@ -1,1 +1,1 @@
--classpath "./../bin/gst;./../bin/gst/data;./../bin/gst/test;./../bin/gst/ui;./../bin/gst/ui/layout;./../lib/org.unisens.jar;./../lib/org.unisens.ri.jar;./../lib/jcommon-1.0.17.jar;./../lib/jfreechart-1.0.14.jar"
+-classpath "./../bin/gst;./../bin/gst/data;./../bin/gst/test;./../bin/gst/ui;./../bin/gst/ui/dialog;./../bin/gst/ui/layout;./../lib/org.unisens.jar;./../lib/org.unisens.ri.jar;./../lib/jcommon-1.0.17.jar;./../lib/jfreechart-1.0.14.jar"

@@ -2,12 +2,14 @@
 ../src/gst/Settings.java
 ../src/gst/data/AnnotationController.java
 ../src/gst/data/AnnotationList.java
+../src/gst/data/AnnotationManager.java
 ../src/gst/data/DataController.java
 ../src/gst/data/SignalController.java
 ../src/gst/data/UnisensDataset.java
 ../src/gst/data/ValueController.java
 ../src/gst/test/DataTest.java
 ../src/gst/test/Debug.java
+../src/gst/ui/AnnotationSelectionDialog.java
 ../src/gst/ui/DataSelectionDialog.java
 ../src/gst/ui/MainWindow.java
 ../src/gst/ui/Menus.java
@@ -19,6 +21,9 @@
 ../src/gst/ui/SignalViewFactory.java
 ../src/gst/ui/StatusBar.java
 ../src/gst/ui/Toolbar.java
+../src/gst/ui/dialog/DatasetSelectionDialog.java
+../src/gst/ui/dialog/EditEventDialog.java
+../src/gst/ui/dialog/EnterFileNameDialog.java
 ../src/gst/ui/layout/ComponentArrangement.java
 ../src/gst/ui/layout/MultiSplit.java
 ../src/gst/ui/layout/SignalPanelLayoutManager.java
