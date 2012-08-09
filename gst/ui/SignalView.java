@@ -40,13 +40,14 @@ import org.jfree.data.Range;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.1.4 (09.08.2012)
+ * @version 0.1.5 (09.08.2012)
  */
 public class SignalView extends ChartPanel {
 
@@ -422,6 +423,10 @@ public class SignalView extends ChartPanel {
 		AnnotationList annoList = ctrl.getAnnotations(startTime, endTime);
 		for(int i = 0; i < annoList.size(); i++) {
 			ValueMarker marker = new ValueMarker(annoList.getTime(i));
+			marker.setPaint(Color.blue);
+			marker.setLabel(annoList.getType(i));
+			marker.setLabelPaint(Color.blue);
+			marker.setLabelAnchor(RectangleAnchor.BOTTOM_RIGHT);
 			if(i == annoList.size() - 1) {
 				this.getChart().getXYPlot().addDomainMarker(0, marker, org.jfree.ui.Layer.FOREGROUND, true);
 			} else {
@@ -600,7 +605,7 @@ public class SignalView extends ChartPanel {
 			SignalView target = (SignalView)event.getComponent();
 			int modifiers = event.getModifiersEx();
 			switch(event.getButton()) {
-			case MouseEvent.BUTTON2:
+			case MouseEvent.BUTTON1:
 				if((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {		// CTRL down
 					// delete annotation
 					Rectangle2D dataRect = target.getScreenDataArea();

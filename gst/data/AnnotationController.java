@@ -53,7 +53,7 @@ public class AnnotationController extends DataController {
 	}
 	
 	/**
-	 * addAnnotatioin implementation
+	 * addAnnotation implementation
 	 * @param time
 	 * @param type
 	 * @param comment

@@ -29,8 +29,7 @@ public class AnnotationManager {
 	
 	public AnnotationManager() {
 		this.selectedAnnotationChannel = null;
-		this.selectedPreset = Preset.N;
-		StatusBar.getInstance().updateText("N", "");
+		this.selectPreset(Preset.N);
 	}
 	
 	public void selectController(AnnotationController actrl) {
