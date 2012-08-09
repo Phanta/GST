@@ -46,7 +46,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.1.3 (08.08.2012)
+ * @version 0.1.4 (09.08.2012)
  */
 public class SignalView extends ChartPanel {
 
@@ -57,6 +57,7 @@ public class SignalView extends ChartPanel {
 	/** ending time of x-axis in seconds*/				private double endTime;
 	/** new data required */							private boolean needNewData;
 	/** time-axis scroll lock switch */					private boolean isScrollLocked;
+	/** time-axis zoom lock switch */					private boolean isZoomLocked;
 	
 	/* * * Constructors * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
@@ -113,6 +114,7 @@ public class SignalView extends ChartPanel {
 		this.addMouseWheelListener(mAdapt);
 		this.addKeyListener(new SignalViewKeyAdapter());
 		this.isScrollLocked = true;
+		this.isZoomLocked = true;
 		
 		return;
 	}
@@ -163,6 +165,19 @@ public class SignalView extends ChartPanel {
 	 */
 	public void setScrollLock(boolean on) {
 		this.isScrollLocked = on;
+	}
+	
+	/** @return {@link #isZoomLocked} */
+	public boolean isZoomLocked() {
+		return this.isZoomLocked;
+	}
+	
+	/**
+	 * Enables or disables the zoom lock of this {@code SignalView}.
+	 * @param on true to enable, false to disable
+	 */
+	public void setZoomLock(boolean on) {
+		this.isZoomLocked = on;
 	}
 	
 	/**
@@ -238,6 +253,21 @@ public class SignalView extends ChartPanel {
 		double range = axisBounds.getUpperBound() - axisBounds.getLowerBound();
 		double newStart = axisBounds.getLowerBound() + value / 100 * range / 2;
 		double newEnd = axisBounds.getUpperBound() - value / 100 * range / 2;
+		this.setTimeAxisBounds(newStart, newEnd);
+	}
+	
+	/**
+	 * Sets the time-axis range to the given value but keeps the central value unchanged.
+	 * @param rangeValue new range of the time-axis
+	 */
+	public void zoomTimeAxis(double rangeValue) {
+		if(rangeValue <= 0) {
+			Debug.println(Debug.signalView, "SignalView: zooming to " + rangeValue + " not possible");
+			return;
+		}
+		double center = this.getTimeAxisBounds().getCentralValue();
+		double newStart = center - rangeValue / 2;
+		double newEnd = center + rangeValue / 2;
 		this.setTimeAxisBounds(newStart, newEnd);
 	}
 	
@@ -536,8 +566,17 @@ public class SignalView extends ChartPanel {
 	
 	/**
 	 * Mouse action handler for {@code SignalView}.
+	 * Implemented actions:
+	 * mousewheel				- scroll time axis
+	 * SHIFT + mousewheel		- zoom time axis
+	 * mousemove				- update crosshair
+	 * mouseenter/-exit			- update highlight
+	 * MMB						- set selected annotation
+	 * SHIFT + MMB				- set edited annotation
+	 * CTRL + MMB				- remove nearest annotation
+	 * 
 	 * @author Enrico Grunitz
-	 * @version 0.1.3 (08.08.2012)
+	 * @version 0.1.4 (09.08.2012)
 	 */
 	protected static class SignalViewMouseAdapter extends NamedMouseAdapter {
 		private static String eventType;
@@ -669,16 +708,16 @@ public class SignalView extends ChartPanel {
 			int modifiers = event.getModifiersEx();
 			if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {
 				// shift was pressed -> zoom view
-				double shiftValue = event.getWheelRotation() * Settings.getInstance().ui.getRelativeAxisZooming();
-				target.zoomTimeAxisRelative(shiftValue);
-				target.revalidate();
-				target.repaint();
+				double relShiftValue = event.getWheelRotation() * Settings.getInstance().ui.getRelativeAxisZooming() / 100;
+				double newRange = target.getTimeAxisBounds().getLength() * (1 - relShiftValue);
+				//target.zoomTimeAxisRelative(shiftValue);
+				SignalPanel.getInstance().fireActionEvent(new SignalPanel.ZoomActionEvent(target, newRange));
 			} else {
 				// shift wasn't pressed -> scroll view
 				double shiftValue = event.getWheelRotation() * Settings.getInstance().ui.getRelativeAxisScrolling() / 100;
 				Range timeAxisRange = target.getTimeAxisBounds();
 				double time = timeAxisRange.getCentralValue() + timeAxisRange.getLength() * shiftValue;
-				SignalPanel.getInstance().fireActionEvent(SignalPanel.getInstance().new ScrollToActionEvent(target, time));
+				SignalPanel.getInstance().fireActionEvent(new SignalPanel.ScrollToActionEvent(target, time));
 			}
 		}
 	}

@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 /**
  * The panel containing all signalgraphs and the controls to resize them. Implemented as Singleton. Supports ActionListener.
  * @author Enrico Grunitz
- * @version 0.2.4 (08.08.2012)
+ * @version 0.2.5 (09.08.2012)
  */
 public class SignalPanel extends JPanel {
 
@@ -49,6 +49,7 @@ public class SignalPanel extends JPanel {
 		this.actionListenerCollection = new ArrayList<ActionListener>();
 		this.addComponentListener(new SignalPanelComponentAdapter());
 		this.addActionListener(new ScrollLockManager());
+		this.addActionListener(new ZoomLockManager());
 		compArr.setPattern(ComponentArrangement.EVENHEIGHTS);
 	    return;
 	}
@@ -242,7 +243,6 @@ public class SignalPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent event) {
 			if(!(event instanceof ScrollToActionEvent)) {
-				Debug.println(Debug.signalPanelScrollLockManager, "event isn't ScrollToActionEvent");
 				return;	// nothing to do here
 			}
 			if(!(event.getSource() instanceof SignalView)) {
@@ -265,15 +265,46 @@ public class SignalPanel extends JPanel {
 	}
 	
 	/**
+	 * {@code ActionListener} that reacts on {@code ZoomActionEvent}s and updates all {@link gst.ui.SignalView}s that are zoom locked.
+	 * @author Enrico Grunitz
+	 * @version 0.1.0 (09.08.2012)
+	 */
+	private class ZoomLockManager implements ActionListener {
+		/** @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent) */
+		@Override
+		public void actionPerformed(ActionEvent event) {
+			if(!(event instanceof ZoomActionEvent)) {
+				return;	// nothing to do here
+			}
+			if(!(event.getSource() instanceof SignalView)) {
+				Debug.println(Debug.signalPanelZoomLockManager, "source of ZoomActionEvent is not a SignalView");
+				return;	// nothing to do here
+			}
+			SignalView source = (SignalView)event.getSource();
+			if(source.isZoomLocked()) {		// source SignalView is zoom-locked -> update all zoom-locked views
+				Iterator<SignalView> it = graphs.iterator();
+				while(it.hasNext()) {
+					SignalView view = it.next();
+					if(view.isZoomLocked()) {
+						view.zoomTimeAxis(((ZoomActionEvent)event).getRange());
+					}
+				}
+			} else {	// source SignalView not zoomLocked -> update only source
+				source.zoomTimeAxis(((ZoomActionEvent)event).getRange());
+			}
+		}
+	}
+	
+	/**
 	 * An {@code ActionEvent} that occurs when a {@link SignalView} should scroll to a specific point in time (domain axis wise). The source
 	 * of this event should be the {@code SignalView}.
 	 * @author Enrico Grunitz
 	 * @version 0.1.0 (08.08.2012)
 	 */
-	public class ScrollToActionEvent extends ActionEvent {
+	public static class ScrollToActionEvent extends ActionEvent {
 		/** serialization ID */					private static final long serialVersionUID = 208364504719887182L;
 		/** default command string */			private static final String ACTIONCOMMAND = "scrollTo";
-		/** point in time to scroll to */		private double pointInTime;
+		/** point in time to scroll to */		private double time;
 		
 		/**
 		 * Constructor implementation.
@@ -284,7 +315,7 @@ public class SignalPanel extends JPanel {
 		 */
 		public ScrollToActionEvent(Object source, long when, int modifiers, double targetTime) {
 			super(source, ActionEvent.ACTION_PERFORMED, ACTIONCOMMAND, when, modifiers);
-			this.pointInTime = targetTime;
+			this.time = targetTime;
 		}
 		
 		/**
@@ -304,12 +335,60 @@ public class SignalPanel extends JPanel {
 		}
 		
 		/**
-		 * @return the point in time to scroll to
+		 * @return the central time value to scroll to
 		 */
 		public double getTime() {
-			return this.pointInTime;
+			return this.time;
 		}
 	}
+
+	/**
+	 * An {@code ActionEvent} that occurs when a {@link SignalView} should zoom to a specific time range. The source of this event should be
+	 * the {@code SignalView}.
+	 * @author Enrico Grunitz
+	 * @version 0.1.0 (09.08.2012)
+	 */
+	public static class ZoomActionEvent extends ActionEvent {
+		/** serialization ID */					private static final long serialVersionUID = 2966316271281983633L;
+		/** default command string */			private static final String ACTIONCOMMAND = "scrollTo";
+		/** point in time to scroll to */		private double rangeValue;
+		
+		/**
+		 * Constructor implementation.
+		 * @param source object that the action originates from
+		 * @param when point in time the action occured
+		 * @param modifiers modifier keys down during event
+		 * @param targetRange time in milliseconds the time axis should have as range
+		 */
+		public ZoomActionEvent(Object source, long when, int modifiers, double targetRange) {
+			super(source, ActionEvent.ACTION_PERFORMED, ACTIONCOMMAND, when, modifiers);
+			this.rangeValue = targetRange;
+		}
+		
+		/**
+		 * Convenience constructor for events at the current point in time.
+		 * @see gst.ui.ScrollToActionEvent#ScrollToActionEvent(object, long, int, double)
+		 */
+		public ZoomActionEvent(Object source, int modifiers, double targetRange) {
+			this(source, System.currentTimeMillis(), modifiers, targetRange);
+		}
+		
+		/**
+		 * Convenience constructor for events at the current point in time and without any modifiers.
+		 * @see gst.ui.ScrollToActionEvent#ScrollToActionEvent(object, long, int, double)
+		 */
+		public ZoomActionEvent(Object source, double targetRange) {
+			this(source, System.currentTimeMillis(), 0, targetRange);
+		}
+		
+		/**
+		 * @return the range value to zoom into
+		 */
+		public double getRange() {
+			return this.rangeValue;
+		}
+	}
+
 	
 	// TODO implementation of SignalPanelMouseAdapter extending NamedMouseAdapter
 	private class SignalPanelMouseAdapter extends MouseAdapter {

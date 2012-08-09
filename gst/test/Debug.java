@@ -47,8 +47,9 @@ public class Debug {
 	public static final int /* gst.ui */ annotationSelectionDialog = 30;
 	public static final int /* gst.ui */ signalPanelScrollLockManager = 31;
 	public static final int /* gst.data */ annotationManager = 32;
+	public static final int /* gst.ui */ signalPanelZoomLockManager = 33;
 	
-	public static final int END = 33;
+	public static final int END = 34;
 
 
 	private static final boolean isEnabled[] = {true,	//	main
@@ -88,6 +89,7 @@ public class Debug {
 												true,	// gst.ui.AnnotationSelectionDialog
 												true,	// gst.ui.SignalPanel.ScrollLockManager
 												true,	// gst.data.AnnotationManager
+												true,	// gst.ui.SignalPanel.ZoomLockManager
 												false};	// END
 	
 	public static void println(int src, String msg) {
