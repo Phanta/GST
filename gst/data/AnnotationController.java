@@ -7,21 +7,18 @@ package gst.data;
 import gst.test.Debug;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.jfree.data.xy.XYSeries;
-import org.unisens.Entry;
 import org.unisens.Event;
 import org.unisens.EventEntry;
 
 /**
  * Buffered {@link gst.data.DataController} implementation for {@code EventEntry}-type data in an {@link gst.data.UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.2.1 (06.08.2012)
+ * @version 0.2.2 (10.08.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -29,6 +26,7 @@ public class AnnotationController extends DataController {
 	/** sample number of the last event */						private long endSampleNumber;
 	/** {@code ArrayList} of all {@code Event}s */				private ArrayList<Event> buffer;
 	/** exists the file? */										private boolean fileExists;
+	/** index of last accessed element */						private int lastAccessedIndex;
 
 	/**
 	 * Creates the {@code AnnotationController} object for the given {@code EventEntry}.
@@ -48,15 +46,17 @@ public class AnnotationController extends DataController {
 		if(this.fileExists) {
 			this.fillBuffer();
 		}
+		this.quickSort(0, this.buffer.size() - 1);
 		this.initBorderSampleNumbers();
 		this.isBuffered = true;
+		this.lastAccessedIndex = 0;
 	}
 	
 	/**
-	 * addAnnotation implementation
-	 * @param time
-	 * @param type
-	 * @param comment
+	 * Adds a new annotation to this Controller.
+	 * @param time time in miliseconds of the annotation
+	 * @param type the type
+	 * @param comment the comment
 	 */
 	public void addAnnotation(double time, String type, String comment) {
 		if(type == null) {
@@ -66,24 +66,45 @@ public class AnnotationController extends DataController {
 			comment = "";
 		}
 		long sampleStamp = (long)Math.ceil((time - this.basetime) * ((EventEntry)this.entry).getSampleRate());
+		int insertIndex = this.findIndexSmaller(sampleStamp) + 1;
 		this.updateBorderSampleNumbers(sampleStamp);
-		this.buffer.add(new Event(sampleStamp, type, comment));
+		this.buffer.add(insertIndex, new Event(sampleStamp, type, comment));
 	}
 	
+	/**
+	 * Returns a list of annotations that are located at the given point in time.
+	 * @param time point in time
+	 * @return list of annotations
+	 */
 	public AnnotationList getAnnotation(double time) {
 		long sampleStamp = (long)Math.round((time - this.basetime) * ((EventEntry)this.entry).getSampleRate());
 		ArrayList<Event> events = new ArrayList<Event>(1);
-		Iterator<Event> it = buffer.iterator();
-		while(it.hasNext()) {
-			Event event = it.next();
-			if(event.getSampleStamp() == sampleStamp) {
-				events.add(event);
+		int index = this.findIndexSmaller(sampleStamp);
+		while(index < this.buffer.size() && this.buffer.get(index).getSampleStamp() <= sampleStamp) {
+			if(this.buffer.get(index).getSampleStamp() == sampleStamp) {
+				events.add(this.buffer.get(index));
 			}
+			index++;
 		}
 		Debug.println(Debug.annotationController, "found " + events.size() + " events");
 		return new AnnotationList(events, this.basetime, ((EventEntry)this.entry).getSampleRate());
 	}
 	
+	/**
+	 * Returns a List of annotations that are between {@code time - range} and {@code time + range}.
+	 * @param time central point in time
+	 * @param range time range value
+	 * @return list of found annotations
+	 */
+	public AnnotationList getAnnotatioin(double time, double range) {
+		// TODO implement
+		return null;
+	}
+	
+	/**
+	 * Removes all events in the given list from this controller.
+	 * @param annoList list of events to remove
+	 */
 	public void removeAnnotation(AnnotationList annoList) {
 		for(int i = 0; i < annoList.size(); i++) {
 			if(this.buffer.remove(annoList.getEvent(i))) {
@@ -91,8 +112,11 @@ public class AnnotationController extends DataController {
 			} else {
 				Debug.println(Debug.annotationController, "item NOT removed");
 			}
-			
 		}
+		if(this.lastAccessedIndex >= this.buffer.size()) {
+			this.lastAccessedIndex = this.buffer.size() - 1;
+		}
+		this.initBorderSampleNumbers();
 	}
 	
 	/**
@@ -106,6 +130,10 @@ public class AnnotationController extends DataController {
 		}
 	}
 	
+	/**
+	 * Sets {@link #startSampleNumber} and {@link #endSampleNumber} to the given value if it is smaller or bigger than the old values.
+	 * @param sampleStamp
+	 */
 	private void updateBorderSampleNumbers(long sampleStamp) {
 		if(this.startSampleNumber > sampleStamp) {
 			this.startSampleNumber = sampleStamp;
@@ -128,24 +156,78 @@ public class AnnotationController extends DataController {
 			this.endSampleNumber = this.startSampleNumber;
 			break;
 		default:
-			Iterator<Event> it = this.buffer.iterator();
-			this.startSampleNumber = it.next().getSampleStamp();
-			long temp = it.next().getSampleStamp();
-			if(temp >= this.startSampleNumber) {
-				this.endSampleNumber = temp;
-			} else {
-				this.endSampleNumber = this.startSampleNumber;
-				this.startSampleNumber = temp;
-			}
-			while(it.hasNext()) {
-				temp = it.next().getSampleStamp();
-				if(temp < this.startSampleNumber) {
-					this.startSampleNumber = temp;
-				} else if(temp > this.endSampleNumber) {
-					this.endSampleNumber = temp;
+			this.startSampleNumber = this.buffer.get(0).getSampleStamp();
+			this.endSampleNumber = this.buffer.get(this.buffer.size() - 1).getSampleStamp();
+		}
+	}
+	
+	/**
+	 * Sorts the elements of the list between index {@code low} and {@code high}.
+	 * @param low index to start with
+	 * @param high index of the last item to sort
+	 */
+	private void quickSort(int low, int high) {
+		if(low < high) {
+			int pivot = high;
+			int i = low;
+			int j = pivot - 1;
+			while(i <= j) {
+				if(this.buffer.get(i).getSampleStamp() > this.buffer.get(pivot).getSampleStamp()) {
+					Event temp = this.buffer.get(i);
+					this.buffer.set(i, this.buffer.get(j));
+					this.buffer.set(j, temp);
+					j--;
+				} else {
+					i++;
 				}
 			}
+			Event temp = this.buffer.get(i);
+			this.buffer.set(i, this.buffer.get(pivot));
+			this.buffer.set(pivot, temp);
+			this.quickSort(low, i - 1);
+			this.quickSort(i + 1, high);
 		}
+	}
+	
+	/**
+	 * Returns the index of the biggest element of the buffer that is smaller or equal than the given sample stamp.
+	 * @param smapleStamp the sampleStamp to look for
+	 * @return index of the searched element
+	 * 		   -1 if there is no entry greater than the given sample stamp and
+	 */
+	private int findIndexSmaller(long sampleStamp) {
+		if(this.buffer.size() == 0) {
+			this.lastAccessedIndex = 0;
+			return -1;
+		} else if(this.buffer.get(this.lastAccessedIndex).getSampleStamp() == sampleStamp) {
+			return this.lastAccessedIndex;
+		} else if(this.startSampleNumber >= sampleStamp) {
+			this.lastAccessedIndex = 0;
+			return -1;
+		} else if(this.endSampleNumber <= sampleStamp) {
+			this.lastAccessedIndex = this.buffer.size() - 1;
+			return this.buffer.size() - 1;
+		}
+		if(this.buffer.get(this.lastAccessedIndex).getSampleStamp() < sampleStamp) {
+			// forward search
+			int i;
+			for(i = this.lastAccessedIndex + 1; i < this.buffer.size(); i++) {
+				if(this.buffer.get(i).getSampleStamp() > sampleStamp) {
+					break;
+				}
+			}
+			this.lastAccessedIndex = i - 1;
+		} else {
+			// reverse search
+			int i;
+			for(i = this.lastAccessedIndex - 1; i > 0; i--) {
+				if(this.buffer.get(i).getSampleStamp() <= sampleStamp) {
+					break;
+				}
+			}
+			this.lastAccessedIndex = i;
+		}
+		return this.lastAccessedIndex;
 	}
 	
 	/**

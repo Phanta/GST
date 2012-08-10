@@ -52,7 +52,6 @@ import org.jfree.ui.RectangleInsets;
 public class SignalView extends ChartPanel {
 
 	/** default serialization ID */						private static final long serialVersionUID = 1L;
-	//** the default domain axis */						private static NumberAxis domainAxis = initDomainAxis();
 	/** list of {@link gst.data.DataController}s */		private ArrayList<DataController> ctrlList; 
 	/** starting time of x-axis in seconds*/			private double startTime;
 	/** ending time of x-axis in seconds*/				private double endTime;
