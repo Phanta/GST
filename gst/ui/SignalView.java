@@ -580,7 +580,7 @@ public class SignalView extends ChartPanel {
 	 * CTRL + MMB				- remove nearest annotation
 	 * 
 	 * @author Enrico Grunitz
-	 * @version 0.1.4 (09.08.2012)
+	 * @version 0.1.5 (10.08.2012)
 	 */
 	protected static class SignalViewMouseAdapter extends NamedMouseAdapter {
 		private static String eventType;
@@ -612,7 +612,7 @@ public class SignalView extends ChartPanel {
 						// calculate time
 						Range timeAxis = target.getTimeAxisBounds();
 						double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
-						Main.getAnnotationManager().removeAnnotation(time);
+						Main.getAnnotationManager().removeAnnotation(time, timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap());
 						target.updateTimeAxisMarkers();
 					}
 					return;	// CTRL means only delete, no adding
@@ -696,7 +696,7 @@ public class SignalView extends ChartPanel {
 				Range timeAxis = target.getTimeAxisBounds();
 				double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
 				SignalPanel.getInstance().updateDomainCrosshairs(time);
-				Main.getAnnotationManager().updateStatusAnnotationNear(time);
+				Main.getAnnotationManager().updateStatusAnnotationNear(time, timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap());
 			}
 		}
 		

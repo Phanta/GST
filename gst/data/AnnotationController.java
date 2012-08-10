@@ -18,7 +18,7 @@ import org.unisens.EventEntry;
 /**
  * Buffered {@link gst.data.DataController} implementation for {@code EventEntry}-type data in an {@link gst.data.UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.2.2 (10.08.2012)
+ * @version 0.2.3 (10.08.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -77,17 +77,7 @@ public class AnnotationController extends DataController {
 	 * @return list of annotations
 	 */
 	public AnnotationList getAnnotation(double time) {
-		long sampleStamp = (long)Math.round((time - this.basetime) * ((EventEntry)this.entry).getSampleRate());
-		ArrayList<Event> events = new ArrayList<Event>(1);
-		int index = this.findIndexSmaller(sampleStamp);
-		while(index < this.buffer.size() && this.buffer.get(index).getSampleStamp() <= sampleStamp) {
-			if(this.buffer.get(index).getSampleStamp() == sampleStamp) {
-				events.add(this.buffer.get(index));
-			}
-			index++;
-		}
-		Debug.println(Debug.annotationController, "found " + events.size() + " events");
-		return new AnnotationList(events, this.basetime, ((EventEntry)this.entry).getSampleRate());
+		return this.getAnnotation(time, 0);
 	}
 	
 	/**
@@ -96,9 +86,26 @@ public class AnnotationController extends DataController {
 	 * @param range time range value
 	 * @return list of found annotations
 	 */
-	public AnnotationList getAnnotatioin(double time, double range) {
+	public AnnotationList getAnnotation(double time, double range) {
 		// TODO implement
-		return null;
+		ArrayList<Event> events = new ArrayList<Event>();
+		if(this.buffer.size() == 0) {
+			return new AnnotationList(events, this.basetime, ((EventEntry)this.entry).getSampleRate());
+		}
+		if(range < 0) {
+			range = -range;
+		}
+		long startSampleStamp = (long)Math.round((time - range - this.basetime) * ((EventEntry)this.entry).getSampleRate());
+		long endSampleStamp = (long)Math.round((time + range - this.basetime) * ((EventEntry)this.entry).getSampleRate());
+		int startIndex = Math.max(0, this.findIndexSmaller(startSampleStamp));
+		int endIndex = this.findIndexSmaller(endSampleStamp);
+		if(this.buffer.get(startIndex).getSampleStamp() >= startSampleStamp && endIndex != -1) {
+			events.add(this.buffer.get(startIndex));
+		}
+		if(endIndex > startIndex) {
+			events.addAll(this.buffer.subList(startIndex + 1, endIndex + 1));
+		}
+		return new AnnotationList(events, this.basetime, ((EventEntry)this.entry).getSampleRate());
 	}
 	
 	/**

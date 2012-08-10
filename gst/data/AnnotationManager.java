@@ -10,11 +10,14 @@ import gst.test.Debug;
 import gst.ui.StatusBar;
 
 /**
- * 
+ * Class that holds information of the selected {@code AnnotationController} and predefined annotations.
  * @author Enrico Grunitz
- * @version 0.1.0 (08.08.2012)
+ * @version 0.1.1 (10.08.2012)
  */
 public class AnnotationManager {
+	/**
+	 * Enumeration for the predefined annotations. 
+	 */
 	public enum Preset {
 		N,
 		V,
@@ -22,16 +25,22 @@ public class AnnotationManager {
 		E;
 	}
 	
-	private AnnotationController selectedAnnotationChannel;
-	private Preset selectedPreset;
-	private String type;
-	private String comment;
+	/** the currently selected data channel to read from or write to */		private AnnotationController selectedAnnotationChannel;
+	/** stored information of the last written annotation type */			private String type;
+	/** stored information of the last written annotation comment */		private String comment;
 	
+	/**
+	 * Constructor for objects with no selected channel and the first preset selected.
+	 */
 	public AnnotationManager() {
 		this.selectedAnnotationChannel = null;
 		this.selectPreset(Preset.N);
 	}
 	
+	/**
+	 * Sets the selected channel.
+	 * @param actrl the controller to use or null to clear selection
+	 */
 	public void selectController(AnnotationController actrl) {
 		this.selectedAnnotationChannel = actrl;
 		if(actrl != null) {
@@ -41,12 +50,17 @@ public class AnnotationManager {
 		}
 	}
 	
+	/** @return {@link #selectedAnnotationChannel} */
 	public AnnotationController selectedController() {
 		return this.selectedAnnotationChannel;
 	}
 	
+	/**
+	 * Selects the preset to use.
+	 * @param preset preset to use
+	 * @return false if the preset is not defined, else true
+	 */
 	public boolean selectPreset(Preset preset) {
-		this.selectedPreset = preset;
 		switch(preset) {
 		case N:
 			this.type = "N";
@@ -72,8 +86,17 @@ public class AnnotationManager {
 		return true;
 	}
 	
+	/**
+	 * Writes an annotation to the slected channel.
+	 * @param time point in time where the annotation belongs to
+	 * @param type the type
+	 * @param comment the comment
+	 * @return true if successful, else false (no channel selected)
+	 */
 	public boolean addAnnotation(double time, String type, String comment) {
 		if(this.selectedAnnotationChannel != null) {
+			this.type = type;
+			this.comment = comment;
 			this.selectedAnnotationChannel.addAnnotation(time, type, comment);
 			return true;
 		}
@@ -81,26 +104,60 @@ public class AnnotationManager {
 		return false;
 	}
 	
+	/**
+	 * Writes an annotation the the selected channel. Type and comment are the same last used to write a annotation or of the previously
+	 * selected preset
+	 * @param time point in time where the annotation belongs to
+	 * @return true if successful, else false (no channel selected)
+	 */
 	public boolean addAnnotation(double time) {
 		return this.addAnnotation(time, this.type, this.comment);
 	}
 	
+	/**
+	 * Removes an annotation from the selected channel at the given point in time. Convenience method for
+	 * {@link #removeAnnotation(double, double)} with {@code range == 0}.
+	 * @param time the point in time
+	 * @return the number of annotations removed
+	 */
 	public int removeAnnotation(double time) {
-		AnnotationList al = this.selectedAnnotationChannel.getAnnotation(time);
+		return this.removeAnnotation(time, 0);
+	}
+	
+	/**
+	 * Removes all annotations from the selected channel between {@code time - range} and {@code time + range}.
+	 * @param time the central point in time
+	 * @param range the range
+	 * @return the number of annotations removed
+	 */
+	public int removeAnnotation(double time, double range) {
+		AnnotationList al = this.selectedAnnotationChannel.getAnnotation(time, range);
 		this.selectedAnnotationChannel.removeAnnotation(al);
 		return al.size();
 	}
 	
-	public void updateStatusAnnotationNear(double time) {
+	/**
+	 * Updates the message of the {@link gst.ui.StatusBar} to represent the annotations in the given time range.
+	 * @param time central point of time
+	 * @param range the range
+	 */
+	public void updateStatusAnnotationNear(double time, double range) {
 		if(this.selectedAnnotationChannel == null) {
 			return;
 		}
-		AnnotationList list = this.selectedAnnotationChannel.getAnnotation(time);
+		AnnotationList list = this.selectedAnnotationChannel.getAnnotation(time, range);
 		if(list.size() == 0) {
 			StatusBar.getInstance().updateInfoText(null, null);
-		} else {
+		} else  if(list.size() == 1) {
 			Event event = list.getEvent(0);
 			StatusBar.getInstance().updateInfoText(event.getType(), event.getComment());
+		} else {
+			// multiple annotations in range
+			String t = list.getType(0);
+			for(int i = 1; i < list.size(); i++) {
+				t += "," + list.getType(i);
+			}
+			StatusBar.getInstance().updateInfoText(t, "mehrere Annotationen");
 		}
 	}
 

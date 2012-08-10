@@ -82,6 +82,7 @@ public class Settings {
 		
 		/** percentage of axis movement on scrollwheel */	private double relativeAxisScrolling;
 		/** percentage of axis zooming on scrollwheel */	private double relativeAxisZooming;
+		/** portion of view to search for annotations */	private double relativeSnapPortion;
 		
 		/**
 		 * Standard Constructor. Initializes UI with default Values.
@@ -111,6 +112,7 @@ public class Settings {
 			
 			relativeAxisScrolling = 15.0;
 			relativeAxisZooming = 15.0;
+			this.relativeSnapPortion = 0.01;
 			return;
 		}
 		
@@ -157,15 +159,22 @@ public class Settings {
 		public int getSignalOverviewHeight() {
 			return signalOverviewHeight;
 		}
-		
+
+		/** @return {@link #signalViewHighlightColor} */
+		public Color getHighlightColor() {
+			return signalViewHighlightColor;
+		}
 		/** @return {@link #relativeAxisScrolling} */
 		public double getRelativeAxisScrolling() {
 			return relativeAxisScrolling;
 		}
-		
 		/** @return {@link #relativeAxisZooming} */
 		public double getRelativeAxisZooming() {
 			return relativeAxisZooming;
+		}
+		/** @return {@link #relativeSnapPortion} */
+		public double getSignalViewRelativeSnap() {
+			return this.relativeSnapPortion;
 		}
 		
 		/** @return {@link #toolbarShowLabels} */
@@ -185,11 +194,6 @@ public class Settings {
 		/** @return {@link #toolbarCloseViewsModifier} */
 		public int getCloseViewsModifier() {
 			return this.toolbarCloseViewsModifier;
-		}
-		
-		/** @return {@link #signalViewHighlightColor} */
-		public Color getHighlightColor() {
-			return signalViewHighlightColor;
 		}
 	}
 }
