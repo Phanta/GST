@@ -78,7 +78,11 @@ public class SignalController extends DataController {
 		// read data from file
 		double[][] dataArray = null;
 		try {
-			dataArray = ((SignalEntry)this.entry).readScaled(iStart, (int)(iEnd - iStart));
+			if(iStart < 0) {
+				dataArray = ((SignalEntry)this.entry).readScaled(iStart, (int)iEnd);
+			} else {
+				dataArray = ((SignalEntry)this.entry).readScaled(iStart, (int)(iEnd - iStart));
+			}
 		} catch(IOException ioe) {
 			System.out.println("couldn't read signal data from file");
 			System.exit(1);
@@ -91,6 +95,9 @@ public class SignalController extends DataController {
 		double timeStep = (endTime - startTime) / maxPoints;
 		double time;
 		double timeBarrier = this.basetime;
+		if(iStart < 0) {	// there is no data for negative times
+			iStart = 0;
+		}
 		// each time the current time is bigger than the timeBarrier, the current value is added to the collection and
 		//   the timeBarrier is raised
 		for( int i = 0; i < dataArray.length; i++) {

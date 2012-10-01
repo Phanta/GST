@@ -6,7 +6,6 @@ package gst.data;
 
 import gst.test.Debug;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,7 +14,6 @@ import java.util.List;
 import org.unisens.DuplicateIdException;
 import org.unisens.Entry;
 import org.unisens.CustomEntry;
-import org.unisens.Event;
 import org.unisens.EventEntry;
 import org.unisens.MeasurementEntry;
 import org.unisens.SignalEntry;
@@ -27,7 +25,7 @@ import org.unisens.ri.UnisensImpl;
 /**
  * This is a convenience wrapper class for org.unisens.Unisens objects.
  * @author Enrico Grunitz
- * @version 0.1.1 (06.08.2012)
+ * @version 0.1.2 (01.10.2012)
  */
 public class UnisensDataset {
 	/** key for custom attribute: name */			protected static final String KEY_NAME = "DatasetName";
