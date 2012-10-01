@@ -289,6 +289,28 @@ public class DataTest {
 		testEnd();
 		return;
 	}
+	
+	public void testReadOnlyDataController() {
+		testing("read-only Controllers -> KM251170", 10);
+		echo("loading data");
+		usds = new UnisensDataset("D:/Users/grunitz/Documents/Unisens Examples/testdata", true);
+		echo("checking read-only attributes");
+		Iterator<DataController> it = usds.getControllerList().iterator();
+		while(it.hasNext()) {
+			DataController dc = it.next();
+			if(dc.getEntryId().equals("fQRS.csv") || dc.getEntryId().equals("mQRS.csv") || dc.getEntryId().equals("tst.csv")) {
+				if(dc.isReadOnly()) {
+					test--;
+				}
+			} else {
+				if(!dc.isReadOnly()) {
+					test--;
+				}
+			}
+		}
+		testEnd();
+		return;
+	}
 		
 	@Deprecated
 	public void arrayTest() {

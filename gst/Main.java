@@ -112,6 +112,7 @@ public abstract class Main {
 		dt.testValueController();
 		dt.testAnnotationController();
 		dt.testMultiController();
+		dt.testReadOnlyDataController();
 		main.revalidate();
 		main.repaint();
 		

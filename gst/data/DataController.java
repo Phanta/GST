@@ -5,6 +5,7 @@
 package gst.data;
 
 import java.awt.Color;
+import java.io.File;
 
 import gst.data.UnisensDataset.EntryType;
 
@@ -14,7 +15,7 @@ import org.unisens.Entry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.4 (07.08.2012)
+ * @version 0.1.4.1 (01.10.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -73,6 +74,26 @@ public abstract class DataController {
 		}
 	}
 	
+	/**
+	 * Returns true if this entry contains read-only data.
+	 * @return true if date entry is read-only
+	 */
+	public boolean isReadOnly() {
+		String path = this.entry.getUnisens().getPath();
+		if(!(path.endsWith("\\") || path.endsWith("/"))) {
+			path += "/";
+		}
+		File file = new File(path + this.getEntryId());
+		if(file.canWrite()) {
+			return false;
+		} else { 
+			return true;
+		}
+	}
+	
+	/**
+	 * Saves the data entry to disc. Calls the saveImpl() method for the entry.
+	 */
 	public void save() {
 		if(this.isBuffered) {
 			this.saveImpl();
