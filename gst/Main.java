@@ -23,13 +23,13 @@ import gst.data.UnisensDataset;
 import gst.test.DataTest;
 import gst.test.Debug;
 
-import gst.ui.AnnotationSelectionDialog;
 import gst.ui.DataSelectionDialog;
 import gst.ui.MainWindow;
 import gst.ui.SignalPanel;
 import gst.ui.SignalView;
 import gst.ui.SignalViewFactory;
 import gst.ui.StatusBar;
+import gst.ui.dialog.AnnotationSelectionDialog;
 import gst.ui.dialog.DatasetSelectionDialog;
 import gst.ui.dialog.EnterFileNameDialog;
 

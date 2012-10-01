@@ -2,7 +2,7 @@
  * AnnotationSelectionDialog.java created on 06.08.2012
  */
 
-package gst.ui;
+package gst.ui.dialog;
 
 import java.awt.Component;
 import java.awt.GridLayout;
@@ -22,6 +22,7 @@ import gst.data.AnnotationController;
 import gst.data.DataController;
 import gst.data.UnisensDataset;
 import gst.test.Debug;
+import gst.ui.MainWindow;
 
 /**
  * A dialog that asks the user to select an annotation-entry of all datasets.
@@ -63,7 +64,7 @@ public class AnnotationSelectionDialog {
 			while(itCtrl.hasNext()) {
 				// for each datacontroller in dataset
 				DataController ctrl = itCtrl.next();
-				if(ctrl.isAnnotation()) {
+				if(ctrl.isAnnotation() && !ctrl.isReadOnly()) { // only display writeable annotations
 					tempAnnoList.add((AnnotationController)ctrl);
 				}
 			}
