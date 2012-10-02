@@ -15,7 +15,7 @@ import org.unisens.Entry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.4.1 (01.10.2012)
+ * @version 0.1.4.2 (02.10.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -95,7 +95,7 @@ public abstract class DataController {
 	 * Saves the data entry to disc. Calls the saveImpl() method for the entry.
 	 */
 	public void save() {
-		if(this.isBuffered) {
+		if(this.isBuffered && !this.isReadOnly()) {
 			this.saveImpl();
 		}
 	}

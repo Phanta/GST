@@ -30,13 +30,14 @@ import gst.ui.SignalView;
 import gst.ui.SignalViewFactory;
 import gst.ui.StatusBar;
 import gst.ui.dialog.AnnotationSelectionDialog;
+import gst.ui.dialog.DatasetManagerDialog;
 import gst.ui.dialog.DatasetSelectionDialog;
 import gst.ui.dialog.EnterFileNameDialog;
 
 /**
  * Class for the public static void main(String[] args) function.
  * @author Enrico Grunitz
- * @version 0.1.6 (08.08.2012)
+ * @version 0.1.6.1 (02.10.2012)
  */
 public abstract class Main {
 	
@@ -89,6 +90,11 @@ public abstract class Main {
 		main.registerActionListener(MainWindow.ID.selectAnnotationFile, new ActionListener() {
 																		    public void actionPerformed(ActionEvent ae) {
 																			    Main.uiSelectAnnotation();
+																		    }
+																   	    });
+		main.registerActionListener(MainWindow.ID.datasetManager, new ActionListener() {
+																		    public void actionPerformed(ActionEvent ae) {
+																			    DatasetManagerDialog dlg = new DatasetManagerDialog(datasets, main);
 																		    }
 																   	    });
 		StatusBar.getInstance().updateText("keiner");

@@ -4,10 +4,9 @@
 
 package gst.data;
 
-import gst.test.Debug;
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,7 +24,7 @@ import org.unisens.ri.UnisensImpl;
 /**
  * This is a convenience wrapper class for org.unisens.Unisens objects.
  * @author Enrico Grunitz
- * @version 0.1.2 (01.10.2012)
+ * @version 0.1.2.1 (02.10.2012)
  */
 public class UnisensDataset {
 	/** key for custom attribute: name */			protected static final String KEY_NAME = "DatasetName";
@@ -128,9 +127,15 @@ public class UnisensDataset {
 			us = null;
 			return;
 		}
-		name = "UnisensDataset" + datasetCount;
-		us.addCustomAttribute(KEY_NAME, name);
-		datasetCount++;
+		// checking for stored name
+		HashMap<String, String> custAttrib = us.getCustomAttributes();
+		if(custAttrib.containsKey(KEY_NAME)) {
+			this.name = custAttrib.get(KEY_NAME);
+		} else {
+			name = "UnisensDataset" + datasetCount;
+			us.addCustomAttribute(KEY_NAME, name);
+			datasetCount++;
+		}
 		ctrlList = this.createControllers();
 		return;
 	}

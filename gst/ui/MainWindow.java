@@ -23,7 +23,7 @@ import javax.swing.UIManager;
 /**
  * The main window of the application.
  * @author Enrico Grunitz
- * @version 0.2.4 (06.08.2012)
+ * @version 0.2.4.1 (02.10.2012)
  */
 public class MainWindow extends JFrame {
 
@@ -37,7 +37,8 @@ public class MainWindow extends JFrame {
 		openNewView,
 		saveAllDatasets,
 		newAnnotationFile,
-		selectAnnotationFile;
+		selectAnnotationFile,
+		datasetManager;
 	}
 	
 	public static MainWindow getInstance() {

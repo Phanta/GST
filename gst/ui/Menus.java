@@ -21,7 +21,7 @@ import javax.swing.KeyStroke;
 /**
  * Menus represent the Menubar of the Application. Implemented as Singleton.
  * 
- * @version 0.1.6 (07.08.2012)
+ * @version 0.1.7 (02.10.2012)
  * @author Enrico Grunitz
  */
 public class Menus extends JMenuBar {
@@ -33,6 +33,7 @@ public class Menus extends JMenuBar {
 	private JMenuItem miCloseProgram;
 	private JMenuItem miFileLoad;
 	private JMenuItem miSaveAll;
+	private JMenuItem miDatasetManager;
 	
 	private JMenuItem miCreateNewAnnotation;
 	private JMenuItem miSelectAnnotation;
@@ -53,6 +54,8 @@ public class Menus extends JMenuBar {
 		// --- DATEI ----------------------------------------------------------
 		m = new JMenu("Datei");
 		m.setMnemonic(KeyEvent.VK_D);
+		this.miDatasetManager = new JMenuItem("Datensätze...", KeyEvent.VK_D);
+		m.add(this.miDatasetManager);
 		miFileLoad = new JMenuItem("Datensatz laden...", KeyEvent.VK_S);
 		m.add(miFileLoad);
 		mi = new JMenuItem("Annotationen laden...", KeyEvent.VK_A);
@@ -124,6 +127,9 @@ public class Menus extends JMenuBar {
 			return true;
 		case selectAnnotationFile:
 			this.miSelectAnnotation.addActionListener(al);
+			return true;
+		case datasetManager:
+			this.miDatasetManager.addActionListener(al);
 			return true;
 		default:
 			return false;
