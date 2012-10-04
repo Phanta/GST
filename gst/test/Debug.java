@@ -5,7 +5,7 @@ package gst.test;
 /**
  * 
  * @author Enrico Grunitz
- * @version 1.0.3 (06.08.2012)
+ * @version 1.0.4 (04.10.2012)
  */
 public class Debug {
 	// gst
@@ -48,8 +48,9 @@ public class Debug {
 	public static final int /* gst.ui */ signalPanelScrollLockManager = 31;
 	public static final int /* gst.data */ annotationManager = 32;
 	public static final int /* gst.ui */ signalPanelZoomLockManager = 33;
+	public static final int /* gst.ui.dialog */ datasetManagerDialog = 34;
 	
-	public static final int END = 34;
+	public static final int END = 35;
 
 
 	private static final boolean isEnabled[] = {true,	//	main
@@ -90,6 +91,7 @@ public class Debug {
 												true,	// gst.ui.SignalPanel.ScrollLockManager
 												true,	// gst.data.AnnotationManager
 												true,	// gst.ui.SignalPanel.ZoomLockManager
+												true,	// gst.ui.dialog.DatasetManagerDialog
 												false};	// END
 	
 	public static void println(int src, String msg) {
