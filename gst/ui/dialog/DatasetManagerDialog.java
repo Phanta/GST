@@ -167,6 +167,7 @@ public final class DatasetManagerDialog extends JDialog
 		DefaultMutableTreeNode tempNode;
 		// save unique node for every entryId 
 		HashMap<String, DefaultMutableTreeNode> nodeMap = new HashMap<String, DefaultMutableTreeNode>();
+		ArrayList<String> readOnlyKeys = new ArrayList<String>();	// for saving keys to mark read-only
 		Iterator<DataController> it = ds.getControllerList().iterator();
 		while(it.hasNext()) {
 			DataController currentCtrl = it.next();
@@ -180,12 +181,21 @@ public final class DatasetManagerDialog extends JDialog
 				// create new entry node
 				tempNode = new DefaultMutableTreeNode(currentCtrl.getEntryId());
 				nodeMap.put(currentCtrl.getEntryId(), tempNode);
+				if(currentCtrl.isReadOnly()) {
+					readOnlyKeys.add(currentCtrl.getEntryId());
+				}
 				root.add(tempNode);
 				// add channel sub-node if necessary
 				if(currentCtrl.getChannelName() != null) {
 					tempNode.add(new DefaultMutableTreeNode(currentCtrl.getChannelName()));
 				}
 			}
+		}
+		// mark read-only entries
+		Iterator<String> keyIt = readOnlyKeys.iterator();
+		while(keyIt.hasNext()) {
+			DefaultMutableTreeNode node = nodeMap.get(keyIt.next());
+			node.setUserObject(((String)node.getUserObject()) + " (schreibgeschützt)");
 		}
 		return root;
 	}
