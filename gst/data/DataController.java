@@ -116,6 +116,12 @@ public abstract class DataController {
 		return this.entry.getUnisens().getMeasurementId() + SEPERATOR + this.entry.getId();
 	}
 	
+	/**
+	 * Returns the name of the channel of the controllers entry. Returns {@code null} if the channel is not named.
+	 * @return channel name
+	 */
+	abstract public String getChannelName();
+	
 	/** @return {@link #prefColor} */
 	public Color getPreferredColor() {
 		return this.prefColor;

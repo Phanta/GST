@@ -18,7 +18,7 @@ import org.unisens.EventEntry;
 /**
  * Buffered {@link gst.data.DataController} implementation for {@code EventEntry}-type data in an {@link gst.data.UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.2.3 (10.08.2012)
+ * @version 0.2.4 (05.10.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -310,7 +310,16 @@ public class AnnotationController extends DataController {
 			Debug.println(Debug.annotationController, "IOException while saving");
 		}
 	}
-	
+
+	/**
+	 * Returns null.
+	 * @see gst.data.DataController#getChannelName()
+	 */
+	@Override
+	public String getChannelName() {
+		return null;
+	}
+
 	private static boolean isInside(long test, long low, long high) {
 		return (test >= low && test <= high);
 	}

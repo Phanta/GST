@@ -4,6 +4,7 @@
 
 package gst.ui.dialog;
 
+import gst.data.DataController;
 import gst.data.UnisensDataset;
 import gst.test.Debug;
 
@@ -13,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -28,14 +30,13 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
 /**
  * Dialog for managing the datasets and it's data entries by the user.
  * @author Enrico Grunitz
- * @version 0.1 (04.10.2012)
+ * @version 0.1 (05.10.2012)
  */
 public final class DatasetManagerDialog extends JDialog
 										implements ActionListener,
@@ -43,7 +44,7 @@ public final class DatasetManagerDialog extends JDialog
 	/** dummy serialization ID */							private static final long serialVersionUID = 1L;
 	/** array list of currently loaded datasets */			private ArrayList<UnisensDataset> datasets;
 	/** String array of dataset names */					private ArrayList<String> datasetNames;
-	/** array of the root nodes for every dataset */		private ArrayList<TreeNode> datasetTrees;
+	/** array of the root nodes for every dataset */		private ArrayList<DefaultMutableTreeNode> datasetTrees;
 	
 	/* GUI elements */
 	/** list of datasets */									private JList<String> guiDatasets;
@@ -137,19 +138,28 @@ public final class DatasetManagerDialog extends JDialog
 	 * Initializes the {@code TreeNode}-array.
 	 */
 	private void initDatasetTrees() {
-		this.datasetTrees = new ArrayList<TreeNode>(this.datasets.size());
+		this.datasetTrees = new ArrayList<DefaultMutableTreeNode>(this.datasets.size());
 		Iterator<UnisensDataset> it = this.datasets.iterator();
 		while(it.hasNext()) {
 			this.datasetTrees.add(this.createTreeNode(it.next()));
 		}
 	}
 	
-	private TreeNode createTreeNode(UnisensDataset ds) {
+	private DefaultMutableTreeNode createTreeNode(UnisensDataset ds) {
 		if(ds == null) {
 			throw new NullPointerException("Cannot create TreeNode from null.");
 		}
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(ds.getName());
 		// TODO implement child nodes
+		DefaultMutableTreeNode tempNode;
+		List<DataController> ctrl = ds.getControllerList();
+		Iterator<DataController> it = ctrl.iterator();
+		while(it.hasNext()) {
+			DataController currentCtrl = it.next();
+			tempNode = new DefaultMutableTreeNode(currentCtrl.getFullName());
+			root.add(tempNode);
+			
+		}
 		return root;
 	}
 
