@@ -4,6 +4,7 @@
 
 package gst.ui.dialog;
 
+import gst.Main;
 import gst.data.DataController;
 import gst.data.UnisensDataset;
 import gst.test.Debug;
@@ -71,6 +72,7 @@ public final class DatasetManagerDialog extends JDialog
 		this.guiDatasets.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.guiDatasets.addListSelectionListener(this);
 		this.btnLoadDs = new JButton("Datensatz laden...");
+		this.btnLoadDs.addActionListener(this);
 		this.btnSaveDs = new JButton("Datensatz speichern");
 		this.btnCloseDs = new JButton("Datensatz schließen");
 		this.guiData = new JTree(new DefaultTreeModel((TreeNode)null));	// need to cast .getModel() to DefaultTreeModel
@@ -191,7 +193,21 @@ public final class DatasetManagerDialog extends JDialog
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		if(event.getSource() == this.btnCloseDialog) {
+			// close dialog
 			this.setVisible(false);
+		} else if(event.getSource() == this.btnLoadDs) {
+			// load dataset
+			UnisensDataset newDs = LoadDatasetDialog.getInstance().show();
+			if(newDs != null) {
+				Main.getDatasets().add(newDs);
+				this.datasetNames.add(newDs.getName());
+				this.datasetTrees.add(this.createTreeNode(newDs));
+				int index = this.guiDatasets.getSelectedIndex();
+				this.guiDatasets.setListData(this.datasetNames.toArray(new String[0]));
+				if(index >= 0) {
+					this.guiDatasets.setSelectedIndex(index);	// reset to previous selection (if there was one)
+				}
+			}
 		} else {
 			Debug.println(Debug.datasetManagerDialog, "unknown source of action: " + event.toString());
 		}
@@ -206,7 +222,11 @@ public final class DatasetManagerDialog extends JDialog
 		if(event.getSource() == this.guiDatasets) {
 			if(event.getValueIsAdjusting() == false) {
 				int selectedIndex = this.guiDatasets.getSelectedIndex();
-				((DefaultTreeModel)(this.guiData.getModel())).setRoot(this.datasetTrees.get(selectedIndex));
+				if(selectedIndex >= 0) {
+					((DefaultTreeModel)(this.guiData.getModel())).setRoot(this.datasetTrees.get(selectedIndex));
+				} else {
+					((DefaultTreeModel)(this.guiData.getModel())).setRoot(null);
+				}
 			}
 		} else {
 			Debug.println(Debug.datasetManagerDialog, "list selection occured from unknown source: " + event.toString());
