@@ -24,7 +24,7 @@ import org.unisens.ri.UnisensImpl;
 /**
  * This is a convenience wrapper class for org.unisens.Unisens objects.
  * @author Enrico Grunitz
- * @version 0.1.2.1 (02.10.2012)
+ * @version 0.1.2.2 (05.10.2012)
  */
 public class UnisensDataset {
 	/** key for custom attribute: name */			protected static final String KEY_NAME = "DatasetName";
@@ -175,6 +175,14 @@ public class UnisensDataset {
 	 */
 	public String getComment() {
 		return us.getComment();
+	}
+	
+	/**
+	 * Returns the file-path of the stored dataset.
+	 * @return path of dataset
+	 */
+	public String getPath() {
+		return this.us.getPath();
 	}
 	
 	/**

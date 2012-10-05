@@ -54,6 +54,7 @@ public final class DatasetManagerDialog extends JDialog
 	/** button for saving datasets */						private JButton btnSaveDs;
 	/** button for closing datasets */						private JButton btnCloseDs;
 	/** tree list of datasets data */						private JTree guiData;
+	/** {@code JScrollPane} for data list */				private JScrollPane guiDataScrollPane;
 	/** text area of this dialog */							private JLabel guiText;
 	/** button for closing this dialog */					private JButton btnCloseDialog;
 
@@ -78,10 +79,10 @@ public final class DatasetManagerDialog extends JDialog
 		this.btnCloseDs.addActionListener(this);
 		this.guiData = new JTree(new DefaultTreeModel((TreeNode)null));	// need to cast .getModel() to DefaultTreeModel
 		this.guiData.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		JScrollPane dataScrollPane = new JScrollPane(this.guiData,
-													 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-													 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		dataScrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
+		this.guiDataScrollPane = new JScrollPane(this.guiData,
+												 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+												 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.guiDataScrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
 		this.guiText = new JLabel("<html>test Text<br>and more ...</html>");
 		this.guiText.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		this.btnCloseDialog = new JButton("Schließen");
@@ -100,7 +101,7 @@ public final class DatasetManagerDialog extends JDialog
 				.addComponent(this.btnLoadDs)
 				.addComponent(this.btnSaveDs)
 				.addComponent(this.btnCloseDs))
-			.addComponent(dataScrollPane)
+			.addComponent(this.guiDataScrollPane)
 			.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 				.addComponent(this.guiText)
 				.addComponent(this.btnCloseDialog)));
@@ -112,14 +113,16 @@ public final class DatasetManagerDialog extends JDialog
 					.addComponent(this.btnLoadDs)
 					.addComponent(this.btnSaveDs)
 					.addComponent(this.btnCloseDs))
-				.addComponent(dataScrollPane)
+				.addComponent(this.guiDataScrollPane)
 				.addComponent(this.guiText))
 			.addComponent(this.btnCloseDialog));
 		
 		// modify sizes
-		this.setSize(700, 560);
+		this.setSize(1024, 560);
 		this.guiDatasets.setMinimumSize(new Dimension(200, 350));
-		this.guiData.setMinimumSize(new Dimension(200, 450));
+		this.guiDataScrollPane.setMinimumSize(new Dimension(250, 450));
+		this.guiDataScrollPane.setMaximumSize(new Dimension(250, 480));
+		this.guiText.setMinimumSize(new Dimension(300, 480));
 
 		// show dialog
 		this.setVisible(true);
@@ -233,12 +236,19 @@ public final class DatasetManagerDialog extends JDialog
 	@Override
 	public void valueChanged(ListSelectionEvent event) {
 		if(event.getSource() == this.guiDatasets) {
+			// dataset list selection changed
 			if(event.getValueIsAdjusting() == false) {
 				int selectedIndex = this.guiDatasets.getSelectedIndex();
 				if(selectedIndex >= 0) {
 					((DefaultTreeModel)(this.guiData.getModel())).setRoot(this.datasetTrees.get(selectedIndex));
+					this.guiText.setText("<html>" +
+							"Datensatz: " + this.datasets.get(selectedIndex).getName() + "<br>" +
+							"Pfad: " + this.datasets.get(selectedIndex).getPath() + "<br><br>" +
+							"Kommentar: " + this.datasets.get(selectedIndex).getComment() + "<br>" +
+							"</html>");
 				} else {
 					((DefaultTreeModel)(this.guiData.getModel())).setRoot(null);
+					this.guiText.setText("<html></html>");
 				}
 			}
 		} else {
