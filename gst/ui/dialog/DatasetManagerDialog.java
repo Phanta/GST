@@ -75,6 +75,7 @@ public final class DatasetManagerDialog extends JDialog
 		this.btnLoadDs.addActionListener(this);
 		this.btnSaveDs = new JButton("Datensatz speichern");
 		this.btnCloseDs = new JButton("Datensatz schließen");
+		this.btnCloseDs.addActionListener(this);
 		this.guiData = new JTree(new DefaultTreeModel((TreeNode)null));	// need to cast .getModel() to DefaultTreeModel
 		this.guiData.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		JScrollPane dataScrollPane = new JScrollPane(this.guiData,
@@ -207,6 +208,18 @@ public final class DatasetManagerDialog extends JDialog
 				if(index >= 0) {
 					this.guiDatasets.setSelectedIndex(index);	// reset to previous selection (if there was one)
 				}
+			}
+		} else if(event.getSource() == this.btnCloseDs) {
+			// close dataset
+			int selectedIndex = this.guiDatasets.getSelectedIndex();
+			if(selectedIndex >= 0) {
+				this.datasets.get(selectedIndex).close();
+				// remove items from ArrayLists
+				this.datasets.remove(selectedIndex);
+				this.datasetNames.remove(selectedIndex);
+				this.datasetTrees.remove(selectedIndex);
+				// update gui
+				this.guiDatasets.setListData(this.datasetNames.toArray(new String[0]));
 			}
 		} else {
 			Debug.println(Debug.datasetManagerDialog, "unknown source of action: " + event.toString());
