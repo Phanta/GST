@@ -13,8 +13,8 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -30,6 +30,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -72,7 +73,7 @@ public final class DatasetManagerDialog extends JDialog
 		this.btnLoadDs = new JButton("Datensatz laden...");
 		this.btnSaveDs = new JButton("Datensatz speichern");
 		this.btnCloseDs = new JButton("Datensatz schlieﬂen");
-		this.guiData = new JTree((TreeNode)null);
+		this.guiData = new JTree(new DefaultTreeModel((TreeNode)null));	// need to cast .getModel() to DefaultTreeModel
 		this.guiData.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		JScrollPane dataScrollPane = new JScrollPane(this.guiData,
 													 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
@@ -145,6 +146,12 @@ public final class DatasetManagerDialog extends JDialog
 		}
 	}
 	
+	/**
+	 * Creates a {@code TreeNode) for the dataset. Every entry is a sub note of the root and every channel is a sub-node
+	 * of the entry-nodes.
+	 * @param ds the dataset to create the tree for
+	 * @return root-node of dataset tree 
+	 */
 	private DefaultMutableTreeNode createTreeNode(UnisensDataset ds) {
 		if(ds == null) {
 			throw new NullPointerException("Cannot create TreeNode from null.");
@@ -152,19 +159,33 @@ public final class DatasetManagerDialog extends JDialog
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(ds.getName());
 		// TODO implement child nodes
 		DefaultMutableTreeNode tempNode;
-		List<DataController> ctrl = ds.getControllerList();
-		Iterator<DataController> it = ctrl.iterator();
+		// save unique node for every entryId 
+		HashMap<String, DefaultMutableTreeNode> nodeMap = new HashMap<String, DefaultMutableTreeNode>();
+		Iterator<DataController> it = ds.getControllerList().iterator();
 		while(it.hasNext()) {
 			DataController currentCtrl = it.next();
-			tempNode = new DefaultMutableTreeNode(currentCtrl.getFullName());
-			root.add(tempNode);
-			
+			if(nodeMap.containsKey(currentCtrl.getEntryId())) {
+				// entry already known
+				if(currentCtrl.getChannelName() != null) {
+					tempNode = new DefaultMutableTreeNode(currentCtrl.getChannelName());
+					nodeMap.get(currentCtrl.getEntryId()).add(tempNode);
+				} // else should not happen
+			} else {
+				// create new entry node
+				tempNode = new DefaultMutableTreeNode(currentCtrl.getEntryId());
+				nodeMap.put(currentCtrl.getEntryId(), tempNode);
+				root.add(tempNode);
+				// add channel sub-node if necessary
+				if(currentCtrl.getChannelName() != null) {
+					tempNode.add(new DefaultMutableTreeNode(currentCtrl.getChannelName()));
+				}
+			}
 		}
 		return root;
 	}
 
 	/**
-	 * Performs tasks as {@code ActionListener} for this dialog.
+	 * Performs tasks as {@code ActionListener} for this dialog's buttons.
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
@@ -177,7 +198,7 @@ public final class DatasetManagerDialog extends JDialog
 	}
 
 	/**
-	 * Performs tasks as {@code ListSelectionListener} for this dialog.
+	 * Performs tasks as {@code ListSelectionListener} for this dialog's JList element.
 	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
 	 */
 	@Override
@@ -185,7 +206,7 @@ public final class DatasetManagerDialog extends JDialog
 		if(event.getSource() == this.guiDatasets) {
 			if(event.getValueIsAdjusting() == false) {
 				int selectedIndex = this.guiDatasets.getSelectedIndex();
-				//this.guiData.set
+				((DefaultTreeModel)(this.guiData.getModel())).setRoot(this.datasetTrees.get(selectedIndex));
 			}
 		} else {
 			Debug.println(Debug.datasetManagerDialog, "list selection occured from unknown source: " + event.toString());
