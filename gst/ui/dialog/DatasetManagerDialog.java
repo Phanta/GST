@@ -36,9 +36,9 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
 /**
- * Dialog for managing the datasets and it's data entries by the user.
+ * Dialog for managing the datasets and its data entries by the user.
  * @author Enrico Grunitz
- * @version 0.1.0.2 (08.10.2012)
+ * @version 0.1.0.3 (08.10.2012)
  */
 public final class DatasetManagerDialog extends JDialog
 										implements ActionListener,
@@ -72,21 +72,29 @@ public final class DatasetManagerDialog extends JDialog
 		this.guiDatasets.setBorder(BorderFactory.createLoweredBevelBorder());
 		this.guiDatasets.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.guiDatasets.addListSelectionListener(this);
+		
 		this.btnLoadDs = new JButton("Datensatz laden...");
 		this.btnLoadDs.addActionListener(this);
+		
 		this.btnSaveDs = new JButton("Datensatz speichern");
+		this.btnSaveDs.addActionListener(this);
 		this.btnSaveDs.setEnabled(false);
+		
 		this.btnCloseDs = new JButton("Datensatz schlieﬂen");
 		this.btnCloseDs.addActionListener(this);
+		this.btnCloseDs.setEnabled(false);
+		
 		this.guiData = new JTree(new DefaultTreeModel((TreeNode)null));	// need to cast .getModel() to DefaultTreeModel
 		this.guiData.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		this.guiDataScrollPane = new JScrollPane(this.guiData,
 												 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 												 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.guiDataScrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
-		this.guiText = new JLabel("<html>test Text<br>and more ...</html>");
+		
+		this.guiText = new JLabel("<html></html>");	// using html to make it max size
 		this.guiText.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-		this.btnCloseDialog = new JButton("Schlieﬂen");
+		
+		this.btnCloseDialog = new JButton("Dialog schlieﬂen");
 		this.btnCloseDialog.addActionListener(this);
 
 		// edit layout
@@ -119,7 +127,7 @@ public final class DatasetManagerDialog extends JDialog
 			.addComponent(this.btnCloseDialog));
 		
 		// modify sizes
-		this.setSize(1024, 560);
+		this.setSize(1024, 565);
 		this.guiDatasets.setMinimumSize(new Dimension(200, 350));
 		this.guiDataScrollPane.setMinimumSize(new Dimension(250, 450));
 		this.guiDataScrollPane.setMaximumSize(new Dimension(250, 480));
@@ -164,7 +172,6 @@ public final class DatasetManagerDialog extends JDialog
 			throw new NullPointerException("Cannot create TreeNode from null.");
 		}
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(ds.getName());
-		// TODO implement child nodes
 		DefaultMutableTreeNode tempNode;
 		// save unique node for every entryId 
 		HashMap<String, DefaultMutableTreeNode> nodeMap = new HashMap<String, DefaultMutableTreeNode>();
@@ -257,15 +264,25 @@ public final class DatasetManagerDialog extends JDialog
 			if(event.getValueIsAdjusting() == false) {
 				int selectedIndex = this.guiDatasets.getSelectedIndex();
 				if(selectedIndex >= 0) {
+					// update tree view
 					((DefaultTreeModel)(this.guiData.getModel())).setRoot(this.datasetTrees.get(selectedIndex));
+					// update text
 					this.guiText.setText("<html>" +
 							"Datensatz: " + this.datasets.get(selectedIndex).getName() + "<br>" +
 							"Pfad: " + this.datasets.get(selectedIndex).getPath() + "<br><br>" +
 							"Kommentar: " + this.datasets.get(selectedIndex).getComment() + "<br>" +
 							"</html>");
+					// update button states
+					this.btnCloseDs.setEnabled(true);
+					this.btnSaveDs.setEnabled(true);
 				} else {
+					// update tree view
 					((DefaultTreeModel)(this.guiData.getModel())).setRoot(null);
+					// update text
 					this.guiText.setText("<html></html>");
+					// update button states
+					this.btnCloseDs.setEnabled(false);
+					this.btnSaveDs.setEnabled(false);
 				}
 			}
 		} else {
