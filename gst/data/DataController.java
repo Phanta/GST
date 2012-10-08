@@ -7,6 +7,8 @@ package gst.data;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import gst.data.UnisensDataset.EntryType;
 import gst.test.Debug;
@@ -17,7 +19,7 @@ import org.unisens.Entry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.4.3 (05.10.2012)
+ * @version 0.1.5.0 (08.10.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -28,12 +30,15 @@ public abstract class DataController {
 	/** number of channels of the entry */			protected int channelCount;
 	/** true if the controller is buffered */		protected boolean isBuffered;
 	/** preferred color for this data */			private Color prefColor;
+	/** list of registered {@link gst.data.DataChangeListener} */
+													private ArrayList<DataChangeListener> listeners;
 	
 	/**
 	 * Constructs the controller object for an entry with the given ID of the dataset.
 	 * @param ds dataset which contains the entry
 	 * @param entryId ID of the entry inside the dataset
 	 */
+	@Deprecated
 	protected DataController(UnisensDataset ds, String entryId) {
 		this(ds.getEntry(entryId));
 		return;
@@ -53,6 +58,7 @@ public abstract class DataController {
 		this.channelCount = 1;
 		this.isBuffered = false;
 		this.prefColor = Color.red;
+		this.listeners = new ArrayList<DataChangeListener>();
 		return;
 	}
 	
@@ -157,6 +163,36 @@ public abstract class DataController {
 			throw new NullPointerException("null preferred color not possible");
 		}
 		this.prefColor = color;
+	}
+	
+	/**
+	 * Notifies all registered Listeners of changed data. Has to be called by subclasses.
+	 * @param source the {@code DataController} thats data changed
+	 */
+	protected void notifyListeners(DataController source) {
+		Iterator<DataChangeListener> it = this.listeners.iterator();
+		while(it.hasNext()) {
+			it.next().dataChangeReaction(source);
+		}
+		return;
+	}
+	
+	/**
+	 * Registers the given {@link gst.data.DataChangeListener} to this controller.
+	 * @param dcl the {@code DataChangeListener} to notify about changes
+	 */
+	public void register(DataChangeListener dcl) {
+		this.listeners.add(dcl);
+		return;
+	}
+	
+	/**
+	 * Removes the {@link DataChangeListener} from the notification list.
+	 * @param dcl {@code DataChangeListener} to remove
+	 */
+	public void remove(DataChangeListener dcl) {
+		this.listeners.remove(dcl);
+		return;
 	}
 	
 	/**

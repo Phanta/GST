@@ -6,14 +6,8 @@ package gst;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import gst.data.AnnotationController;
 import gst.data.AnnotationManager;
@@ -63,13 +57,7 @@ public abstract class Main {
 		Debug.println(Debug.main, "Mainwindow : " + main.toString());
 		Debug.println(Debug.main, "MainWindow content pane :" + main.getContentPane().toString());
 		Debug.println(Debug.main, "SignalPanel parent : " + SignalPanel.getInstance().getParent().toString());
-		//Debug.println(Debug.main, "Sidebar parent : " + Sidebar.getInstance().getParent().toString());
 		
-/*		main.registerActionListener(MainWindow.ID.openFile, new ActionListener() {
-																public void actionPerformed(ActionEvent ae) {
-																	Main.loadUnisensData(ae);
-																}
-															});*/
 		main.registerActionListener(MainWindow.ID.closeProgram, new ActionListener() {
 																	public void actionPerformed(ActionEvent ae) {
 																		Main.closeProgram(ae);

@@ -45,7 +45,6 @@ public final class DatasetManagerDialog extends JDialog
 												   ListSelectionListener {
 	/** dummy serialization ID */							private static final long serialVersionUID = 1L;
 	/** array list of currently loaded datasets */			private DatasetList datasets;
-//	/** String array of dataset names */					private ArrayList<String> datasetNames;
 	/** array of the root nodes for every dataset */		private ArrayList<DefaultMutableTreeNode> datasetTrees;
 	
 	/* GUI elements */

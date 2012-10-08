@@ -18,7 +18,7 @@ import org.unisens.EventEntry;
 /**
  * Buffered {@link gst.data.DataController} implementation for {@code EventEntry}-type data in an {@link gst.data.UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.2.4.1 (05.10.2012)
+ * @version 0.2.5.0 (08.10.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -69,6 +69,7 @@ public class AnnotationController extends DataController {
 		int insertIndex = this.findIndexSmaller(sampleStamp) + 1;
 		this.updateBorderSampleNumbers(sampleStamp);
 		this.buffer.add(insertIndex, new Event(sampleStamp, type, comment));
+		this.notifyListeners(this);
 	}
 	
 	/**
@@ -124,6 +125,7 @@ public class AnnotationController extends DataController {
 			this.lastAccessedIndex = this.buffer.size() - 1;
 		}
 		this.initBorderSampleNumbers();
+		this.notifyListeners(this);
 	}
 	
 	/**
