@@ -24,7 +24,7 @@ import org.unisens.ri.UnisensImpl;
 /**
  * This is a convenience wrapper class for org.unisens.Unisens objects.
  * @author Enrico Grunitz
- * @version 0.1.2.2 (05.10.2012)
+ * @version 0.1.2.3 (05.10.2012)
  */
 public class UnisensDataset {
 	/** key for custom attribute: name */			protected static final String KEY_NAME = "DatasetName";
@@ -264,6 +264,7 @@ public class UnisensDataset {
 			Debug.println(Debug.unisensDataset, "couldn't write dummy data");
 		}
 */		AnnotationController ctrl = new AnnotationController(newEntry);
+		ctrl.createFile();
 		this.ctrlList.add(ctrl);
 		return ctrl;
 	}

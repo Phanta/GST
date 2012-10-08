@@ -58,7 +58,7 @@ public class Debug {
 														//gst.data
 												true,	//	annotationController
 												false,	//	annotationList
-												false,	//	controller
+												true,	//	controller
 												false,	//	signalController
 												false,	//	unisensDataset
 												false,	//	valueController

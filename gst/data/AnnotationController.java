@@ -18,7 +18,7 @@ import org.unisens.EventEntry;
 /**
  * Buffered {@link gst.data.DataController} implementation for {@code EventEntry}-type data in an {@link gst.data.UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.2.4 (05.10.2012)
+ * @version 0.2.4.1 (05.10.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -198,7 +198,7 @@ public class AnnotationController extends DataController {
 	
 	/**
 	 * Returns the index of the biggest element of the buffer that is smaller or equal than the given sample stamp.
-	 * @param smapleStamp the sampleStamp to look for
+	 * @param sampleStamp the sampleStamp to look for
 	 * @return index of the searched element
 	 * 		   -1 if there is no entry greater than the given sample stamp and
 	 */
@@ -233,6 +233,10 @@ public class AnnotationController extends DataController {
 				}
 			}
 			this.lastAccessedIndex = i;
+		}
+		// FIXME some weird bug sets the index out of bounds, so re-check needed
+		if(this.lastAccessedIndex < 0 || this.lastAccessedIndex >= this.buffer.size()) {
+			this.lastAccessedIndex = 0;
 		}
 		return this.lastAccessedIndex;
 	}

@@ -38,7 +38,7 @@ import javax.swing.tree.TreeSelectionModel;
 /**
  * Dialog for managing the datasets and it's data entries by the user.
  * @author Enrico Grunitz
- * @version 0.1 (05.10.2012)
+ * @version 0.1.0.2 (08.10.2012)
  */
 public final class DatasetManagerDialog extends JDialog
 										implements ActionListener,
@@ -75,6 +75,7 @@ public final class DatasetManagerDialog extends JDialog
 		this.btnLoadDs = new JButton("Datensatz laden...");
 		this.btnLoadDs.addActionListener(this);
 		this.btnSaveDs = new JButton("Datensatz speichern");
+		this.btnSaveDs.setEnabled(false);
 		this.btnCloseDs = new JButton("Datensatz schließen");
 		this.btnCloseDs.addActionListener(this);
 		this.guiData = new JTree(new DefaultTreeModel((TreeNode)null));	// need to cast .getModel() to DefaultTreeModel
@@ -219,8 +220,14 @@ public final class DatasetManagerDialog extends JDialog
 				int index = this.guiDatasets.getSelectedIndex();
 				this.guiDatasets.setListData(this.datasetNames.toArray(new String[0]));
 				if(index >= 0) {
-					this.guiDatasets.setSelectedIndex(index);	// reset to previous selection (if there was one)
+					this.guiDatasets.setSelectedIndex(index);	// reset previous selection (if there was one)
 				}
+			}
+		} else if(event.getSource() == this.btnSaveDs) {
+			// save selected dataset
+			int selectedIndex = this.guiDatasets.getSelectedIndex();
+			if(selectedIndex >= 0) {
+				this.datasets.get(selectedIndex).save();
 			}
 		} else if(event.getSource() == this.btnCloseDs) {
 			// close dataset

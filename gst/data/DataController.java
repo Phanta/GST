@@ -6,8 +6,10 @@ package gst.data;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 
 import gst.data.UnisensDataset.EntryType;
+import gst.test.Debug;
 
 import org.jfree.data.xy.XYSeries;
 import org.unisens.Entry;
@@ -15,7 +17,7 @@ import org.unisens.Entry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.4.2 (02.10.2012)
+ * @version 0.1.4.3 (05.10.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -88,6 +90,24 @@ public abstract class DataController {
 			return false;
 		} else { 
 			return true;
+		}
+	}
+	
+	/**
+	 * Create the file if it not exists.
+	 */
+	public void createFile() {
+		String path = this.entry.getUnisens().getPath();
+		File dummyFile = new File(path, this.getEntryId());
+		if(!dummyFile.exists()) {
+			try {
+				dummyFile.createNewFile();
+				dummyFile.setWritable(true);
+			} catch(IOException ioe) {
+				Debug.println(Debug.controller, "cannot create new file '" + dummyFile.getAbsolutePath() + "'");
+			}
+		} else {
+			Debug.println(Debug.controller, "file '" + dummyFile.getAbsolutePath() + "' already exists");
 		}
 	}
 	
