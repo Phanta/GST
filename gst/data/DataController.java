@@ -182,7 +182,9 @@ public abstract class DataController {
 	 * @param dcl the {@code DataChangeListener} to notify about changes
 	 */
 	public void register(DataChangeListener dcl) {
-		this.listeners.add(dcl);
+		if(!this.listeners.contains(dcl)) {
+			this.listeners.add(dcl);
+		}
 		return;
 	}
 	

@@ -22,6 +22,7 @@ import gst.Main;
 import gst.Settings;
 import gst.data.AnnotationList;
 import gst.data.AnnotationManager;
+import gst.data.DataChangeListener;
 import gst.data.DataController;
 import gst.test.Debug;
 import gst.ui.dialog.EditEventDialog;
@@ -47,9 +48,9 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.1.5 (09.08.2012)
+ * @version 0.1.5.1 (08.10.2012)
  */
-public class SignalView extends ChartPanel {
+public class SignalView extends ChartPanel implements DataChangeListener{
 
 	/** default serialization ID */						private static final long serialVersionUID = 1L;
 	/** list of {@link gst.data.DataController}s */		private ArrayList<DataController> ctrlList; 
@@ -150,6 +151,7 @@ public class SignalView extends ChartPanel {
 	public void addController(DataController dataCtrl) {
 		if(ctrlList.contains(dataCtrl) == false) {
 			ctrlList.add(dataCtrl);
+			dataCtrl.register(this);
 			this.needNewData = true;
 		}
 	}
@@ -313,8 +315,13 @@ public class SignalView extends ChartPanel {
 			// ignore zero selection
 			return;
 		}
+		// unregister listening
+		Iterator<DataController> it = this.ctrlList.iterator();
+		while(it.hasNext()) {
+			it.next().remove(this);
+		}
 		ctrlList.clear();
-		Iterator<DataController> it = newList.iterator();
+		it = newList.iterator();
 		while(it.hasNext()) {
 			this.addController(it.next());
 		}
@@ -440,6 +447,19 @@ public class SignalView extends ChartPanel {
 	 */
 	private void removeTimeAxisMarker() {
 		this.getChart().getXYPlot().clearDomainMarkers();
+	}
+	
+	/**
+	 * Implementation of {@code DataChangeListener}-interface.
+	 * @see gst.data.DataChangeListener#dataChangeReaction(gst.data.DataController)
+	 */
+	@Override
+	public void dataChangeReaction(DataController source) {
+		if(source.isAnnotation()) {
+			this.updateTimeAxisMarkers();
+		} else {
+			this.updateData();
+		}
 	}
 	
 	/* * * static methods * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -613,7 +633,6 @@ public class SignalView extends ChartPanel {
 						Range timeAxis = target.getTimeAxisBounds();
 						double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
 						Main.getAnnotationManager().removeAnnotation(time, timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap());
-						target.updateTimeAxisMarkers();
 					}
 					return;	// CTRL means only delete, no adding
 				}
@@ -628,8 +647,6 @@ public class SignalView extends ChartPanel {
 							Range timeAxis = target.getTimeAxisBounds();
 							double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
 							Main.getAnnotationManager().addAnnotation(time, eed.getType(), eed.getComment());
-							// hack updateing without checking
-							target.updateTimeAxisMarkers();
 						}
 					}
 				} else { // no SHIFT down
@@ -640,8 +657,6 @@ public class SignalView extends ChartPanel {
 						Range timeAxis = target.getTimeAxisBounds();
 						double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
 						Main.getAnnotationManager().addAnnotation(time);
-						// hack updateing without checking
-						target.updateTimeAxisMarkers();
 					}
 				}
 				break;
