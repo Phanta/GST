@@ -18,6 +18,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import gst.data.AnnotationController;
 import gst.data.AnnotationManager;
 import gst.data.DataController;
+import gst.data.DatasetList;
 import gst.data.UnisensDataset;
 
 import gst.test.DataTest;
@@ -37,7 +38,7 @@ import gst.ui.dialog.EnterFileNameDialog;
 /**
  * Class for the public static void main(String[] args) function.
  * @author Enrico Grunitz
- * @version 0.1.6.1 (02.10.2012)
+ * @version 0.1.6.2 (08.10.2012)
  */
 public abstract class Main {
 	
@@ -45,7 +46,8 @@ public abstract class Main {
 	private static final int MAXSIGNALS = 0;
 
 	private static MainWindow main;
-	private static ArrayList<UnisensDataset> datasets;
+	//private static ArrayList<UnisensDataset> datasets;
+	private static DatasetList datasetList;
 	private static AnnotationManager annotationManager;
 	
 	/**
@@ -53,7 +55,8 @@ public abstract class Main {
 	 * @param args command line parameters (not evaluated)
 	 */
 	public static void main(String[] args) {
-		datasets = new ArrayList<UnisensDataset>();
+		//datasets = new ArrayList<UnisensDataset>();
+		datasetList = DatasetList.getInstance();
 		main = MainWindow.getInstance();
 		annotationManager = new AnnotationManager();
 		
@@ -62,11 +65,11 @@ public abstract class Main {
 		Debug.println(Debug.main, "SignalPanel parent : " + SignalPanel.getInstance().getParent().toString());
 		//Debug.println(Debug.main, "Sidebar parent : " + Sidebar.getInstance().getParent().toString());
 		
-		main.registerActionListener(MainWindow.ID.openFile, new ActionListener() {
+/*		main.registerActionListener(MainWindow.ID.openFile, new ActionListener() {
 																public void actionPerformed(ActionEvent ae) {
 																	Main.loadUnisensData(ae);
 																}
-															});
+															});*/
 		main.registerActionListener(MainWindow.ID.closeProgram, new ActionListener() {
 																	public void actionPerformed(ActionEvent ae) {
 																		Main.closeProgram(ae);
@@ -94,7 +97,7 @@ public abstract class Main {
 																   	    });
 		main.registerActionListener(MainWindow.ID.datasetManager, new ActionListener() {
 																		    public void actionPerformed(ActionEvent ae) {
-																			    DatasetManagerDialog dlg = new DatasetManagerDialog(datasets, main);
+																			    new DatasetManagerDialog(main);
 																		    }
 																   	    });
 		StatusBar.getInstance().updateText("keiner");
@@ -127,45 +130,6 @@ public abstract class Main {
 	
 	public static AnnotationManager getAnnotationManager() {
 		return annotationManager;
-	}
-	
-	/**
-	 * Displays an open-file-dialog and loads the received dataset.
-	 * @param ae {@code ActionEvent} of the triggering Action
-	 */
-	private static void loadUnisensData(ActionEvent ae) {
-		String userHomeDir = System.getProperty("user.home");
-		JFileChooser dialog = new JFileChooser(new File(userHomeDir));
-		dialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		FileFilter filter = new FileNameExtensionFilter("XML Datei", "xml");
-		dialog.addChoosableFileFilter(filter);
-		int dialogReturnValue = dialog.showOpenDialog(main);
-		if(dialogReturnValue == JFileChooser.APPROVE_OPTION) {
-			String path;
-			// selecting the directory which contains the unisens.xml
-			if(dialog.getSelectedFile().isDirectory() ==  false) {
-				path = dialog.getSelectedFile().getParentFile().getAbsolutePath();
-			} else {
-				path = dialog.getSelectedFile().getAbsolutePath();
-			}
-			UnisensDataset usds = new UnisensDataset(path, true);
-			datasets.add(usds);
-			createSignalViews(usds);
-			main.revalidate();
-			main.repaint();
-		}
-		
-		// DEBUG DataSelectionDialog
-/*		DataSelectionDialog dsd = new DataSelectionDialog(null);
-		List<DataController> ret = dsd.show();
-		Debug.println(Debug.main, "" + ret.getFullName());
-*/		
-		// DEBUG AnnotationSelectionDialog
-/*		AnnotationSelectionDialog asd = new AnnotationSelectionDialog();
-		AnnotationController ret = asd.show();
-		Debug.println(Debug.main, "" + ret.getFullName());
-*/
-		return;
 	}
 	
 	/**
@@ -230,15 +194,9 @@ public abstract class Main {
 	 * Saves all datasets.
 	 */
 	private static void saveAllDatasets() {
-		Iterator<UnisensDataset> it = Main.datasets.iterator();
-		while(it.hasNext()) {
-			it.next().save();
+		for(int i = 0; i < datasetList.size(); i++) {
+			datasetList.get(i).save();
 		}
-	}
-	
-	/** @return a list of all loaded datasets */
-	public static List<UnisensDataset> getDatasets() {
-		return datasets;
 	}
 	
 	/**
@@ -261,9 +219,8 @@ public abstract class Main {
 	 * @param ae {@code ActionEvent} causing this action
 	 */
 	private static void closeProgram(ActionEvent ae) {
-		Iterator<UnisensDataset> it = datasets.iterator();
-		while(it.hasNext()) {
-			it.next().close();
+		for(int i = 0; i < datasetList.size(); i++) {
+			datasetList.close(i);
 		}
 		System.exit(0);
 	}

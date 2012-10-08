@@ -17,9 +17,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import gst.Main;
 import gst.data.AnnotationController;
 import gst.data.DataController;
+import gst.data.DatasetList;
 import gst.data.UnisensDataset;
 import gst.test.Debug;
 import gst.ui.MainWindow;
@@ -27,7 +27,7 @@ import gst.ui.MainWindow;
 /**
  * A dialog that asks the user to select an annotation-entry of all datasets.
  * @author Enrico Grunitz
- * @version 0.1.1 (06.08.2012)
+ * @version 0.1.1.1 (08.10.2012)
  */
 public class AnnotationSelectionDialog {
 	
@@ -41,7 +41,7 @@ public class AnnotationSelectionDialog {
 	/** Ctor */
 	public AnnotationSelectionDialog() {
 		// collect all AnnotationController
-		List<UnisensDataset> datasets = Main.getDatasets();
+		DatasetList datasets = DatasetList.getInstance();
 		this.annotation = new ArrayList<ArrayList<AnnotationController>>(datasets.size());
 		this.selectedDsIndex = 0;
 		if(datasets.isEmpty()) {
@@ -50,16 +50,14 @@ public class AnnotationSelectionDialog {
 		}
 		List<DataController> tempControllerList = null;
 		ArrayList<AnnotationController> tempAnnoList = null;
-		String[] dsStringArray = new String[datasets.size()];
-		int indexDs = 0;
-		Iterator<UnisensDataset> itDs = datasets.iterator();
-		while(itDs.hasNext()) {
+		//int indexDs = 0;
+		//Iterator<UnisensDataset> itDs = datasets.iterator();
+		//while(itDs.hasNext()) {
+		for(int indexDs = 0; indexDs < datasets.size(); indexDs++) {
 			// for all datasets
-			UnisensDataset ds = itDs.next();
+			UnisensDataset ds = datasets.get(indexDs);
 			tempControllerList = ds.getControllerList();
 			tempAnnoList = new ArrayList<AnnotationController>();
-			dsStringArray[indexDs] = ds.getName();	// save name for dialog elements
-			indexDs++;
 			Iterator<DataController> itCtrl = tempControllerList.iterator();
 			while(itCtrl.hasNext()) {
 				// for each datacontroller in dataset
@@ -74,7 +72,7 @@ public class AnnotationSelectionDialog {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(2, 1, 10, 10));	// 2 columns, 1 row, 10 pixel horizontal and vertical gap
 		// dataset combobox
-		JComboBox<String> comboBox = new JComboBox<String>(dsStringArray);
+		JComboBox<String> comboBox = new JComboBox<String>(datasets.getNames());
 		panel.add(comboBox);
 		comboBox.setSelectedIndex(this.selectedDsIndex);
 		comboBox.addActionListener(new AnnotationSelectionDialogActionListener(this));

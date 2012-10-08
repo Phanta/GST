@@ -4,9 +4,8 @@
 
 package gst.ui;
 
-import gst.Main;
 import gst.data.DataController;
-import gst.data.UnisensDataset;
+import gst.data.DatasetList;
 import gst.test.Debug;
 
 import java.awt.Component;
@@ -22,7 +21,7 @@ import javax.swing.ListSelectionModel;
 /**
  * This is a dialog for selecting specific data from all loaded datasets. 
  * @author Enrico Grunitz
- * @version 1.0.1 (02.08.2012)
+ * @version 1.0.1.1 (08.10.2012)
  */
 public class DataSelectionDialog {
 	
@@ -38,15 +37,14 @@ public class DataSelectionDialog {
 		// gather controller from Main
 		controller = new ArrayList<DataController>();
 		
-		List<UnisensDataset> datasets = Main.getDatasets();
-		if(datasets == null) {
+		DatasetList datasets = DatasetList.getInstance();
+		if(datasets.isEmpty()) {
 			// no datasets available
 			this.initEmptyDialog();
 			return;
 		}
-		Iterator<UnisensDataset> itDs = datasets.iterator();
-		while(itDs.hasNext()) {
-			this.controller.addAll(itDs.next().getControllerList());
+		for(int dsIndex = 0; dsIndex < datasets.size(); dsIndex++) {
+			this.controller.addAll(datasets.get(dsIndex).getControllerList());
 		}
 		if(this.controller.isEmpty()) {
 			// no data inside datasets available

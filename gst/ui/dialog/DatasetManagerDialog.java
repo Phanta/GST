@@ -4,8 +4,8 @@
 
 package gst.ui.dialog;
 
-import gst.Main;
 import gst.data.DataController;
+import gst.data.DatasetList;
 import gst.data.UnisensDataset;
 import gst.test.Debug;
 
@@ -38,14 +38,14 @@ import javax.swing.tree.TreeSelectionModel;
 /**
  * Dialog for managing the datasets and its data entries by the user.
  * @author Enrico Grunitz
- * @version 0.1.0.3 (08.10.2012)
+ * @version 0.1.0.4 (08.10.2012)
  */
 public final class DatasetManagerDialog extends JDialog
 										implements ActionListener,
 												   ListSelectionListener {
 	/** dummy serialization ID */							private static final long serialVersionUID = 1L;
-	/** array list of currently loaded datasets */			private ArrayList<UnisensDataset> datasets;
-	/** String array of dataset names */					private ArrayList<String> datasetNames;
+	/** array list of currently loaded datasets */			private DatasetList datasets;
+//	/** String array of dataset names */					private ArrayList<String> datasetNames;
 	/** array of the root nodes for every dataset */		private ArrayList<DefaultMutableTreeNode> datasetTrees;
 	
 	/* GUI elements */
@@ -58,17 +58,14 @@ public final class DatasetManagerDialog extends JDialog
 	/** text area of this dialog */							private JLabel guiText;
 	/** button for closing this dialog */					private JButton btnCloseDialog;
 
-	public DatasetManagerDialog(ArrayList<UnisensDataset> datasets, Frame owner) {
+	public DatasetManagerDialog(Frame owner) {
 		super(owner, "Datensatz-Manager", true);
-		if(datasets == null) {
-			throw new NullPointerException("Cannot open dataset manager without dataset list.");
-		}
 		// initialize member variables
-		this.datasets = datasets;
+		this.datasets = DatasetList.getInstance();
 		this.initDatasetTrees();
 		
 		// create gui components
-		this.guiDatasets = this.initDatasetList();
+		this.guiDatasets = new JList<String>(this.datasets.getNames());
 		this.guiDatasets.setBorder(BorderFactory.createLoweredBevelBorder());
 		this.guiDatasets.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.guiDatasets.addListSelectionListener(this);
@@ -137,27 +134,14 @@ public final class DatasetManagerDialog extends JDialog
 		this.setVisible(true);
 	}
 	
-	/**
-	 * Initializes {@value datasetNames} and creates a new {@link javax.swing.JList}.
-	 * @return the created JList
-	 */
-	private JList<String> initDatasetList() {
-		this.datasetNames = new ArrayList<String>(this.datasets.size());
-		Iterator<UnisensDataset> it = this.datasets.iterator();
-		while(it.hasNext()) {
-			this.datasetNames.add(it.next().getName());
-		}
-		return new JList<String>(this.datasetNames.toArray(new String[0]));
-	}
 	
 	/**
 	 * Initializes the {@code TreeNode}-array.
 	 */
 	private void initDatasetTrees() {
 		this.datasetTrees = new ArrayList<DefaultMutableTreeNode>(this.datasets.size());
-		Iterator<UnisensDataset> it = this.datasets.iterator();
-		while(it.hasNext()) {
-			this.datasetTrees.add(this.createTreeNode(it.next()));
+		for(int i = 0; i < this.datasets.size(); i++) {
+			this.datasetTrees.add(this.createTreeNode(this.datasets.get(i)));
 		}
 	}
 	
@@ -219,34 +203,30 @@ public final class DatasetManagerDialog extends JDialog
 			this.setVisible(false);
 		} else if(event.getSource() == this.btnLoadDs) {
 			// load dataset
-			UnisensDataset newDs = LoadDatasetDialog.getInstance().show();
-			if(newDs != null) {
-				Main.getDatasets().add(newDs);
-				this.datasetNames.add(newDs.getName());
-				this.datasetTrees.add(this.createTreeNode(newDs));
-				int index = this.guiDatasets.getSelectedIndex();
-				this.guiDatasets.setListData(this.datasetNames.toArray(new String[0]));
-				if(index >= 0) {
-					this.guiDatasets.setSelectedIndex(index);	// reset previous selection (if there was one)
-				}
+			int oldSize = this.datasets.size();
+			int newIndex = this.datasets.loadDataset();
+			if(oldSize != this.datasets.size()) {	// updating only if we got a new dataset
+				this.guiDatasets.setListData(this.datasets.getNames());
+				this.datasetTrees.add(this.createTreeNode(this.datasets.get(newIndex)));
+			}
+			if(newIndex != -1) {
+				// set selection loaded dataset
+				this.guiDatasets.setSelectedIndex(newIndex);
 			}
 		} else if(event.getSource() == this.btnSaveDs) {
 			// save selected dataset
 			int selectedIndex = this.guiDatasets.getSelectedIndex();
 			if(selectedIndex >= 0) {
-				this.datasets.get(selectedIndex).save();
+				this.datasets.save(selectedIndex);
 			}
 		} else if(event.getSource() == this.btnCloseDs) {
 			// close dataset
 			int selectedIndex = this.guiDatasets.getSelectedIndex();
 			if(selectedIndex >= 0) {
-				this.datasets.get(selectedIndex).close();
+				this.datasets.close(selectedIndex);
 				// remove items from ArrayLists
-				this.datasets.remove(selectedIndex);
-				this.datasetNames.remove(selectedIndex);
 				this.datasetTrees.remove(selectedIndex);
-				// update gui
-				this.guiDatasets.setListData(this.datasetNames.toArray(new String[0]));
+				this.guiDatasets.setListData(this.datasets.getNames());
 			}
 		} else {
 			Debug.println(Debug.datasetManagerDialog, "unknown source of action: " + event.toString());

@@ -21,7 +21,7 @@ import javax.swing.KeyStroke;
 /**
  * Menus represent the Menubar of the Application. Implemented as Singleton.
  * 
- * @version 0.1.7 (02.10.2012)
+ * @version 0.1.7.1 (08.10.2012)
  * @author Enrico Grunitz
  */
 public class Menus extends JMenuBar {
@@ -31,7 +31,7 @@ public class Menus extends JMenuBar {
 	private static final String PREFIX_FAIL = "ERROR\tcouldn't register ";
 	
 	private JMenuItem miCloseProgram;
-	private JMenuItem miFileLoad;
+	//private JMenuItem miFileLoad;
 	private JMenuItem miSaveAll;
 	private JMenuItem miDatasetManager;
 	
@@ -56,8 +56,8 @@ public class Menus extends JMenuBar {
 		m.setMnemonic(KeyEvent.VK_D);
 		this.miDatasetManager = new JMenuItem("Datensätze...", KeyEvent.VK_D);
 		m.add(this.miDatasetManager);
-		miFileLoad = new JMenuItem("Datensatz laden...", KeyEvent.VK_S);
-		m.add(miFileLoad);
+		//miFileLoad = new JMenuItem("Datensatz laden...", KeyEvent.VK_S);
+		//m.add(miFileLoad);
 		mi = new JMenuItem("Annotationen laden...", KeyEvent.VK_A);
 		m.add(mi);
 		m.addSeparator();
@@ -114,7 +114,7 @@ public class Menus extends JMenuBar {
 	public boolean registerActionListener(MainWindow.ID id, ActionListener al) {
 		switch(id) {
 		case openFile:
-			miFileLoad.addActionListener(al);
+			//miFileLoad.addActionListener(al);
 			return true;
 		case closeProgram:
 			miCloseProgram.addActionListener(al);
