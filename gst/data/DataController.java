@@ -15,7 +15,6 @@ import gst.test.Debug;
 
 import org.jfree.data.xy.XYSeries;
 import org.unisens.Entry;
-import org.unisens.EventEntry;
 import org.unisens.TimedEntry;
 
 /**

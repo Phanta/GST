@@ -311,7 +311,7 @@ public class DataTest {
 		testEnd();
 		return;
 	}
-		
+	
 	@Deprecated
 	public void arrayTest() {
 		testing("arrayTest(void)", 0);

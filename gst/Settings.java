@@ -19,6 +19,8 @@ public class Settings {
 	/** sub settings of the user interface */			public UI ui;
 	
 	/** default number of maximum signals */			private int signalCount;
+	/** name of the application */						private String applicationName;
+	/** version number of application */				private String applicationId;
 
 	/**
 	 * Access to the instance of the Settings object.
@@ -41,6 +43,8 @@ public class Settings {
 	 */
 	public void defaultValues() {
 		signalCount = 16;		// 16 channel ecg data possible
+		this.applicationName = "GST";
+		this.applicationId = "GST v0.1 (10.10.2012)";
 		ui.defaultValues();
 		return;
 	}
@@ -51,6 +55,15 @@ public class Settings {
 	 */
 	public int getMaxSignals() {
 		return signalCount;
+	}
+	
+	/** @return {@link #applicationName} */
+	public String getAppName() {
+		return this.applicationName;
+	}
+	/** @return {@link #applicationId} */
+	public String getAppId() {
+		return this.applicationId;
 	}
 	
 	/**

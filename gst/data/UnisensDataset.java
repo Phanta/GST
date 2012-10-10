@@ -4,6 +4,8 @@
 
 package gst.data;
 
+import gst.Settings;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -244,7 +246,9 @@ public class UnisensDataset {
 	}
 	
 	/**
-	 * 
+	 * Creates a new {@link gst.data.AnnotationController} and an {@code org.unisens.Entry} for the given file name.
+	 * @param fileName the file name of the new controller
+	 * @return {@code AnnotationController} for the newly created {@code Entry}
 	 */
 	public AnnotationController createAnnotation(String fileName) {
 		EventEntry newEntry = null;
@@ -258,13 +262,35 @@ public class UnisensDataset {
 			System.out.println("ERROR\tcouldn't create new EventEntry");
 			return null;
 		}
-		// FIXME create dummy file here to work around nasty unisens implementation, can't remove events
-/*		try {
-			newEntry.append(new Event(0, "-", ""));
-		} catch(IOException ioe) {
-			Debug.println(Debug.unisensDataset, "couldn't write dummy data");
+		newEntry.setSource(Settings.getInstance().getAppName());
+		newEntry.setSourceId(Settings.getInstance().getAppId());
+		AnnotationController ctrl = new AnnotationController(newEntry);
+		ctrl.createFile();
+		this.ctrlList.add(ctrl);
+		return ctrl;
+	}
+	
+	
+	/**
+	 * Creates a {@link gst.data.BufferedValueController} for a new {@code org.unisens.ValuesEntry} of this dataset.
+	 * @param fileName file name of the entry
+	 * @return the {@code BufferedValueController} of the newly created dataset entry
+	 */
+	public BufferedValueController createValues(String fileName) {
+		ValuesEntry newEntry = null;
+		try {
+			newEntry = us.createValuesEntry(fileName, new String[]{"ch1"}, DataType.DOUBLE, 1000.0);
+		} catch(DuplicateIdException die) {
+			System.out.println("ERROR\tcouldn't create new ValuesEntry - DuplicatedId '" + fileName + "'");
+			return null;
 		}
-*/		AnnotationController ctrl = new AnnotationController(newEntry);
+		if(newEntry == null) {
+			System.out.println("ERROR\tcreated new null ValuesEntry '" + fileName + "'");
+			return null;
+		}
+		newEntry.setSource(Settings.getInstance().getAppName());
+		newEntry.setSourceId(Settings.getInstance().getAppId());
+		BufferedValueController ctrl = new BufferedValueController(newEntry);
 		ctrl.createFile();
 		this.ctrlList.add(ctrl);
 		return ctrl;
