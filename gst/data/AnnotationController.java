@@ -18,7 +18,7 @@ import org.unisens.EventEntry;
 /**
  * Buffered {@link gst.data.DataController} implementation for {@code EventEntry}-type data in an {@link gst.data.UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.2.5.0 (08.10.2012)
+ * @version 0.2.5.1 (10.10.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -284,7 +284,7 @@ public class AnnotationController extends DataController {
 	 */
 	@Override
 	public double getMaxX() {
-		return this.basetime + (this.endSampleNumber / ((EventEntry)this.entry).getSampleRate());
+		return this.timeOf(this.endSampleNumber);
 	}
 
 	/**
@@ -292,7 +292,7 @@ public class AnnotationController extends DataController {
 	 */
 	@Override
 	public double getMinX() {
-		return this.basetime + (this.startSampleNumber / ((EventEntry)this.entry).getSampleRate());
+		return this.timeOf(this.startSampleNumber);
 	}
 
 	/**

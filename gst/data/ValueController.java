@@ -16,7 +16,7 @@ import org.unisens.ValuesEntry;
 /**
  * {@code ViewController} implementation for {@code ValuesEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1.2.1 (05.10.2012)
+ * @version 0.1.2.2 (10.10.2012)
  * @see gst.data.DataController
  */
 public class ValueController extends DataController {
@@ -127,7 +127,7 @@ public class ValueController extends DataController {
 			while(it.hasNext()) {
 				Value value = it.next();
 				// not sure if simple cast correctly converts runtime class to double
-				series.add(this.basetime + value.getSampleStamp() / sampleRate, ((double[])value.getData())[this.channelIndex]);
+				series.add(this.timeOf(value.getSampleStamp()), ((double[])value.getData())[this.channelIndex]);
 			}
 		} else {
 			// FIXME does not support maxPoints - returns all data
@@ -135,7 +135,7 @@ public class ValueController extends DataController {
 			while(it.hasNext()) {
 				Value value = it.next();
 				// not sure if simple cast correctly converts runtime class to double
-				series.add(this.basetime + value.getSampleStamp() / sampleRate, ((double[])value.getData())[this.channelIndex]);
+				series.add(this.timeOf(value.getSampleStamp()), ((double[])value.getData())[this.channelIndex]);
 			}
 		}
 		return series;
@@ -144,13 +144,13 @@ public class ValueController extends DataController {
 	/** @see gst.data.DataController#getMaxX() */
 	@Override
 	public double getMaxX() {
-		return this.basetime + (this.lastSampleNumber / ((ValuesEntry)this.entry).getSampleRate());
+		return this.timeOf(this.lastSampleNumber);
 	}
 
 	/** @see gst.data.DataController#getMinX() */
 	@Override
 	public double getMinX() {
-		return this.basetime + (this.firstSampleNumber / ((ValuesEntry)this.entry).getSampleRate());
+		return this.timeOf(this.firstSampleNumber);
 	}
 
 	/** @see gst.data.DataController#getPhysicalUnit() */

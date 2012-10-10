@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.unisens.DataType;
 import org.unisens.DuplicateIdException;
 import org.unisens.Entry;
 import org.unisens.CustomEntry;
@@ -24,7 +25,7 @@ import org.unisens.ri.UnisensImpl;
 /**
  * This is a convenience wrapper class for org.unisens.Unisens objects.
  * @author Enrico Grunitz
- * @version 0.1.2.3 (05.10.2012)
+ * @version 0.1.2.4 (10.10.2012)
  */
 public class UnisensDataset {
 	/** key for custom attribute: name */			protected static final String KEY_NAME = "DatasetName";
@@ -245,7 +246,7 @@ public class UnisensDataset {
 	/**
 	 * 
 	 */
-	public AnnotationController addNewAnnotation(String fileName) {
+	public AnnotationController createAnnotation(String fileName) {
 		EventEntry newEntry = null;
 		try {
 			newEntry = us.createEventEntry(fileName, 1000.0);

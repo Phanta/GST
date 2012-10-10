@@ -49,8 +49,9 @@ public class Debug {
 	public static final int /* gst.data */ annotationManager = 32;
 	public static final int /* gst.ui */ signalPanelZoomLockManager = 33;
 	public static final int /* gst.ui.dialog */ datasetManagerDialog = 34;
+	public static final int /* gst.data */ bufferedValueController = 35;
 	
-	public static final int END = 35;
+	public static final int END = 36;
 
 
 	private static final boolean isEnabled[] = {true,	//	main
@@ -92,6 +93,7 @@ public class Debug {
 												true,	// gst.data.AnnotationManager
 												true,	// gst.ui.SignalPanel.ZoomLockManager
 												true,	// gst.ui.dialog.DatasetManagerDialog
+												true,	// gst.data.BufferdValueController
 												false};	// END
 	
 	public static void println(int src, String msg) {

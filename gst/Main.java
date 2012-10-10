@@ -165,7 +165,7 @@ public abstract class Main {
 			while(finished != true) {
 				String fileName = dialog2.show();
 				if(fileName != null) {
-					AnnotationController newAnnoCtrl = selectedDs.addNewAnnotation(fileName);
+					AnnotationController newAnnoCtrl = selectedDs.createAnnotation(fileName);
 					if(newAnnoCtrl != null) {
 						// creation successful
 						getAnnotationManager().selectController(newAnnoCtrl);

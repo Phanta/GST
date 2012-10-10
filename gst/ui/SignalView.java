@@ -456,7 +456,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	@Override
 	public void dataChangeReaction(DataController source) {
 		if(source.isAnnotation()) {
-			this.updateTimeAxisMarkers();
+			this.updateTimeAxisMarkers();	// faster than update of all data
 		} else {
 			this.updateData();
 		}

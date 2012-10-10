@@ -15,11 +15,13 @@ import gst.test.Debug;
 
 import org.jfree.data.xy.XYSeries;
 import org.unisens.Entry;
+import org.unisens.EventEntry;
+import org.unisens.TimedEntry;
 
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.5.0 (08.10.2012)
+ * @version 0.1.5.1 (10.10.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -87,24 +89,15 @@ public abstract class DataController {
 	 * @return true if date entry is read-only
 	 */
 	public boolean isReadOnly() {
-		String path = this.entry.getUnisens().getPath();
-		if(!(path.endsWith("\\") || path.endsWith("/"))) {
-			path += "/";
-		}
-		File file = new File(path + this.getEntryId());
-		if(file.canWrite()) {
-			return false;
-		} else { 
-			return true;
-		}
+		return !this.getFile().canWrite();
 	}
 	
 	/**
 	 * Create the file if it not exists.
 	 */
 	public void createFile() {
-		String path = this.entry.getUnisens().getPath();
-		File dummyFile = new File(path, this.getEntryId());
+		File dummyFile = this.getFile();
+		Debug.println(Debug.controller, "creating dummy file " + dummyFile.getAbsolutePath());
 		if(!dummyFile.exists()) {
 			try {
 				dummyFile.createNewFile();
@@ -115,6 +108,27 @@ public abstract class DataController {
 		} else {
 			Debug.println(Debug.controller, "file '" + dummyFile.getAbsolutePath() + "' already exists");
 		}
+	}
+	
+	protected boolean fileExists() {
+		return this.getFile().exists();
+	}
+	
+	/**
+	 * Returns the file of this entry.
+	 * @return the file of this data entry
+	 */
+	protected File getFile() {
+		File unisensFile = new File(this.entry.getUnisens().getPath());
+		// remove unisens file to get the directory
+		if(unisensFile.isFile()) {
+			unisensFile = unisensFile.getParentFile();
+		}
+		if(unisensFile == null) {
+			throw new NullPointerException("error while creating file for entry " + this.entry.getId());
+		}
+		// create file of entry
+		return new File(unisensFile, this.entry.getId());
 	}
 	
 	/**
@@ -140,6 +154,20 @@ public abstract class DataController {
 	 */
 	public String getFullName() {
 		return this.entry.getUnisens().getMeasurementId() + SEPERATOR + this.entry.getId();
+	}
+	
+	/**
+	 * Returns the time corresponding to the given SampleStamp. Throws a {@code UnsupportedOperationException} if the entry
+	 * is not an instance of {@code org.unisens.TimedEntry}.
+	 * @param sampleStamp the sampleStamp to convert.
+	 * @return the time in seconds of this sample stamp
+	 */
+	protected double timeOf(long sampleStamp) {
+		if(this.entry instanceof TimedEntry) {
+			return this.basetime + (sampleStamp / ((TimedEntry)this.entry).getSampleRate());
+		} else {
+			throw new UnsupportedOperationException("time conversion only works for TimedEntries");
+		}
 	}
 	
 	/**
