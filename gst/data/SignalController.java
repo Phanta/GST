@@ -12,7 +12,7 @@ import org.unisens.SignalEntry;
 /**
  * {@code ViewController} implementation for {@code SignalEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1.3.1 (05.10.2012)
+ * @version 0.1.3.2 (11.10.2012)
  * @see gst.data.DataController
  */
 public class SignalController extends DataController {
@@ -73,8 +73,8 @@ public class SignalController extends DataController {
 			endTime = temp;
 		}
 		// calculate indices from time variables
-		long iStart = (long)Math.ceil((startTime - this.basetime) * sampleRate); 
-		long iEnd = (long)Math.round((endTime - this.basetime) * sampleRate);
+		long iStart = this.lowSampleStamp(startTime); 
+		long iEnd = this.highSampleStamp(endTime);
 		// read data from file
 		double[][] dataArray = null;
 		try {

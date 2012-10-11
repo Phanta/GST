@@ -20,7 +20,7 @@ import org.unisens.TimedEntry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.5.1 (10.10.2012)
+ * @version 0.1.5.2 (11.10.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -169,6 +169,34 @@ public abstract class DataController {
 		}
 	}
 	
+	/**
+	 * Returns the highest samplestamp that is lower or equal the given point in time. Only works for entries of
+	 * {@code org.unisens.TimedEntry}.
+	 * @param time point in time to convert
+	 * @return samplestamp lower or equal the given time
+	 */
+	protected long lowSampleStamp(double time) {
+		if(this.entry instanceof TimedEntry) {
+			return (long)Math.floor((time - this.basetime) * ((TimedEntry)this.entry).getSampleRate());
+		} else {
+			throw new UnsupportedOperationException("time conversion only works for TimedEntries");
+		}
+	}
+
+	/**
+	 * Returns the lowest samplestamp that is higher or equal the given point in time. Only works for entries of
+	 * {@code org.unisens.TimedEntry}.
+	 * @param time point in time to convert
+	 * @return samplestamp higher or equal the given time
+	 */
+	protected long highSampleStamp(double time) {
+		if(this.entry instanceof TimedEntry) {
+			return (long)Math.ceil((time - this.basetime) * ((TimedEntry)this.entry).getSampleRate());
+		} else {
+			throw new UnsupportedOperationException("time conversion only works for TimedEntries");
+		}
+	}
+
 	/**
 	 * Returns the name of the channel of the controllers entry. Returns {@code null} if the channel is not named.
 	 * @return channel name

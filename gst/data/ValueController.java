@@ -16,7 +16,7 @@ import org.unisens.ValuesEntry;
 /**
  * {@code ViewController} implementation for {@code ValuesEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1.2.2 (10.10.2012)
+ * @version 0.1.2.3 (11.10.2012)
  * @see gst.data.DataController
  */
 public class ValueController extends DataController {
@@ -88,8 +88,8 @@ public class ValueController extends DataController {
 			endTime = temp;
 		}
 		// calculate indices from time variables
-		long iStart = (long)Math.ceil((startTime - this.basetime) * sampleRate); 
-		long iEnd = (long)Math.round((endTime - this.basetime) * sampleRate);
+		long iStart = this.lowSampleStamp(startTime); 
+		long iEnd = this.highSampleStamp(endTime);
 		// read data from file
 			// TODO simplest version of getting data: read until find first and last data point in time window
 			// store data of all points in between

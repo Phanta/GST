@@ -18,7 +18,7 @@ import org.unisens.EventEntry;
 /**
  * Buffered {@link gst.data.DataController} implementation for {@code EventEntry}-type data in an {@link gst.data.UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.2.5.1 (10.10.2012)
+ * @version 0.2.5.2 (11.10.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -255,8 +255,8 @@ public class AnnotationController extends DataController {
 			endTime = temp;
 		}
 		// calculate sample numbers from times
-		long startSample = (long)Math.ceil((startTime - this.basetime) * ((EventEntry)this.entry).getSampleRate());
-		long endSample = (long)Math.round((endTime - this.basetime) * ((EventEntry)this.entry).getSampleRate());
+		long startSample = this.lowSampleStamp(startTime);
+		long endSample = this.highSampleStamp(endTime);
 		// create list of interesting events
 		Iterator<Event> it = this.buffer.iterator();
 		ArrayList<Event> events = new ArrayList<Event>();
