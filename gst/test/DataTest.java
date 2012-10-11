@@ -15,6 +15,7 @@ import org.unisens.EventEntry;
 
 import gst.data.AnnotationController;
 import gst.data.AnnotationList;
+import gst.data.BufferedValueController;
 import gst.data.SignalController;
 import gst.data.UnisensDataset;
 import gst.data.UnisensDataset.EntryType;
@@ -310,6 +311,16 @@ public class DataTest {
 		}
 		testEnd();
 		return;
+	}
+	
+	public void testBufferedValues() {
+		testing("BufferedValueController -> Implementation Test");
+		echo("loading Data");
+		usds = new UnisensDataset("D:/Users/grunitz/Documents/Unisens Examples/uniImplTest", true);
+		ValuesEntry entry = (ValuesEntry)usds.getEntry("bufferedRRTest.csv");
+		BufferedValueController bvc = new BufferedValueController(entry);
+		bvc.save();
+		testEnd();
 	}
 	
 	@Deprecated

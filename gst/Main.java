@@ -110,6 +110,7 @@ public abstract class Main {
 		dt.testAnnotationController();
 		dt.testMultiController();
 		dt.testReadOnlyDataController();
+		dt.testBufferedValues();
 		main.revalidate();
 		main.repaint();
 		
