@@ -7,11 +7,12 @@ package gst.data;
 import gst.ui.dialog.LoadDatasetDialog;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
  * @author Enrico Grunitz
- * @version 0.0.0.1 (08.10.2012)
+ * @version 0.0.0.2 (12.10.2012)
  */
 public class DatasetList {
 	/** instance of this class */						private static DatasetList instance = new DatasetList(); 
@@ -69,6 +70,23 @@ public class DatasetList {
 		String[] names = new String[this.size()];
 		for(int i = 0; i < this.size(); i++) {
 			names[i] = this.datasets.get(i).getName();
+		}
+		return names;
+	}
+	
+	/**
+	 * Returns a {@code String} array with the (short) names of all {@link gst.data.DataController}s of the selected dataset. 
+	 * @param index index of the dataset to select
+	 * @return array of {@code DataController} names
+	 */
+	public String[] getNames(int index) {
+		if(index < 0 || index >= this.datasets.size()) {
+			throw new IndexOutOfBoundsException("index out of bounds: 0 <= " + index + " < " + this.datasets.size());
+		}
+		List<DataController> ctrlList = this.datasets.get(index).getControllerList(); 
+		String[] names = new String[ctrlList.size()];
+		for(int i = 0; i < ctrlList.size(); i++) {
+			names[i] = ctrlList.get(i).getEntryId() + " -> " + ctrlList.get(i).getChannelName();
 		}
 		return names;
 	}
