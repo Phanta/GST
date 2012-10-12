@@ -12,7 +12,7 @@ import java.util.ArrayList;
 /**
  * Abstract class of a signal processing function.
  * @author Enrico Grunitz
- * @version 0.0.0.1 (12.10.2012)
+ * @version 0.0.0.2 (12.10.2012)
  */
 public abstract class SignalProcessor {
 	/** {@code ArrayList} of source {@link gst.data.DataController}s */	private ArrayList<DataController> sourceArr;
@@ -121,19 +121,20 @@ public abstract class SignalProcessor {
 	 * Implements the functionality of this signal processing function. 
 	 * @return return value defined by implementation
 	 */
-	abstract int performFunctionality();
+	abstract protected int performFunctionality();
 	
 	/**
 	 * Returns the name this signal processing function is called. Used for setting the {@code source} field of target entries
 	 * of the dataset.
 	 * @return the name this signal processing function is called
 	 */
-	abstract String getName();
+	abstract public String getName();
 	
 	/**
 	 * Returns a {@code String} which contains all necessary parameters. Used for setting the {@code sourceId} field of target
 	 * entries in the dataset.
 	 * @return a comprehensive parameter list
 	 */
-	abstract String getParameterString();
+	abstract public String getParameterString();
+	
 }
