@@ -20,7 +20,7 @@ import org.unisens.TimedEntry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.5.3 (12.10.2012)
+ * @version 0.1.5.4 (12.10.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -219,6 +219,16 @@ public abstract class DataController {
 	/** @return {@link #prefColor} */
 	public Color getPreferredColor() {
 		return this.prefColor;
+	}
+	
+	/**
+	 * Sets the {@code source} and {@code sourceId} fields of the controlled dataset entry to the given {@code String}s.
+	 * @param source the source {@code String}
+	 * @param sourceId the sourceId {@code String}
+	 */
+	public void setSource(String source, String sourceId) {
+		this.entry.setSource(source);
+		this.entry.setSourceId(sourceId);
 	}
 	
 	/**
