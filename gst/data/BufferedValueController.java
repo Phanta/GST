@@ -97,6 +97,16 @@ public class BufferedValueController extends ValueController {
 	}
 	
 	/**
+	 * Removes all data-points from the controller. Seriously there will be no confirmation dialog, no "Are you sure? Yes. No.
+	 * Maybe."-questioning. So be absolutely, uber extremely sure you don't need the data anymore. And never ever say I didn't
+	 * warn you about this behavior.
+	 */
+	public void clearDataPoints() {
+		this.buffer.clear();
+		this.updateLastAccess(0);
+	}
+	
+	/**
 	 * Removes the data point of the given time and value from the buffer. If removal is successful true is returned, otherwise
 	 * false.
 	 * @param time point in time of the data point

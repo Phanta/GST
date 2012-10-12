@@ -50,8 +50,10 @@ public class Debug {
 	public static final int /* gst.ui */ signalPanelZoomLockManager = 33;
 	public static final int /* gst.ui.dialog */ datasetManagerDialog = 34;
 	public static final int /* gst.data */ bufferedValueController = 35;
+	public static final int /* gst.signalprocessing */ signalProcessor = 36;
+	public static final int /* gst.signalprocessing.rrcalc */ rrCalculator =37;
 	
-	public static final int END = 36;
+	public static final int END = 38;
 
 
 	private static final boolean isEnabled[] = {true,	//	main
@@ -94,6 +96,8 @@ public class Debug {
 												true,	// gst.ui.SignalPanel.ZoomLockManager
 												true,	// gst.ui.dialog.DatasetManagerDialog
 												true,	// gst.data.BufferdValueController
+												true,	// gst.signalprocessing.SignalProcessor
+												true,	// gst.signalprocessing.rrcalc.RRCalculator
 												false};	// END
 	
 	public static void println(int src, String msg) {

@@ -67,8 +67,12 @@ public abstract class SignalProcessor {
 	/**
 	 * Adds the given {@link gst.data.DataController} to the sources.
 	 * @param dc the {@code DataController} to add to sources
+	 * @throws NullPointerException if {@code dc} is null
 	 */
 	public void addSource(DataController dc) {
+		if(dc == null) {
+			throw new NullPointerException("Source-signal for signal processing shall not be null!");
+		}
 		if(this.allowDuplicateSources || !this.sourceArr.contains(dc)) {
 			this.sourceArr.add(dc);
 		}
@@ -97,8 +101,12 @@ public abstract class SignalProcessor {
 	/**
 	 * Adds the given {@link gst.data.DataController} to the targets.
 	 * @param dc the {@code DataController} to add to targets
+	 * @throws NullPointerException if {@code dc} is null
 	 */
 	public void addTarget(DataController dc) {
+		if(dc == null) {
+			throw new NullPointerException("Target-signal for signal processing shall not be null!");
+		}
 		if(this.allowDuplicateTargets || !this.targetArr.contains(dc)) {
 			this.targetArr.add(dc);
 		}
