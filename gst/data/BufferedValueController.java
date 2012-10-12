@@ -19,11 +19,11 @@ import org.unisens.ValuesEntry;
  * Buffered version of a {@link gst.data.ValueController} which supports reading and writing of data. Only double-type data and
  * one single channel are supported.
  * @author Enrico Grunitz
- * @version 0.0.0.3 (11.10.2012)
+ * @version 0.0.1.0 (12.10.2012)
  */
 public class BufferedValueController extends ValueController {
 	/** buffer of the values of the controlled channel and entry */		private ArrayList<DataPoint<Double>> buffer;
-	/** last accessed index */											private int lastAccessedIndex;
+	/** last accessed index */											private int lastAccessedIndex = 0;
 	
 	/**
 	 * Constructor.
@@ -33,14 +33,159 @@ public class BufferedValueController extends ValueController {
 		super(entry);
 		this.isBuffered = true;
 		this.setChannelToControl(0);
-		this.readBuffer();
-		this.updateLastAccess(0);
+		this.initAndFillBuffer();
 	}
 	
+	/**
+	 * Inserts a new data point into the buffer and may notify registered {@link gst.data.DataChangeListener}s.
+	 * @param time point in time of the data point
+	 * @param value value of the data point
+	 * @param notify if true all {@code DataChangeListener}s are notified
+	 */
+	public void addDataPoint(double time, double value, boolean notify) {
+		this.insert(new DataPoint<Double>(this.roundSampleStamp(time), value));
+		if(notify == true) {
+			this.notifyListeners(this);
+		}
+		return;
+	}
+	
+	/**
+	 * Inserts a new data point into the buffer and notifies the listeners. Convenience method to always notify listeners.
+	 * @param time point in time of the data point
+	 * @param value value of the data point
+	 */
+	public void addDataPoint(double time, double value) {
+		this.addDataPoint(time, value, true);
+		return;
+	}
+	
+	/**
+	 * Changes the value of the data point with the time {@code time} and its value {@code oldValue} to {@code newValue}.
+	 * @param time point in time of the data point
+	 * @param oldValue value of the data point
+	 * @param newValue new value for the data point
+	 * @param notify if {@code true} all registered {@link gst.data.DataChangeListener}s are notified about data change
+	 * @return {@code true} if modify was success else {@code false}
+	 */
+	public boolean modifyDataPoint(double time, double oldValue, double newValue, boolean notify) {
+		if(this.buffer.isEmpty()) {
+			return false;
+		}
+		int index = this.seek(new DataPoint<Double>(this.roundSampleStamp(time), oldValue));
+		if(index == -1) {
+			return false;
+		}
+		this.buffer.get(index).setData(newValue);
+		if(notify == true) {
+			this.notifyListeners(this);
+		}
+		return true;
+	}
+	
+	/**
+	 * Convenience method for {@link #modifyDataPoint(double, double, double, boolean) modifyDataPoint(time, oldValue, newValue, notify = true)}.<br>
+	 * Changes the value of the data point with the time {@code time} and its value {@code oldValue} to {@code newValue}. All
+	 * registered  {@link gst.data.DataChangeListener}s are notified about data change.
+	 * @param time point in time of the data point
+	 * @param oldValue value of the data point
+	 * @param newValue new value for the data point
+	 * @return {@code true} if modify was success else {@code false}
+	 */
+	public boolean modifyDataPoint(double time, double oldValue, double newValue) {
+		return this.modifyDataPoint(time, oldValue, newValue, true);
+	}
+	
+	/**
+	 * Removes the data point of the given time and value from the buffer. If removal is successful true is returned, otherwise
+	 * false.
+	 * @param time point in time of the data point
+	 * @param value value of the data point
+	 * @param notify if true all registered {@link gst.data.DataChangeListener}s are notified of data removal
+	 * @return true if removal was successful
+	 */
+	public boolean removeDataPoint(double time, double value, boolean notify) {
+		if(this.buffer.isEmpty()) {
+			return false;
+		}
+		DataPoint<Double> dp = new DataPoint<Double>(this.roundSampleStamp(time), value);
+		int index = this.seek(dp);
+		if(index == -1) {
+			// no element in buffer with matching sample-stamp
+			return false;
+		} else {
+			this.buffer.remove(index);
+			this.updateLastAccess(index - 1);
+			if(notify == true) {
+				this.notifyListeners(this);
+			}
+			return true;
+		}
+	}
+	
+	/**
+	 * Convenience method for {@link #removeDataPoint(double, double, boolean)} with notification set to {@code true}.<br>
+	 * Removes the data point of the given time and value from the buffer. If removal is successful true is returned, otherwise
+	 * false. All register {@link gst.data.DataChangeListener}s are notified upon data removal.
+	 * @param time point in time of the data point
+	 * @param value value of the data point
+	 * @return true if removal was successful
+	 */
+	public boolean removeDataPoint(double time, double value) {
+		return this.removeDataPoint(time, value, true);
+	}
+	
+	/**
+	 * Removes all data at the given point in time from the buffer. The number of removed elements is returned. If {@code notify}
+	 * is {@code true} all registered {@code gst.data.DataChangeListener} are notified of the changed data.
+	 * @param time point in time to remove all data points from
+	 * @param notify if {@code true} all {@code DataChangeListener}s are notified of changed data
+	 * @return number of removed data points
+	 */
+	public int removeDataAt(double time, boolean notify) {
+		long sampleStamp = this.roundSampleStamp(time);
+		int index = this.seek(sampleStamp);
+		int counter = 0;
+		while(index != -1) {
+			this.buffer.remove(index);
+			counter++;
+			index = this.seek(sampleStamp);
+		}
+		if(counter > 0 && notify == true) {
+			this.notifyListeners(this);
+		}
+		return counter;
+	}
+	
+	/**
+	 * Convenience method for {@link #removeDataAt(double, boolean) removeDataAt(double time, boolean notify = true)}.<br> 
+	 * Removes all data at the given point in time from the buffer. The number of removed elements is returned. All registered
+	 * {@code gst.data.DataChangeListener} are notified of the changed data.
+	 * @param time point in time to remove all data points from
+	 * @return number of removed data points
+	 */
+	public int removeDataAt(double time) {
+		return this.removeDataAt(time, true);
+	}
+		
 	/** @see gst.data.ValueController#getDataPoints(double, double, int) */
 	@Override public XYSeries getDataPoints(double startTime, double endTime, int maxPoints) {
-		// TODO implementation
-		return null;
+		XYSeries series = new XYSeries(this.getFullName());
+		if(this.buffer.isEmpty()) {
+			return series;
+		}
+		int startIndex = this.seekLower(this.lowSampleStamp(startTime));
+		if(startIndex < 0) {
+			startIndex = 0;
+		}
+		int endIndex = this.seekHigher(this.highSampleStamp(endTime));
+		if(endIndex > this.buffer.size()) {
+			endIndex = this.buffer.size();
+		}
+		for(int i = startIndex; i < endIndex; i++) {
+			series.add(this.timeOf(this.buffer.get(i).getSampleStamp()), this.buffer.get(i).getData());
+		}
+		return series;
 	}
 	
 	/** @see gst.data.DataController#getMaxX() */
@@ -100,42 +245,14 @@ public class BufferedValueController extends ValueController {
 	 * @param dp the {@code DataPoint to insert}
 	 */
 	private void insert(DataPoint<Double> dp) {
-		int insertIndex = 0;
-		long curSS = dp.getSampleStamp();
+		if(dp == null) {
+			throw new NullPointerException("cannot insert null into buffer");
+		}
+		int insertIndex;
 		if(this.buffer.isEmpty()) {
 			insertIndex = 0;
-		} else if(curSS < this.buffer.get(this.lastAccessedIndex).getSampleStamp()) {
-			// search before lastAccessedIndex
-			for(int i = this.lastAccessedIndex; i >= 0; i--) {
-				if(i == 0) {
-					// checking first buffer element
-					if(this.buffer.get(i).getSampleStamp() > curSS) {
-						insertIndex = i;
-						break;
-					} else {
-						insertIndex = i + 1;
-						break;
-					}
-				}
-				if(this.buffer.get(i).getSampleStamp() < curSS) {
-					insertIndex = i + 1;
-					break;
-				}
-			}
 		} else {
-			//search after lastAccesedIndex
-			for(int i = this.lastAccessedIndex; i <= this.buffer.size(); i++) {
-				if(i == this.buffer.size()) {
-					// nothing found until end
-					insertIndex = this.buffer.size();
-					break;
-				}
-				if(this.buffer.get(i).getSampleStamp() > curSS) {
-					// found first index that is bigger than the the item to insert
-					insertIndex = i;
-					break;
-				}
-			}
+			insertIndex = this.seekHigher(dp.getSampleStamp());
 		}
 		this.buffer.add(insertIndex, dp);
 		this.updateLastAccess(insertIndex);
@@ -143,9 +260,9 @@ public class BufferedValueController extends ValueController {
 	}
 	
 	/**
-	 * Reads all data from file and fills the buffer.
+	 * Reads all data from file and fills the buffer. Notifies Listeners at the end.
 	 */
-	private void readBuffer() {
+	private void initAndFillBuffer() {
 		if(!(((ValuesEntry)this.entry).getDataType() == DataType.DOUBLE)) {
 			throw new UnsupportedOperationException("cannot handle buffer values of non double types");
 		}
@@ -163,12 +280,116 @@ public class BufferedValueController extends ValueController {
 		for(int i = 0; i < values.length; i++) {
 			this.insert(new DataPoint<Double>(values[i].getSampleStamp(), ((double[])values[i].getData())[0]));
 		}
+		this.notifyListeners(this);
+	}
+	
+	/**
+	 * Searches for the index of the buffer-element which sample-stamp is lower than the given sample-stamp. Starting search
+	 * from {@link #lastAccessedIndex}.
+	 * @param sampleStamp
+	 * @return index of the element which sample-stamp is the highest below the given, -1 if there is no lower sample-stamp
+	 */
+	private int seekLower(long sampleStamp) {
+		if(sampleStamp <= this.buffer.get(this.lastAccessedIndex).getSampleStamp()) {
+			// ss >= lastSS -> seeking backward
+			for(int i = this.lastAccessedIndex; i >= 0; i--) {
+				if(i == 0) { // reached beginning of buffer
+					if(this.buffer.get(i).getSampleStamp() >= sampleStamp) {
+						return -1;
+					} else {
+						return 0;
+					}
+				}
+				if(sampleStamp > this.buffer.get(i).getSampleStamp()) {
+					return i;
+				}
+			}
+		} else {
+			// ss < lastSS -> seeking forward
+			for(int i = this.lastAccessedIndex; i < this.buffer.size(); i++) {
+				if(i == this.buffer.size() - 1) {	// reached end of buffer
+					if(sampleStamp <= this.buffer.get(i).getSampleStamp()) {
+						return i - 1;
+					} else {
+						return i;
+					}
+				}
+				if(sampleStamp <= this.buffer.get(i).getSampleStamp()) {
+					return i - 1;
+				}
+			}
+		}
+		Debug.println(Debug.bufferedValueController, "BufferedValueController.seekLower() reached unreachable code");
+		return -1;
+	}
+	
+	/**
+	 * Seeks the first element in the buffer, that has the given sample-stamp.
+	 * @param sampleStamp the sample-stamp to look for
+	 * @return index of the first element with the given sample-stamp or -1 if there is no such element in the buffer
+	 */
+	private int seek(long sampleStamp) {
+		if(this.buffer.size() == 0) {
+			return -1;
+		}
+		int index = this.seekLower(sampleStamp) + 1;
+		if(index < this.buffer.size()) {
+			if(this.buffer.get(index).getSampleStamp() == sampleStamp) {
+				return index;
+			} else {
+				// must be bigger than the sample-stamp, but let's double check
+				if(!(this.buffer.get(index).getSampleStamp() > sampleStamp)) {
+					Debug.println(Debug.bufferedValueController, "BufferedValueController.seekLower(long) failed");
+				}
+				return -1;
+			}
+		} else {
+			return -1;
+		}
+	}
+	
+	/**
+	 * Searches the buffer for a {@link gst.data.BufferedValueController.DataPoint} which equals the given.
+	 * @param dp the {@code DataPoint} to look for
+	 * @return the index of the first matching {@code DataPoint} or -1 if there is no such point
+	 */
+	private int seek(DataPoint<Double> dp) {
+		int iStart = this.seek(dp.getSampleStamp());
+		if(iStart == -1) {
+			return -1;
+		}
+		for(int i = iStart; i < this.buffer.size(); i++) {
+			if(this.buffer.get(i).getSampleStamp() > dp.getSampleStamp()) {
+				return -1;
+			}
+			if(this.buffer.get(i).equals(dp)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	/**
+	 * Returns the index of the buffer-element which has the lowest sample-stamp above the given.
+	 * @param sampleStamp the sample-stamp to seek for
+	 * @return index of the element with the smallest sampleStamp above the given, {@code buffer.size()} if there is no bigger
+	 * 		   element
+	 */
+	private int seekHigher(long sampleStamp) {
+		int lowerIndex = this.seekLower(sampleStamp);
+		for(int i = lowerIndex + 1; i < this.buffer.size(); i++) {
+			// skip all elements that have the same sample-stamp as the current one
+			if(sampleStamp < this.buffer.get(i).getSampleStamp()) {
+				return i;
+			}
+		}
+		return this.buffer.size();
 	}
 	
 	/**
 	 * Updates {@link #lastAccessedIndex} to the given value, but checks size of the buffer. If {@code index} is lower 0 it is
-	 * set to 0. If it is higher or equal {@code buffer.size()} it is set to {@code buffer.size() - 1}. If {@buffer.size()} is 0
-	 * it is also set to 0.
+	 * set to 0. If it is higher or equal {@code buffer.size()} it is set to {@code buffer.size() - 1}. If {@code buffer.size()}
+	 * is 0 it is also set to 0.
 	 * @param index the index to set to
 	 */
 	private void updateLastAccess(int index) {
@@ -196,7 +417,7 @@ public class BufferedValueController extends ValueController {
 	/**
 	 * 
 	 * @author Enrico Grunitz
-	 * @version 0.0.0.1 (08.10.2012)
+	 * @version 0.0.0.2 (12.10.2012)
 	 * @param <T> 
 	 */
 	private class DataPoint<T> {
@@ -226,6 +447,17 @@ public class BufferedValueController extends ValueController {
 		
 		public Value toValue() {
 			return new Value(this.samplestamp, this.data);
+		}
+		
+		public boolean equals(DataPoint<T> dp) {
+			if(dp == null) {
+				return false;
+			}
+			if(dp.samplestamp == this.samplestamp && dp.data.equals(this.data)) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 		
 	}

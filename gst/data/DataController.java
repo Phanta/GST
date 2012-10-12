@@ -20,7 +20,7 @@ import org.unisens.TimedEntry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.5.2 (11.10.2012)
+ * @version 0.1.5.3 (12.10.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -178,6 +178,19 @@ public abstract class DataController {
 	protected long lowSampleStamp(double time) {
 		if(this.entry instanceof TimedEntry) {
 			return (long)Math.floor((time - this.basetime) * ((TimedEntry)this.entry).getSampleRate());
+		} else {
+			throw new UnsupportedOperationException("time conversion only works for TimedEntries");
+		}
+	}
+	
+	/**
+	 * Returns the closest sample-stamp to the given point in time. Only works for entries of {@code org.unisens.TimedEntry}.
+	 * @param time to convert into sample-stamp
+	 * @return the sample-stamp closest to the given point in time
+	 */
+	protected long roundSampleStamp(double time) {
+		if(this.entry instanceof TimedEntry) {
+			return (long)Math.round((time - this.basetime) * ((TimedEntry)this.entry).getSampleRate());
 		} else {
 			throw new UnsupportedOperationException("time conversion only works for TimedEntries");
 		}

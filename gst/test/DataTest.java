@@ -319,6 +319,8 @@ public class DataTest {
 		usds = new UnisensDataset("D:/Users/grunitz/Documents/Unisens Examples/uniImplTest", true);
 		ValuesEntry entry = (ValuesEntry)usds.getEntry("bufferedRRTest.csv");
 		BufferedValueController bvc = new BufferedValueController(entry);
+		SignalView csv = SignalView.createControlledView(bvc);
+		SignalPanel.getInstance().addSignal(csv);
 		bvc.save();
 		testEnd();
 	}
