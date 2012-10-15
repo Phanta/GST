@@ -52,8 +52,9 @@ public class Debug {
 	public static final int /* gst.data */ bufferedValueController = 35;
 	public static final int /* gst.signalprocessing */ signalProcessor = 36;
 	public static final int /* gst.signalprocessing.rrcalc */ rrCalculator =37;
+	public static final int /* gst.signalprocessing.rrcalc */ rrConfig =38;
 	
-	public static final int END = 38;
+	public static final int END = 39;
 
 
 	private static final boolean isEnabled[] = {true,	//	main
@@ -98,6 +99,7 @@ public class Debug {
 												true,	// gst.data.BufferdValueController
 												true,	// gst.signalprocessing.SignalProcessor
 												true,	// gst.signalprocessing.rrcalc.RRCalculator
+												true,	// gst.signalprocessing.rrcalc.ConfigDialog
 												false};	// END
 	
 	public static void println(int src, String msg) {

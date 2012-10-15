@@ -21,7 +21,7 @@ import javax.swing.KeyStroke;
 /**
  * Menus represent the Menubar of the Application. Implemented as Singleton.
  * 
- * @version 0.1.7.1 (08.10.2012)
+ * @version 0.1.7.2 (15.10.2012)
  * @author Enrico Grunitz
  */
 public class Menus extends JMenuBar {
@@ -37,6 +37,8 @@ public class Menus extends JMenuBar {
 	
 	private JMenuItem miCreateNewAnnotation;
 	private JMenuItem miSelectAnnotation;
+	
+	private JMenuItem miFuncRRCalc;
 	
 	/**
 	 * @return the Instance of the Menubar
@@ -82,6 +84,15 @@ public class Menus extends JMenuBar {
 		m.addSeparator();
 		mi = new JMenuItem("Einstellungen...", KeyEvent.VK_E);
 		m.add(mi);
+		this.add(m);
+		
+		// --- FUNKTION ----------------------------------------------------------
+		m = new JMenu("Funktion");
+		m.setMnemonic(KeyEvent.VK_F);
+		this.miFuncRRCalc = new JMenuItem("RRCalc (Debug)");
+		// quick and dirty actionlistener
+		this.miFuncRRCalc.addActionListener(new gst.signalprocessing.rrcalc.ConfigDialog());
+		m.add(this.miFuncRRCalc);
 		this.add(m);
 		
 		// --- ANNOTATIONEN ----------------------------------------------------------

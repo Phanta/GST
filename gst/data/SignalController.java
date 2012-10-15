@@ -7,12 +7,13 @@ package gst.data;
 import java.io.IOException;
 
 import org.jfree.data.xy.XYSeries;
+import org.unisens.MeasurementEntry;
 import org.unisens.SignalEntry;
 
 /**
  * {@code ViewController} implementation for {@code SignalEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1.3.2 (11.10.2012)
+ * @version 0.1.3.3 (15.10.2012)
  * @see gst.data.DataController
  */
 public class SignalController extends DataController {
@@ -132,6 +133,11 @@ public class SignalController extends DataController {
 	@Override
 	public String getPhysicalUnit() {
 		return ((SignalEntry)entry).getUnit();
+	}
+
+	/** @see gst.data.DataController#setPhysicalUnit(java.lang.String) */
+	@Override public void setPhysicalUnit(String physUnit) {
+		((MeasurementEntry)this.entry).setUnit(physUnit);
 	}
 
 	/**

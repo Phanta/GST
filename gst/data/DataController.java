@@ -20,7 +20,7 @@ import org.unisens.TimedEntry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.5.4 (12.10.2012)
+ * @version 0.1.5.5 (15.10.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -306,6 +306,10 @@ public abstract class DataController {
 	 * @return physical unit as {@code String}
 	 */
 	abstract public String getPhysicalUnit();
+	/**
+	 * Sets the physical unit specifying string. Ignored if not applicable.
+	 */
+	abstract public void setPhysicalUnit(String physUnit);
 	/**
 	 * This function saves the data to its corresponding file. Called if {@link #isBuffered} is set to true.
 	 */

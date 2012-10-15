@@ -14,15 +14,18 @@ import gst.test.Debug;
 /**
  * This {@link gst.signalprocessing.SignalProcessor} calculates the RR-times of annotations.
  * @author Enrico Grunitz
- * @version 0.0.0.1 (12.10.2012)
+ * @version 0.0.0.2 (15.10.2012)
  */
 public class RRCalculator extends SignalProcessor {
-	/** name of this {@link SignalProcessor} */			final private static String PROC_NAME = "RR-Calulator";
+	/** name of this {@link SignalProcessor} */			final private static String PROC_NAME = "RR-Calculator";
 														final private static String PREF_ERROR = "Failed operation: ";
 														final private static String PREF_SOURCE = "Quelle: ";
 
 	public RRCalculator(DataController source, BufferedValueController target) {
 		super(1, 1, true, true);
+		if(!source.isAnnotation()) {
+			throw new IllegalArgumentException("source of RRCalculator must be an annotation");
+		}
 		this.addSource(source);
 		this.addTarget(target);
 	}
@@ -47,17 +50,19 @@ public class RRCalculator extends SignalProcessor {
 		AnnotationList aList = anno.getAnnotations(anno.getMinX(), anno.getMaxX());
 		if(aList.size() <= 1) {
 			Debug.println(Debug.rrCalculator, PREF_ERROR + "Source signal has to few annotations.");
+			return -1;
 		}
 		// prepare target signals
 		BufferedValueController bvc = (BufferedValueController)this.target(0);
 		bvc.clearDataPoints();
+		bvc.setPhysicalUnit("ms");
 		// Go-Go-Gadget-o-difference-calculator
 		double prev = aList.getTime(0);
 		double cur = 0;
 		double diff = 0;
 		for(int i = 1; i < aList.size(); i++) {
 			cur = aList.getTime(i);
-			diff = cur - prev;
+			diff = (cur - prev) * 1000;		// save it in miliseconds
 			prev = cur;
 			if(i == aList.size() - 1) {
 				// last calculation cycle

@@ -10,13 +10,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.jfree.data.xy.XYSeries;
+import org.unisens.MeasurementEntry;
 import org.unisens.Value;
 import org.unisens.ValuesEntry;
 
 /**
  * {@code ViewController} implementation for {@code ValuesEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1.2.3 (11.10.2012)
+ * @version 0.1.2.4 (15.10.2012)
  * @see gst.data.DataController
  */
 public class ValueController extends DataController {
@@ -27,18 +28,7 @@ public class ValueController extends DataController {
 	public ValueController(ValuesEntry entry) {
 		super(entry);
 		this.channelCount = entry.getChannelCount();
-		channelIndex = 0;
-		Value[] firstData = null;
-		Value[] lastData = null;
-		try {
-			firstData = entry.read(0, 1);
-			lastData = entry.read(entry.getCount() - 1, 1);
-		} catch(IOException ioe) {
-			System.out.println("couldn't read first and last value entry of " + entry.getId());
-			return;
-		}
-		firstSampleNumber = firstData[0].getSampleStamp();
-		lastSampleNumber = lastData[0].getSampleStamp();
+		this.updateBorderSampleNumber();
 		return;
 	}
 	
@@ -71,11 +61,47 @@ public class ValueController extends DataController {
 		}
 		throw new IllegalArgumentException("could not find channel named '" + channelName + "'");
 	}
+	
+	/**
+	 * Tries to read first and last data point of this entry and updates {@link #firstSampleNumber} and
+	 * {@link #lastSampleNumber} accordingly. If reading fails the corresponding border-samplenumber is set to 0.
+	 */
+	private void updateBorderSampleNumber() {
+		Value[] firstData = null;
+		Value[] lastData = null;
+		if(((ValuesEntry)this.entry).getCount() > 0) {		// try reading first value
+			try {
+				firstData = ((ValuesEntry)entry).read(0, 1);
+			} catch(IOException ioe) {
+				System.out.println("couldn't read first value entry of " + entry.getId());
+				firstData = null;
+			}
+		}
+		if(((ValuesEntry)this.entry).getCount() > 1) {		// try reading last value
+			try {
+				lastData = ((ValuesEntry)entry).read(((ValuesEntry)entry).getCount() - 1, 1);
+			} catch(IOException ioe) {
+				System.out.println("couldn't read last value entry of " + entry.getId());
+				lastData = null;
+			}
+		}
+		// setting border samplestamps 
+		if(firstData != null) {
+			this.firstSampleNumber = firstData[0].getSampleStamp();
+		} else {
+			this.firstSampleNumber = 0;
+		}
+		if(lastData != null) {
+			this.lastSampleNumber = lastData[0].getSampleStamp();
+		} else {
+			this.lastSampleNumber = this.firstSampleNumber;
+		}
+	}
 
 	/** @see gst.data.DataController#getDataPoints(double, double, int) */
 	@Override
 	public XYSeries getDataPoints(double startTime, double endTime, int maxPoints) {
-		double sampleRate = ((ValuesEntry)this.entry).getSampleRate();
+		//double sampleRate = ((ValuesEntry)this.entry).getSampleRate();
 		// name of series is interpreted as ID so it has to be unique, full name should do that
 		XYSeries series = new XYSeries(this.getFullName());
 		if(maxPoints <= 0) {
@@ -159,6 +185,11 @@ public class ValueController extends DataController {
 		return ((ValuesEntry)this.entry).getUnit();
 	}
 
+	/** @see gst.data.DataController#setPhysicalUnit(java.lang.String) */
+	@Override public void setPhysicalUnit(String physUnit) {
+		((MeasurementEntry)this.entry).setUnit(physUnit);
+	}
+
 	/** @see gst.data.DataController#getAnnotations(double, double) */
 	@Override
 	public AnnotationList getAnnotations(double startTime, double endTime) {
@@ -170,6 +201,7 @@ public class ValueController extends DataController {
 	public String getFullName() {
 		return super.getFullName() + DataController.SEPERATOR + this.getChannelName();
 	}
+	
 	/** @see gst.data.DataController#saveImpl() */
 	@Override
 	protected void saveImpl() {}

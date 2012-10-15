@@ -18,7 +18,7 @@ import org.unisens.EventEntry;
 /**
  * Buffered {@link gst.data.DataController} implementation for {@code EventEntry}-type data in an {@link gst.data.UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.2.5.2 (11.10.2012)
+ * @version 0.2.5.3 (15.10.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -301,6 +301,11 @@ public class AnnotationController extends DataController {
 	@Override
 	public String getPhysicalUnit() {
 		return "";		// annotation do not have any physical units (hopefully)
+	}
+	
+	/** @see gst.data.DataController#setPhysicalUnit(java.lang.String) */
+	@Override public void setPhysicalUnit(String physUnit) {
+		return;			// annotation do not have any physical units (hopefully)
 	}
 	
 	/**
