@@ -48,7 +48,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.1.5.2 (15.10.2012)
+ * @version 0.1.5.3 (15.10.2012)
  */
 public class SignalView extends ChartPanel implements DataChangeListener{
 
@@ -59,8 +59,6 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	/** new data required */							private boolean needNewData;
 	/** time-axis scroll lock switch */					private boolean isScrollLocked;
 	/** time-axis zoom lock switch */					private boolean isZoomLocked;
-	
-	/* * * Constructors * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
 	/**
 	 * Constructor using a chart. X-Axis range is set to 0.0 - 30.0.
@@ -91,8 +89,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 			  /*enable print*/		false,
 			  /*enable zoom*/		false,		// function implemented, no need for built-in version
 			  /*enable tooltips*/	false);
-		// NOTE tooltips cause an unhandled class cast exception for MainWindow cast to JComponent in context of mouse event forwarding
-		//																													in MainWindow
+
 		if(endTime < startTime) {
 			// swapping start and end time if needed 
 			double temp = endTime;
@@ -121,14 +118,11 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 		return;
 	}
 	
-	/* * * methods * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	
 	/**
 	 * Needed for catching width changes to this component. Refreshes data of the plot if necessary. 
 	 * @see java.awt.Component#setBounds(int, int, int, int)
 	 */
-	@Override
-	public void setBounds(int x, int y, int width, int height) {
+	@Override public void setBounds(int x, int y, int width, int height) {
 		if(this.getWidth() != width) {
 			needNewData = true;
 		}
@@ -298,8 +292,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	 * @see org.jfree.chart.ChartPanel#paintComponent(java.awt.Graphics)
 	 * @see javax.swing.JComponent#paintComponents(java.awt.Graphics)
 	 */
-	@Override
-	public void paintComponent(Graphics g) {
+	@Override public void paintComponent(Graphics g) {
 		if(needNewData == true) {
 			this.updateData();
 		}
@@ -454,16 +447,13 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	 * Implementation of {@code DataChangeListener}-interface.
 	 * @see gst.data.DataChangeListener#dataChangeReaction(gst.data.DataController)
 	 */
-	@Override
-	public void dataChangeReaction(DataController source) {
+	@Override public void dataChangeReaction(DataController source) {
 		if(source.isAnnotation()) {
 			this.updateTimeAxisMarkers();	// faster than update of all data
 		} else {
 			this.updateData();
 		}
 	}
-	
-	/* * * static methods * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	
 	/**
 	 * Creates a new {@code SignalView} object for the given {@code ViewController}.
@@ -509,8 +499,6 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 		return sv;
 	}
 
-	/* * * intern classes * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	
 	/**
 	 * Keyboard event handler for {@code SignalView}.
 	 * @author Enrico Grunitz
@@ -522,8 +510,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 												 InputEvent.META_DOWN_MASK |
 												 InputEvent.SHIFT_DOWN_MASK;
 		/** @see java.awt.event.KeyAdapter#keyReleased(java.awt.event.KeyEvent) */
-		@Override
-		public void keyReleased(KeyEvent event) {
+		@Override public void keyReleased(KeyEvent event) {
 			if((event.getComponent() instanceof SignalView) == false) {
 				Debug.println(Debug.signalViewKeyAdapter, "target of key-release event is not a signalview. Event: " + event.toString());
 				return;
@@ -569,8 +556,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 		}
 		
 		/** @see java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent) */
-		@Override
-		public void keyPressed(KeyEvent event) {
+		@Override public void keyPressed(KeyEvent event) {
 			if((event.getComponent() instanceof SignalView) == false) {
 				Debug.println(Debug.signalViewKeyAdapter, "target of key-press event is not a signalview. Event: " + event.toString());
 				return;
@@ -596,12 +582,13 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	 * SHIFT + mousewheel		- zoom time axis
 	 * mousemove				- update crosshair
 	 * mouseenter/-exit			- update highlight
-	 * MMB						- set selected annotation
-	 * SHIFT + MMB				- set edited annotation
-	 * CTRL + MMB				- remove nearest annotation
+	 * LMB						- set selected annotation
+	 * SHIFT + LMB				- set edited annotation
+	 * CTRL + LMB				- remove nearest annotation
+	 * MMB						- center view on clicked time
 	 * 
 	 * @author Enrico Grunitz
-	 * @version 0.1.5 (10.08.2012)
+	 * @version 0.1.6 (15.10.2012)
 	 */
 	protected static class SignalViewMouseAdapter extends NamedMouseAdapter {
 		private static String eventType;
@@ -615,8 +602,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent) */
-		@Override
-		public void mouseClicked(MouseEvent event) {
+		@Override public void mouseClicked(MouseEvent event) {
 			Debug.println(Debug.signalViewMouseAdapter, "mouse entered " + this.getComponentName());
 			if((event.getComponent() instanceof SignalView) == false) {
 				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
@@ -661,6 +647,16 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 					}
 				}
 				break;
+			case MouseEvent.BUTTON2:
+				// MMB -> center view on clicked x-location
+				Rectangle2D dataRect = target.getScreenDataArea();
+				if(dataRect.contains(event.getPoint())) {
+					// calculate time
+					Range timeAxis = target.getTimeAxisBounds();
+					double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
+					SignalPanel.getInstance().fireActionEvent(new SignalPanel.ScrollToActionEvent(target, time));
+				}
+				break;
 			default:
 				Debug.println(Debug.signalViewMouseAdapter, "unhandled button click");
 			}
@@ -668,8 +664,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 		}
 		
 		/** @see gst.ui.NamedMouseAdapter#mouseEntered(java.awt.event.MouseEvent) */
-		@Override
-		public void mouseEntered(MouseEvent event) {
+		@Override public void mouseEntered(MouseEvent event) {
 			Debug.println(Debug.signalViewMouseAdapter, "mouse entered " + this.getComponentName());
 			if((event.getComponent() instanceof SignalView) == false) {
 				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
@@ -686,8 +681,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseExited(java.awt.event.MouseEvent) */
-		@Override
-		public void mouseExited(MouseEvent event) {
+		@Override public void mouseExited(MouseEvent event) {
 			if((event.getComponent() instanceof SignalView) == false) {
 				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
 				return;
@@ -698,8 +692,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseMoved(java.awt.event.MouseEvent) */
-		@Override
-		public void mouseMoved(MouseEvent event) {
+		@Override public void mouseMoved(MouseEvent event) {
 			Debug.println(Debug.signalViewMouseAdapter, "mouseMove");
 			if((event.getComponent() instanceof SignalView) == false) {
 				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
@@ -717,8 +710,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseWheelMoved(java.awt.event.MouseWheelEvent) */
-		@Override
-		public void mouseWheelMoved(MouseWheelEvent event) {
+		@Override public void mouseWheelMoved(MouseWheelEvent event) {
 			Debug.println(Debug.signalViewMouseAdapter, this.getComponentName() + " detected mousewheel motion -> " + event.toString());
 			if((event.getComponent() instanceof SignalView) == false) {
 				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
