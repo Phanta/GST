@@ -21,7 +21,7 @@ import javax.swing.KeyStroke;
 /**
  * Menus represent the Menubar of the Application. Implemented as Singleton.
  * 
- * @version 0.1.7.2 (15.10.2012)
+ * @version 0.1.7.3 (15.10.2012)
  * @author Enrico Grunitz
  */
 public class Menus extends JMenuBar {
@@ -61,6 +61,7 @@ public class Menus extends JMenuBar {
 		//miFileLoad = new JMenuItem("Datensatz laden...", KeyEvent.VK_S);
 		//m.add(miFileLoad);
 		mi = new JMenuItem("Annotationen laden...", KeyEvent.VK_A);
+		mi.setEnabled(false);
 		m.add(mi);
 		m.addSeparator();
 		miSaveAll = new JMenuItem("alles speichern", KeyEvent.VK_S);
@@ -75,6 +76,7 @@ public class Menus extends JMenuBar {
 		// --- BEARBEITEN ----------------------------------------------------------
 		m = new JMenu("Bearbeiten");
 		m.setMnemonic(KeyEvent.VK_B);
+		m.setEnabled(false);
 		mi = new JMenuItem("Annotation kopieren");
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
 		m.add(mi);
@@ -107,6 +109,7 @@ public class Menus extends JMenuBar {
 		// --- ANSICHT ----------------------------------------------------------
 		m = new JMenu("Ansicht");
 		m.setMnemonic(KeyEvent.VK_A);
+		m.setEnabled(false);
 		this.add(m);
 		
 		// --- UNSICHTBARER FILLER ----------------------------------------------------------
@@ -115,6 +118,7 @@ public class Menus extends JMenuBar {
 		// --- HILFE ----------------------------------------------------------
 		m = new JMenu("Hilfe");
 		m.setMnemonic(KeyEvent.VK_H);
+		m.setEnabled(false);
 		mi = new JMenuItem("Test 1");
 		m.add(mi);
 		mi = new JMenuItem("Test 2");
