@@ -13,7 +13,7 @@ import org.unisens.SignalEntry;
 /**
  * {@code ViewController} implementation for {@code SignalEntry}-type data in an {@code UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.1.3.3 (15.10.2012)
+ * @version 0.1.3.4 (15.10.2012)
  * @see gst.data.DataController
  */
 public class SignalController extends DataController {
@@ -80,7 +80,9 @@ public class SignalController extends DataController {
 		double[][] dataArray = null;
 		try {
 			if(iStart < 0) {
-				dataArray = ((SignalEntry)this.entry).readScaled(iStart, (int)iEnd);
+				if(iEnd > 0) {	// only show data if there is any
+					dataArray = ((SignalEntry)this.entry).readScaled(iStart, (int)iEnd);
+				}
 			} else {
 				dataArray = ((SignalEntry)this.entry).readScaled(iStart, (int)(iEnd - iStart));
 			}
