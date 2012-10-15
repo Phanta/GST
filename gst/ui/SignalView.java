@@ -48,7 +48,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.1.5.1 (08.10.2012)
+ * @version 0.1.5.2 (15.10.2012)
  */
 public class SignalView extends ChartPanel implements DataChangeListener{
 
@@ -116,6 +116,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 		this.addKeyListener(new SignalViewKeyAdapter());
 		this.isScrollLocked = true;
 		this.isZoomLocked = true;
+		this.setMouseZoomable(false);
 		
 		return;
 	}
