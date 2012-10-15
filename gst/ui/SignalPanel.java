@@ -11,13 +11,10 @@ import gst.ui.layout.SignalPanelLayoutManager;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -27,7 +24,7 @@ import javax.swing.JPanel;
 /**
  * The panel containing all signalgraphs and the controls to resize them. Implemented as Singleton. Supports ActionListener.
  * @author Enrico Grunitz
- * @version 0.2.5 (09.08.2012)
+ * @version 0.2.5.1 (15.10.2012)
  */
 public class SignalPanel extends JPanel {
 
@@ -37,7 +34,7 @@ public class SignalPanel extends JPanel {
 	/** collection of ActionListeners */		private Collection<ActionListener> actionListenerCollection;
 	
 	/** collection of the signalgraphs */		private Collection<SignalView> graphs = new ArrayList<SignalView>(Settings.getInstance().getMaxSignals());
-	/** collection of resize controls */		private Collection controls;
+	//** collection of resize controls */		private Collection controls;
 	
 	/** component arranger */					private ComponentArrangement compArr = new ComponentArrangement();
 	
@@ -83,8 +80,6 @@ public class SignalPanel extends JPanel {
 			this.add(element);
 			compArr.setPreferredSizes(new ArrayList<Component>(graphs), this.getWidth(), this.getHeight());
 			this.doLayout();
-			//this.revalidate();
-			//this.repaint();
 		}
 	}
 	
@@ -155,7 +150,6 @@ public class SignalPanel extends JPanel {
 		}
 	}
 
-	// methods for ActionListener support
 	/**
 	 * Adds the {@code ActionListener} to this {@code JPanel}.
 	 * @param al the {@code ActionListener} to add
@@ -186,16 +180,8 @@ public class SignalPanel extends JPanel {
 		}
 	}
 	
-	
-	/** @see javax.swing.JComponent#paintComponent(java.awt.Graphics) */
-	@Override
-	protected void paintComponent(Graphics g) {
-		
-	}
-	
 	/** @see java.awt.Container#validate() */
-	@Override
-	public void revalidate() {
+	@Override public void revalidate() {
 		super.revalidate();
 		// DEBUGCODE SignalPanel.revalidate() call signer
 			String DBG_not = "";
@@ -216,8 +202,7 @@ public class SignalPanel extends JPanel {
 	 * @version 0.2 (01.06.2012)
 	 */
 	private class SignalPanelComponentAdapter extends ComponentAdapter {
-		@Override
-		public void componentResized(ComponentEvent event) {
+		@Override public void componentResized(ComponentEvent event) {
 			int newHeight = getHeight();
 			int newWidth = getWidth();
 			/* FIXME doesn't adjusts graphs after maximizing application
@@ -240,8 +225,7 @@ public class SignalPanel extends JPanel {
 	 */
 	private class ScrollLockManager implements ActionListener {
 		/** @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent) */
-		@Override
-		public void actionPerformed(ActionEvent event) {
+		@Override public void actionPerformed(ActionEvent event) {
 			if(!(event instanceof ScrollToActionEvent)) {
 				return;	// nothing to do here
 			}
@@ -271,8 +255,7 @@ public class SignalPanel extends JPanel {
 	 */
 	private class ZoomLockManager implements ActionListener {
 		/** @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent) */
-		@Override
-		public void actionPerformed(ActionEvent event) {
+		@Override public void actionPerformed(ActionEvent event) {
 			if(!(event instanceof ZoomActionEvent)) {
 				return;	// nothing to do here
 			}
@@ -386,15 +369,6 @@ public class SignalPanel extends JPanel {
 		 */
 		public double getRange() {
 			return this.rangeValue;
-		}
-	}
-
-	
-	// TODO implementation of SignalPanelMouseAdapter extending NamedMouseAdapter
-	private class SignalPanelMouseAdapter extends MouseAdapter {
-		public void mouseEntered(MouseEvent me) {
-			//	DEBUGCODE
-			Debug.println(Debug.signalPanelMouseAdapter, "mouse entered SignalPanel");
 		}
 	}
 }

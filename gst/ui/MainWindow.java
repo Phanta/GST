@@ -9,21 +9,18 @@ import gst.test.Debug;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Toolkit;	// Screenresolution
 import java.awt.Dimension;	// Screenresolution
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 /**
  * The main window of the application.
  * @author Enrico Grunitz
- * @version 0.2.4.1 (02.10.2012)
+ * @version 0.2.4.2 (15.10.2012)
  */
 public class MainWindow extends JFrame {
 
@@ -63,19 +60,21 @@ public class MainWindow extends JFrame {
 		int y = (dimScreenResolution.height - settings.ui.getMainWindowDimension().height) / 2;
 		this.setBounds(x, y, settings.ui.getMainWindowDimension().width, settings.ui.getMainWindowDimension().height);
 		Debug.println(Debug.mainWindow, "MainWindow.size: " + this.getWidth() + ", " + this.getHeight());
-		// register listener for event-forwarding
-		//this.addMouseListener(new MainWindowMouseForwarder());
 
 		// define default behavior
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setTitle(settings.ui.getMainWindowTitle());
+		
+		// set layout
+		this.getContentPane().setLayout(new BorderLayout());
+		
 		
 		// add Menus
 		this.setJMenuBar(Menus.getInstance());
 		Menus.getInstance().addMouseListener(new NamedMouseAdapter("Menus"));
 		
 		// add Toolbar
-		this.add(Toolbar.getInstance(), BorderLayout.PAGE_START);
+		this.getContentPane().add(Toolbar.getInstance(), BorderLayout.PAGE_START);
 		//Toolbar.getInstance().addMouseListener(new NamedMouseAdapter("Toolbar"));
 		
 		// add Sidebar
@@ -85,7 +84,7 @@ public class MainWindow extends JFrame {
 				debugPanelWest.setBackground(Color.red);
 				debugPanelWest.addMouseListener(new NamedMouseAdapter("DebugPanelWest"));
 				debugPanelWest.setSize(200, 400);
-				this.add(debugPanelWest, BorderLayout.LINE_START);
+				this.getContentPane().add(debugPanelWest, BorderLayout.LINE_START);
 		//this.add(Sidebar.getInstance(), BorderLayout.LINE_START);
 		//Sidebar.getInstance().addMouseListener(new NamedMouseAdapter("Sidebar"));
 		
@@ -97,12 +96,12 @@ public class MainWindow extends JFrame {
 //				debugPanelCent.addMouseListener(new NamedMouseAdapter("DebugPanelCenter"));
 //				this.add(debugPanelCent, BorderLayout.CENTER);
 		Debug.println(Debug.mainWindow, "SignalPanel: " + SignalPanel.getInstance().hashCode());
-		this.add(SignalPanel.getInstance(), BorderLayout.CENTER);
+		this.getContentPane().add(SignalPanel.getInstance(), BorderLayout.CENTER);
 		SignalPanel.getInstance().addMouseListener(new NamedMouseAdapter("SignalPanel"));
 
 		// add statusbar
 		// FIXME i don't like this style of status bar, maybe replace it with some homebrew
-		this.add(StatusBar.getInstance(), BorderLayout.PAGE_END);
+		this.getContentPane().add(StatusBar.getInstance(), BorderLayout.PAGE_END);
 		StatusBar.getInstance().addMouseListener(new NamedMouseAdapter("StatusBar"));
 		
 		// show me what u got!
@@ -142,98 +141,5 @@ public class MainWindow extends JFrame {
 			break;
 		}
 		return retVal;
-	}
-	
-	/**
-	 * {@code MouseAdapter} for the main window forwards the mouse events to it's child components.
-	 * @author Enrico Grunitz
-	 * @version 0.1 (30.07.2012)
-	 */
-	@Deprecated
-	private class MainWindowMouseForwarder extends NamedMouseAdapter {
-		/** basic constructor */ 
-		public MainWindowMouseForwarder() {
-			super("MainWindow");
-		}
-		/** @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent) */
-		@Override
-		public void mouseClicked(MouseEvent event) {
-			if(forward(event) != true) {
-				Debug.println(Debug.mainWindowMouseForwarder, "MouseClicked on " + this.getComponentName() +
-															  " NOT forwarded! Event: " + event.toString());
-			}
-		}
-		/** @see java.awt.event.MouseAdapter#mouseDragged(java.awt.event.MouseEvent) */
-		@Override
-		public void mouseDragged(MouseEvent event) {
-			if(forward(event) != true) {
-				Debug.println(Debug.mainWindowMouseForwarder, "MouseDragged on " + this.getComponentName() +
-															  " NOT forwarded! Event: " + event.toString());
-			}
-		}
-		/** @see gst.ui.NamedMouseAdapter#mouseEntered(java.awt.event.MouseEvent) */
-		@Override
-		public void mouseEntered(MouseEvent event) {
-			if(forward(event) != true) {
-				Debug.println(Debug.mainWindowMouseForwarder, "MouseEntered on " + this.getComponentName() +
-						  									  " NOT forwarded! Event: " + event.toString());
-			}
-		}
-		/** @see gst.ui.NamedMouseAdapter#mouseExited(java.awt.event.MouseEvent) */
-		@Override
-		public void mouseExited(MouseEvent event) {
-			if(forward(event) != true) {
-				Debug.println(Debug.mainWindowMouseForwarder, "MouseExited on " + this.getComponentName() +
-						  									  " NOT forwarded! Event: " + event.toString());
-			}
-		}
-		/** @see gst.ui.NamedMouseAdapter#mouseMoved(java.awt.event.MouseEvent) */
-		@Override
-		public void mouseMoved(MouseEvent event) {
-			if(forward(event) != true) {
-				Debug.println(Debug.mainWindowMouseForwarder, "MouseMoved on " + this.getComponentName() +
-						  									  " NOT forwarded! Event: " + event.toString());
-			}
-		}
-		/** @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent) */
-		@Override
-		public void mousePressed(MouseEvent event) {
-			if(forward(event) != true) {
-				Debug.println(Debug.mainWindowMouseForwarder, "MousePressed on " + this.getComponentName() +
-						  									  " NOT forwarded! Event: " + event.toString());
-			}
-		}
-		/** @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent) */
-		@Override
-		public void mouseReleased(MouseEvent event) {
-			Debug.println(Debug.mainWindowMouseForwarder, "Mouse released @" + event.getX() + "," + event.getY());
-			Debug.println(Debug.mainWindowMouseForwarder, "SignalPanel position: " + SignalPanel.getInstance().getBounds().toString());
-			if(forward(event) != true) {
-				Debug.println(Debug.mainWindowMouseForwarder, "MouseReleased on " + this.getComponentName() +
-						  									  " NOT forwarded! Event: " + event.toString());
-			}
-		}
-				
-		/**
-		 * Tries to forward the {@code MouseEvent} to the deepest displayed {@code Component}.
-		 * @param event the {@code MouseEvent} to forward
-		 * @return true if forward is successful, false if deepest {@code Component} is {@link gst.ui.MainWindow} 
-		 */
-		private boolean forward(MouseEvent event) {
-			
-			Component target = SwingUtilities.getDeepestComponentAt(MainWindow.getInstance(), event.getPoint().x, event.getPoint().y);
-			if(target != (Component)MainWindow.getInstance()) {
-				if(target != null) {
-					Debug.println(Debug.mainWindowMouseForwarder, "forwarding " + event.toString() + "\n\tto " + target.toString());
-					//event.setSource(this);
-					target.dispatchEvent(event);
-					return true;
-				} else {
-					Debug.println(Debug.mainWindowMouseForwarder, "target is null");
-					return false;
-				}
-			}
-			return false;
-		}
 	}
 }
