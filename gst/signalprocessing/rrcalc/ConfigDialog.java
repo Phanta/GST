@@ -27,7 +27,7 @@ import javax.swing.JTextField;
 /**
  * 
  * @author Enrico Grunitz
- * @version 0.0.0.2 (15.10.2012)
+ * @version 0.0.0.3 (16.10.2012)
  */
 public class ConfigDialog extends JDialog implements ActionListener {
 
@@ -103,9 +103,8 @@ public class ConfigDialog extends JDialog implements ActionListener {
 			}
 			DataController source = this.annoCtrl.get(this.cbDataset.getSelectedIndex())[this.cbAnnotation.getSelectedIndex()];
 			BufferedValueController bvc = dsl.get(this.cbDataset.getSelectedIndex()).createValues(this.tfValue.getText());
-			if((new RRCalculator(source, bvc)).run() != 0) {
-				Debug.println(Debug.rrConfig, "operation failed!");
-			}
+			//(new RRLiveCalculator(source, bvc)).start();
+			this.createSignalProcessor(source, bvc);
 			return;
 		} else if(event.getSource() == this.btnCancel) {
 			// close dialog without action
@@ -130,7 +129,17 @@ public class ConfigDialog extends JDialog implements ActionListener {
 			this.setVisible(true);
 			return;
 		}
-		
+	}
+	
+	/**
+	 * Creates the {@link gst.signalProcessingSignalProcessor}.
+	 * @param source {@link gst.data.DataController} of source signal
+	 * @param target {@link gst.data.BufferedValueController} of the target signal
+	 */
+	protected void createSignalProcessor(DataController source, BufferedValueController target) {
+		if((new RRCalculator(source, target)).run() != 0) {
+			Debug.println(Debug.rrConfig, "operation failed!");
+		}
 	}
 	
 	/**

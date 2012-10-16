@@ -7,9 +7,14 @@ package gst.ui;
  * 		function calls
  */
 
+import gst.signalprocessing.LiveSignalProcessor;
+
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.InputEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -21,10 +26,10 @@ import javax.swing.KeyStroke;
 /**
  * Menus represent the Menubar of the Application. Implemented as Singleton.
  * 
- * @version 0.1.7.3 (15.10.2012)
+ * @version 0.1.8.0 (16.10.2012)
  * @author Enrico Grunitz
  */
-public class Menus extends JMenuBar {
+public class Menus extends JMenuBar implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
 	private static final Menus myself = new Menus();
@@ -39,6 +44,10 @@ public class Menus extends JMenuBar {
 	private JMenuItem miSelectAnnotation;
 	
 	private JMenuItem miFuncRRCalc;
+	private JMenuItem miFuncRRLiveCalc;
+	
+	private JMenu mRunningSP;
+	private ArrayList<RunningSignalProcessorMenuItem> runningSPList;
 	
 	/**
 	 * @return the Instance of the Menubar
@@ -52,6 +61,7 @@ public class Menus extends JMenuBar {
 		JMenuItem mi;
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+		this.runningSPList = new ArrayList<RunningSignalProcessorMenuItem>();
 		
 		// --- DATEI ----------------------------------------------------------
 		m = new JMenu("Datei");
@@ -91,10 +101,16 @@ public class Menus extends JMenuBar {
 		// --- FUNKTION ----------------------------------------------------------
 		m = new JMenu("Funktion");
 		m.setMnemonic(KeyEvent.VK_F);
-		this.miFuncRRCalc = new JMenuItem("RRCalc (Debug)");
+		this.miFuncRRCalc = new JMenuItem("RR Calculator");
 		// quick and dirty actionlistener
 		this.miFuncRRCalc.addActionListener(new gst.signalprocessing.rrcalc.ConfigDialog());
 		m.add(this.miFuncRRCalc);
+
+		this.miFuncRRLiveCalc = new JMenuItem("RR Calculator (Live)");
+		this.miFuncRRLiveCalc.addActionListener(new gst.signalprocessing.rrcalc.LiveConfigDialog());
+		m.add(this.miFuncRRLiveCalc);
+		this.mRunningSP = new JMenu("laufende Funktionen");
+		m.add(this.mRunningSP);
 		this.add(m);
 		
 		// --- ANNOTATIONEN ----------------------------------------------------------
@@ -150,5 +166,58 @@ public class Menus extends JMenuBar {
 			return false;
 		}
 	}
-
+	
+	/** @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent) */
+	@Override public void actionPerformed(ActionEvent event) {
+		RunningSignalProcessorMenuItem rspmi = null;
+		Iterator<RunningSignalProcessorMenuItem> it = this.runningSPList.iterator();
+		while(it.hasNext()) {
+			rspmi = it.next();
+			if(rspmi.getMenuItem() == event.getSource()) {
+				// if event-source is one of our created menuitems stop the processor and remove the menuitem
+				rspmi.getSignalProcessor().stop();
+				this.mRunningSP.remove(rspmi.getMenuItem());
+				return;
+			}
+		}
+		return;
+	}
+	
+	/**
+	 * Registers a {@link gst.signalprocessing.LiveSignalProcessor} to the menu. A new entry is created to enable the user to
+	 * stop it.
+	 * @param sigProcess the {@code LiveSignalProcessor} to register
+	 */
+	public void registerStartedLiveSignalProcess(LiveSignalProcessor sigProcess) {
+		RunningSignalProcessorMenuItem rspmi = new RunningSignalProcessorMenuItem(sigProcess);
+		rspmi.getMenuItem().addActionListener(this);
+		this.mRunningSP.add(rspmi.getMenuItem());
+		this.runningSPList.add(rspmi);
+	}
+	
+	/**
+	 * Simple class to save a running {@link gst.signalprocessing.LiveSignalProcessor} and a {@code JMenuItem} together.
+	 * @author Enrico Grunitz
+	 * @version 0.0.0.1 (16.10.2012)
+	 */
+	private class RunningSignalProcessorMenuItem {
+		private LiveSignalProcessor sp;
+		private JMenuItem mi;
+		
+		public RunningSignalProcessorMenuItem(LiveSignalProcessor signalProcessor) {
+			if(signalProcessor == null) {
+				throw new NullPointerException();
+			}
+			this.sp = signalProcessor;
+			this.mi = new JMenuItem("Stoppe " + signalProcessor.toString());
+		}
+		
+		public JMenuItem getMenuItem() {
+			return this.mi;
+		}
+		
+		public LiveSignalProcessor getSignalProcessor() {
+			return this.sp;
+		}
+	}
 }
