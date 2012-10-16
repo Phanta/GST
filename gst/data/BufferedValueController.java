@@ -19,11 +19,14 @@ import org.unisens.ValuesEntry;
  * Buffered version of a {@link gst.data.ValueController} which supports reading and writing of data. Only double-type data and
  * one single channel are supported.
  * @author Enrico Grunitz
- * @version 0.0.1.0 (12.10.2012)
+ * @version 0.0.1.1 (16.10.2012)
  */
 public class BufferedValueController extends ValueController {
 	/** buffer of the values of the controlled channel and entry */		private ArrayList<DataPoint<Double>> buffer;
 	/** last accessed index */											private int lastAccessedIndex = 0;
+	/** event for adding data */										private DataChangeEvent addEvent;
+	/** event for changeing data values */								private DataChangeEvent valueEvent;
+	/** event for removing data */										private DataChangeEvent removeEvent;
 	
 	/**
 	 * Constructor.
@@ -33,6 +36,9 @@ public class BufferedValueController extends ValueController {
 		super(entry);
 		this.isBuffered = true;
 		this.setChannelToControl(0);
+		this.addEvent = new DataChangeEvent(this, DataChangeEvent.Type.ADDED);
+		this.valueEvent = new DataChangeEvent(this, DataChangeEvent.Type.VALUE_CHANGED);
+		this.removeEvent = new DataChangeEvent(this, DataChangeEvent.Type.REMOVED);
 		this.initAndFillBuffer();
 	}
 	
@@ -43,9 +49,11 @@ public class BufferedValueController extends ValueController {
 	 * @param notify if true all {@code DataChangeListener}s are notified
 	 */
 	public void addDataPoint(double time, double value, boolean notify) {
+		this.addEvent.addDataPoint(time, value);
 		this.insert(new DataPoint<Double>(this.roundSampleStamp(time), value));
 		if(notify == true) {
-			this.notifyListeners(this);
+			this.notifyListeners(this.addEvent);
+			this.addEvent = new DataChangeEvent(this, DataChangeEvent.Type.ADDED);
 		}
 		return;
 	}
@@ -76,9 +84,11 @@ public class BufferedValueController extends ValueController {
 		if(index == -1) {
 			return false;
 		}
+		this.valueEvent.addDataPoint(time, newValue, oldValue);
 		this.buffer.get(index).setData(newValue);
 		if(notify == true) {
-			this.notifyListeners(this);
+			this.notifyListeners(this.valueEvent);
+			this.valueEvent = new DataChangeEvent(this, DataChangeEvent.Type.VALUE_CHANGED);
 		}
 		return true;
 	}
@@ -124,10 +134,12 @@ public class BufferedValueController extends ValueController {
 			// no element in buffer with matching sample-stamp
 			return false;
 		} else {
+			this.removeEvent.addDataPoint(time, value);
 			this.buffer.remove(index);
 			this.updateLastAccess(index - 1);
 			if(notify == true) {
-				this.notifyListeners(this);
+				this.notifyListeners(this.removeEvent);
+				this.removeEvent = new DataChangeEvent(this, DataChangeEvent.Type.REMOVED);
 			}
 			return true;
 		}
@@ -157,12 +169,14 @@ public class BufferedValueController extends ValueController {
 		int index = this.seek(sampleStamp);
 		int counter = 0;
 		while(index != -1) {
+			this.removeEvent.addDataPoint(time, this.buffer.get(index).getData());
 			this.buffer.remove(index);
 			counter++;
 			index = this.seek(sampleStamp);
 		}
 		if(counter > 0 && notify == true) {
-			this.notifyListeners(this);
+			this.notifyListeners(this.removeEvent);
+			this.removeEvent = new DataChangeEvent(this, DataChangeEvent.Type.REMOVED);
 		}
 		return counter;
 	}
@@ -289,8 +303,12 @@ public class BufferedValueController extends ValueController {
 		this.buffer = new ArrayList<DataPoint<Double>>(values.length);
 		for(int i = 0; i < values.length; i++) {
 			this.insert(new DataPoint<Double>(values[i].getSampleStamp(), ((double[])values[i].getData())[0]));
+			this.addEvent.addDataPoint(this.timeOf(values[i].getSampleStamp()), ((double[])values[i].getData())[0]);
 		}
-		this.notifyListeners(this);
+		if(values.length > 0) {
+			this.notifyListeners(this.addEvent);
+			this.addEvent = new DataChangeEvent(this, DataChangeEvent.Type.ADDED);
+		}
 	}
 	
 	/**

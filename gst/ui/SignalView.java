@@ -22,6 +22,7 @@ import gst.Main;
 import gst.Settings;
 import gst.data.AnnotationList;
 import gst.data.AnnotationManager;
+import gst.data.DataChangeEvent;
 import gst.data.DataChangeListener;
 import gst.data.DataController;
 import gst.test.Debug;
@@ -48,7 +49,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.1.5.3 (15.10.2012)
+ * @version 0.1.5.4 (16.10.2012)
  */
 public class SignalView extends ChartPanel implements DataChangeListener{
 
@@ -447,7 +448,9 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	 * Implementation of {@code DataChangeListener}-interface.
 	 * @see gst.data.DataChangeListener#dataChangeReaction(gst.data.DataController)
 	 */
-	@Override public void dataChangeReaction(DataController source) {
+	@Override public void dataChangeReaction(DataChangeEvent event) {
+		DataController source = event.getSource();
+		// TODO evaluate event.getType to speed things up a bit
 		if(source.isAnnotation()) {
 			this.updateTimeAxisMarkers();	// faster than update of all data
 		} else {

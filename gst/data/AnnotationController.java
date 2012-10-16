@@ -18,7 +18,7 @@ import org.unisens.EventEntry;
 /**
  * Buffered {@link gst.data.DataController} implementation for {@code EventEntry}-type data in an {@link gst.data.UnisensDataset}.
  * @author Enrico Grunitz
- * @version 0.2.5.3 (15.10.2012)
+ * @version 0.2.5.4 (16.10.2012)
  * @see gst.data.DataController
  */
 public class AnnotationController extends DataController {
@@ -69,7 +69,9 @@ public class AnnotationController extends DataController {
 		int insertIndex = this.findIndexSmaller(sampleStamp) + 1;
 		this.updateBorderSampleNumbers(sampleStamp);
 		this.buffer.add(insertIndex, new Event(sampleStamp, type, comment));
-		this.notifyListeners(this);
+		DataChangeEvent event = new DataChangeEvent(this, DataChangeEvent.Type.ADDED);
+		event.addDataPoint(time);
+		this.notifyListeners(event);
 	}
 	
 	/**
@@ -114,8 +116,10 @@ public class AnnotationController extends DataController {
 	 * @param annoList list of events to remove
 	 */
 	public void removeAnnotation(AnnotationList annoList) {
+		DataChangeEvent event = new DataChangeEvent(this, DataChangeEvent.Type.REMOVED);
 		for(int i = 0; i < annoList.size(); i++) {
 			if(this.buffer.remove(annoList.getEvent(i))) {
+				event.addDataPoint(annoList.getTime(i));
 				Debug.println(Debug.annotationController, "item successful removed");
 			} else {
 				Debug.println(Debug.annotationController, "item NOT removed");
@@ -125,7 +129,7 @@ public class AnnotationController extends DataController {
 			this.lastAccessedIndex = this.buffer.size() - 1;
 		}
 		this.initBorderSampleNumbers();
-		this.notifyListeners(this);
+		this.notifyListeners(event);
 	}
 	
 	/**

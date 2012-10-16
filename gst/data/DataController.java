@@ -20,7 +20,7 @@ import org.unisens.TimedEntry;
 /**
  * Controller class for managing data access for SignalViews.
  * @author Enrico Grunitz
- * @version 0.1.5.5 (15.10.2012)
+ * @version 0.1.5.6 (16.10.2012)
  */
 public abstract class DataController {
 	/** seperator used for full names */			public static final String SEPERATOR = " -> "; 
@@ -247,10 +247,10 @@ public abstract class DataController {
 	 * Notifies all registered Listeners of changed data. Has to be called by subclasses.
 	 * @param source the {@code DataController} thats data changed
 	 */
-	protected void notifyListeners(DataController source) {
+	protected void notifyListeners(DataChangeEvent event) {
 		Iterator<DataChangeListener> it = this.listeners.iterator();
 		while(it.hasNext()) {
-			it.next().dataChangeReaction(source);
+			it.next().dataChangeReaction(event);
 		}
 		return;
 	}
