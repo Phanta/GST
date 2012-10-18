@@ -12,7 +12,7 @@ import gst.ui.StatusBar;
 /**
  * Class that holds information of the selected {@code AnnotationController} and predefined annotations.
  * @author Enrico Grunitz
- * @version 0.1.1 (10.08.2012)
+ * @version 0.1.2 (18.10.2012)
  */
 public class AnnotationManager {
 	/**
@@ -131,9 +131,13 @@ public class AnnotationManager {
 	 * @return the number of annotations removed
 	 */
 	public int removeAnnotation(double time, double range) {
-		AnnotationList al = this.selectedAnnotationChannel.getAnnotation(time, range);
-		this.selectedAnnotationChannel.removeAnnotation(al);
-		return al.size();
+		if(this.selectedAnnotationChannel != null) {
+			AnnotationList al = this.selectedAnnotationChannel.getAnnotation(time, range);
+			this.selectedAnnotationChannel.removeAnnotation(al);
+			return al.size();
+		}
+		Debug.println(Debug.annotationManager, "annotation(s) not removed - no channel selected");
+		return 0;
 	}
 	
 	/**
