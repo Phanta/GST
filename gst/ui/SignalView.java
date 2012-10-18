@@ -604,7 +604,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	 * MMB						- center view on clicked time
 	 * 
 	 * @author Enrico Grunitz
-	 * @version 0.1.6.1 (18.10.2012)
+	 * @version 0.1.6.2 (18.10.2012)
 	 */
 	protected static class SignalViewMouseAdapter extends NamedMouseAdapter {
 		private static String eventType;
@@ -626,6 +626,12 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 			StatusBar.getInstance().updateText(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
 		}
 		
+		/**
+		 * Tests the event to be an instance of {@code SignalView}. If so updates the member variables of this adapter.
+		 * @param event the event to evaluate
+		 * @return {@code true} if this event has occured on a {@code SignalView} and member variables were updated, else
+		 * 		   {@code false}
+		 */
 		private boolean checkEvent(MouseEvent event) {
 			if((event.getComponent() instanceof SignalView) == false) {
 				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
@@ -641,51 +647,13 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent) */
-		@Override public void mouseClicked(MouseEvent event) {
+/*		@Override public void mouseClicked(MouseEvent event) {
 			if(this.checkEvent(event) == false) {
 				return;
 			}
 			Debug.println(Debug.signalViewMouseAdapter, "mouse click on " + this.getComponentName());
-			int modifiers = event.getModifiersEx();
-			switch(event.getButton()) {
-			case MouseEvent.BUTTON1:
-				if((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {
-					// LMB + Ctrl -> delete annotation
-					if(this.isInDataRect) {
-						Main.getAnnotationManager().removeAnnotation(this.eventTime, this.timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap());
-					}
-					return;	// CTRL means only delete, no adding
-				}
-				if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {
-					// LMB + Shift -> edit annotation to set and add it
-					EditEventDialog eed = new EditEventDialog(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
-					if(eed.show() == true) {
-						// adding new edited annotation
-						if(this.isInDataRect) {
-							Main.getAnnotationManager().addAnnotation(this.eventTime, eed.getType(), eed.getComment());
-						}
-					}
-				} else { // no SHIFT down
-					// adding preset annotation
-					if(this.isInDataRect) {
-						// calculate time
-						Main.getAnnotationManager().addAnnotation(this.eventTime);
-					}
-				}
-				break;
-			case MouseEvent.BUTTON2:
-				// MMB -> center view on clicked x-location
-				if(this.isInDataRect) {
-					// calculate time
-					SignalPanel.getInstance().fireActionEvent(new SignalPanel.ScrollToActionEvent(this.target, this.eventTime));
-				}
-				break;
-			default:
-				Debug.println(Debug.signalViewMouseAdapter, "unhandled button click");
-			}
-			
 		}
-		
+*/		
 		/** @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent) */
 		@Override public void mousePressed(MouseEvent event) {
 			if(this.checkEvent(event) == false) {
@@ -702,8 +670,46 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 			Debug.println(Debug.signalViewMouseAdapter, "mouse released on " + this.getComponentName());
 			if(this.isDragging == true) {
 				// release mouse ends dragging state
-				((SignalView)event.getComponent()).highlightDomainCrosshair(false);
+				this.target.highlightDomainCrosshair(false);
 				this.isDragging = false;
+			} else {
+				switch(event.getButton()) {
+				case MouseEvent.BUTTON1:
+					Debug.println(Debug.signalViewMouseAdapter, "number of clicks: " + event.getClickCount());
+					if(event.isControlDown()) {
+						// LMB + Ctrl -> delete annotation
+						if(this.isInDataRect) {
+							Main.getAnnotationManager().removeAnnotation(this.eventTime, this.timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap());
+						}
+						return;	// CTRL means only delete, no adding
+					}
+					if(event.isShiftDown()) {
+						// LMB + Shift -> edit annotation to set and add it
+						EditEventDialog eed = new EditEventDialog(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
+						if(eed.show() == true) {
+							// adding new edited annotation
+							if(this.isInDataRect) {
+								Main.getAnnotationManager().addAnnotation(this.eventTime, eed.getType(), eed.getComment());
+							}
+						}
+					} else { // no SHIFT down
+						// adding preset annotation
+						if(this.isInDataRect) {
+							// calculate time
+							Main.getAnnotationManager().addAnnotation(this.eventTime);
+						}
+					}
+					break;
+				case MouseEvent.BUTTON2:
+					// MMB -> center view on clicked x-location
+					if(this.isInDataRect) {
+						// calculate time
+						SignalPanel.getInstance().fireActionEvent(new SignalPanel.ScrollToActionEvent(this.target, this.eventTime));
+					}
+					break;
+				default:
+					Debug.println(Debug.signalViewMouseAdapter, "unhandled button click");
+				}
 			}
 		}
 		
@@ -715,7 +721,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 			Debug.println(Debug.signalViewMouseAdapter, "mouse dragged on " + this.getComponentName());
 			if(this.isDragging == false) {
 				// show the user the dragging state
-				((SignalView)event.getComponent()).highlightDomainCrosshair(true);
+				this.target.highlightDomainCrosshair(true);
 				this.isDragging = true;
 			}
 			// dirty mouse forward to update domain crosshairs
@@ -765,8 +771,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 				return;
 			}
 			Debug.println(Debug.signalViewMouseAdapter, this.getComponentName() + " detected mousewheel motion -> " + event.toString());
-			int modifiers = event.getModifiersEx();
-			if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {
+			if(event.isShiftDown()) {
 				// shift was pressed -> zoom view
 				double relShiftValue = event.getWheelRotation() * Settings.getInstance().ui.getRelativeAxisZooming() / 100;
 				double newRange = this.target.getTimeAxisBounds().getLength() * (1 - relShiftValue);
