@@ -80,7 +80,7 @@ public class Debug {
 												false,	//		signalPanelComponentAdapter
 												false,	//		signalPanelMouseAdapter
 												false,	//	signalView
-												false,	//		signalViewMouseAdapter
+												true,	//		signalViewMouseAdapter
 												false,	//	signalViewFactory
 												false,	//	statusbar
 												false,	//	toolbar

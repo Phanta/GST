@@ -49,7 +49,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * The graph of a signal in a diagram. At this moment just a raw hull.
  * @author Enrico Grunitz
- * @version 0.1.5.4 (16.10.2012)
+ * @version 0.1.5.5 (18.10.2012)
  */
 public class SignalView extends ChartPanel implements DataChangeListener{
 
@@ -103,6 +103,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 		this.getChart().getXYPlot().setDomainCrosshairPaint(Color.black);
 		this.getChart().getXYPlot().setDomainCrosshairVisible(true);
 		this.getChart().getXYPlot().getDomainAxis().setRange(startTime, endTime);
+		this.highlightDomainCrosshair(false);
 		needNewData = false;	// there is no controller yet
 		//this.addPropertyChangeListener(NEW_DATA_PROP, this);
 		ctrlList = new ArrayList<DataController>();
@@ -137,6 +138,18 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	 */
 	public void updateDomainCrosshair(double pos) {
 		this.getChart().getXYPlot().setDomainCrosshairValue(pos);
+	}
+	
+	/**
+	 * Changes color of the domain crosshair of this chart.
+	 * @param on if {@code true} color is set to highlight color (red) else is set to standard color (black)
+	 */
+	public void highlightDomainCrosshair(boolean on) {
+		if(on == true) {
+			this.getChart().getXYPlot().setDomainCrosshairPaint(Color.red);
+		} else {
+			this.getChart().getXYPlot().setDomainCrosshairPaint(Color.black);
+		}
 	}
 	
 	/**
@@ -591,11 +604,20 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	 * MMB						- center view on clicked time
 	 * 
 	 * @author Enrico Grunitz
-	 * @version 0.1.6 (15.10.2012)
+	 * @version 0.1.6.1 (18.10.2012)
 	 */
 	protected static class SignalViewMouseAdapter extends NamedMouseAdapter {
 		private static String eventType;
 		private static String eventComment;
+		
+		private boolean isDragging =  false;
+		
+		private SignalView target;
+		private Rectangle2D dataRect;
+		private boolean isInDataRect;
+		private Range timeAxis;
+		private double eventTime;
+		
 		
 		public SignalViewMouseAdapter(String nameExtension) {
 			super("SignalView" + nameExtension);
@@ -604,25 +626,33 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 			StatusBar.getInstance().updateText(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
 		}
 		
-		/** @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent) */
-		@Override public void mouseClicked(MouseEvent event) {
-			Debug.println(Debug.signalViewMouseAdapter, "mouse click on " + this.getComponentName());
+		private boolean checkEvent(MouseEvent event) {
 			if((event.getComponent() instanceof SignalView) == false) {
 				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
+				return false;
+			} else {
+				this.target = (SignalView)event.getComponent();
+				this.dataRect = this.target.getScreenDataArea();
+				this.isInDataRect = this.dataRect.contains(event.getPoint());
+				this.timeAxis = this.target.getTimeAxisBounds();
+				this.eventTime = this.timeAxis.getLength() / this.dataRect.getWidth() * (event.getX() - this.dataRect.getX()) + this.timeAxis.getLowerBound();
+				return true;
+			}
+		}
+		
+		/** @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent) */
+		@Override public void mouseClicked(MouseEvent event) {
+			if(this.checkEvent(event) == false) {
 				return;
 			}
-			SignalView target = (SignalView)event.getComponent();
+			Debug.println(Debug.signalViewMouseAdapter, "mouse click on " + this.getComponentName());
 			int modifiers = event.getModifiersEx();
 			switch(event.getButton()) {
 			case MouseEvent.BUTTON1:
 				if((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {
 					// LMB + Ctrl -> delete annotation
-					Rectangle2D dataRect = target.getScreenDataArea();
-					if(dataRect.contains(event.getPoint())) {
-						// calculate time
-						Range timeAxis = target.getTimeAxisBounds();
-						double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
-						Main.getAnnotationManager().removeAnnotation(time, timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap());
+					if(this.isInDataRect) {
+						Main.getAnnotationManager().removeAnnotation(this.eventTime, this.timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap());
 					}
 					return;	// CTRL means only delete, no adding
 				}
@@ -631,33 +661,23 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 					EditEventDialog eed = new EditEventDialog(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
 					if(eed.show() == true) {
 						// adding new edited annotation
-						Rectangle2D dataRect = target.getScreenDataArea();
-						if(dataRect.contains(event.getPoint())) {
-							// calculate time
-							Range timeAxis = target.getTimeAxisBounds();
-							double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
-							Main.getAnnotationManager().addAnnotation(time, eed.getType(), eed.getComment());
+						if(this.isInDataRect) {
+							Main.getAnnotationManager().addAnnotation(this.eventTime, eed.getType(), eed.getComment());
 						}
 					}
 				} else { // no SHIFT down
 					// adding preset annotation
-					Rectangle2D dataRect = target.getScreenDataArea();
-					if(dataRect.contains(event.getPoint())) {
+					if(this.isInDataRect) {
 						// calculate time
-						Range timeAxis = target.getTimeAxisBounds();
-						double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
-						Main.getAnnotationManager().addAnnotation(time);
+						Main.getAnnotationManager().addAnnotation(this.eventTime);
 					}
 				}
 				break;
 			case MouseEvent.BUTTON2:
 				// MMB -> center view on clicked x-location
-				Rectangle2D dataRect = target.getScreenDataArea();
-				if(dataRect.contains(event.getPoint())) {
+				if(this.isInDataRect) {
 					// calculate time
-					Range timeAxis = target.getTimeAxisBounds();
-					double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
-					SignalPanel.getInstance().fireActionEvent(new SignalPanel.ScrollToActionEvent(target, time));
+					SignalPanel.getInstance().fireActionEvent(new SignalPanel.ScrollToActionEvent(this.target, this.eventTime));
 				}
 				break;
 			default:
@@ -666,73 +686,96 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 			
 		}
 		
-		/** @see gst.ui.NamedMouseAdapter#mouseEntered(java.awt.event.MouseEvent) */
-		@Override public void mouseEntered(MouseEvent event) {
-			Debug.println(Debug.signalViewMouseAdapter, "mouse entered " + this.getComponentName());
-			if((event.getComponent() instanceof SignalView) == false) {
-				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
+		/** @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent) */
+		@Override public void mousePressed(MouseEvent event) {
+			if(this.checkEvent(event) == false) {
 				return;
 			}
-			SignalView target = (SignalView)event.getComponent();
+			Debug.println(Debug.signalViewMouseAdapter, "mouse pressed on " + this.getComponentName());
+		}
+		
+		/** @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent) */
+		@Override public void mouseReleased(MouseEvent event) {
+			if(this.checkEvent(event) == false) {
+				return;
+			}
+			Debug.println(Debug.signalViewMouseAdapter, "mouse released on " + this.getComponentName());
+			if(this.isDragging == true) {
+				// release mouse ends dragging state
+				((SignalView)event.getComponent()).highlightDomainCrosshair(false);
+				this.isDragging = false;
+			}
+		}
+		
+		/** @see java.awt.event.MouseAdapter#mouseDragged(java.awt.event.MouseEvent) */
+		@Override public void mouseDragged(MouseEvent event) {
+			if(this.checkEvent(event) == false) {
+				return;
+			}
+			Debug.println(Debug.signalViewMouseAdapter, "mouse dragged on " + this.getComponentName());
+			if(this.isDragging == false) {
+				// show the user the dragging state
+				((SignalView)event.getComponent()).highlightDomainCrosshair(true);
+				this.isDragging = true;
+			}
+			// dirty mouse forward to update domain crosshairs
+			this.mouseMoved(event);
+			return;
+		}
+		
+		/** @see gst.ui.NamedMouseAdapter#mouseEntered(java.awt.event.MouseEvent) */
+		@Override public void mouseEntered(MouseEvent event) {
+			if(this.checkEvent(event) == false) {
+				return;
+			}
+			Debug.println(Debug.signalViewMouseAdapter, "mouse entered " + this.getComponentName());
 			// focus request
-			boolean retval = target.requestFocusInWindow();
+			boolean retval = this.target.requestFocusInWindow();
 			if(retval == false) {
 				Debug.println(Debug.signalViewMouseAdapter, "focus will fail/failed");
 			}
 			// change background
-			target.focusHighlight(true);
+			this.target.focusHighlight(true);
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseExited(java.awt.event.MouseEvent) */
 		@Override public void mouseExited(MouseEvent event) {
-			if((event.getComponent() instanceof SignalView) == false) {
-				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
+			if(this.checkEvent(event) == false) {
 				return;
 			}
-			SignalView target = (SignalView)event.getComponent();
 			// change background
-			target.focusHighlight(false);
+			this.target.focusHighlight(false);
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseMoved(java.awt.event.MouseEvent) */
 		@Override public void mouseMoved(MouseEvent event) {
-			Debug.println(Debug.signalViewMouseAdapter, "mouseMove");
-			if((event.getComponent() instanceof SignalView) == false) {
-				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
+			if(this.checkEvent(event) == false) {
 				return;
 			}
-			SignalView target = (SignalView)event.getComponent();
-			Rectangle2D dataRect = target.getScreenDataArea();
-			if(dataRect.contains(event.getPoint())) {
-				// calculate time
-				Range timeAxis = target.getTimeAxisBounds();
-				double time = timeAxis.getLength() / dataRect.getWidth() * (event.getX() - dataRect.getX()) + timeAxis.getLowerBound();
-				SignalPanel.getInstance().updateDomainCrosshairs(time);
-				Main.getAnnotationManager().updateStatusAnnotationNear(time, timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap());
+			// Debug.println(Debug.signalViewMouseAdapter, "mouseMove");
+			if(this.isInDataRect) {
+				SignalPanel.getInstance().updateDomainCrosshairs(this.eventTime);
+				Main.getAnnotationManager().updateStatusAnnotationNear(this.eventTime, this.timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap());
 			}
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseWheelMoved(java.awt.event.MouseWheelEvent) */
 		@Override public void mouseWheelMoved(MouseWheelEvent event) {
-			Debug.println(Debug.signalViewMouseAdapter, this.getComponentName() + " detected mousewheel motion -> " + event.toString());
-			if((event.getComponent() instanceof SignalView) == false) {
-				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
+			if(this.checkEvent(event) == false) {
 				return;
 			}
-			SignalView target = (SignalView)event.getComponent();
+			Debug.println(Debug.signalViewMouseAdapter, this.getComponentName() + " detected mousewheel motion -> " + event.toString());
 			int modifiers = event.getModifiersEx();
 			if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {
 				// shift was pressed -> zoom view
 				double relShiftValue = event.getWheelRotation() * Settings.getInstance().ui.getRelativeAxisZooming() / 100;
-				double newRange = target.getTimeAxisBounds().getLength() * (1 - relShiftValue);
-				//target.zoomTimeAxisRelative(shiftValue);
-				SignalPanel.getInstance().fireActionEvent(new SignalPanel.ZoomActionEvent(target, newRange));
+				double newRange = this.target.getTimeAxisBounds().getLength() * (1 - relShiftValue);
+				SignalPanel.getInstance().fireActionEvent(new SignalPanel.ZoomActionEvent(this.target, newRange));
 			} else {
 				// shift wasn't pressed -> scroll view
 				double shiftValue = event.getWheelRotation() * Settings.getInstance().ui.getRelativeAxisScrolling() / 100;
-				Range timeAxisRange = target.getTimeAxisBounds();
-				double time = timeAxisRange.getCentralValue() + timeAxisRange.getLength() * shiftValue;
-				SignalPanel.getInstance().fireActionEvent(new SignalPanel.ScrollToActionEvent(target, time));
+				double time = this.timeAxis.getCentralValue() + this.timeAxis.getLength() * shiftValue;
+				SignalPanel.getInstance().fireActionEvent(new SignalPanel.ScrollToActionEvent(this.target, time));
 			}
 		}
 	}
