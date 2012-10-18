@@ -180,6 +180,8 @@ public class AnnotationController extends DataController {
 	 * @param high index of the last item to sort
 	 */
 	private void quickSort(int low, int high) {
+		/* Recursion is a problem on 32-bit windows 7 (and maybe all other 32-bit OS) with default stack size (512kB). Getting
+		 * stack overflow on sorting 3000 annotations. A iterative implementation should fix this. */
 		if(low < high) {
 			int pivot = high;
 			int i = low;
