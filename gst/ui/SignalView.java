@@ -606,7 +606,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 		
 		/** @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent) */
 		@Override public void mouseClicked(MouseEvent event) {
-			Debug.println(Debug.signalViewMouseAdapter, "mouse entered " + this.getComponentName());
+			Debug.println(Debug.signalViewMouseAdapter, "mouse click on " + this.getComponentName());
 			if((event.getComponent() instanceof SignalView) == false) {
 				Debug.println(Debug.signalViewMouseAdapter, "target of mouse event is not a signalview. Event: " + event.toString());
 				return;
@@ -615,8 +615,8 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 			int modifiers = event.getModifiersEx();
 			switch(event.getButton()) {
 			case MouseEvent.BUTTON1:
-				if((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {		// CTRL down
-					// delete annotation
+				if((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {
+					// LMB + Ctrl -> delete annotation
 					Rectangle2D dataRect = target.getScreenDataArea();
 					if(dataRect.contains(event.getPoint())) {
 						// calculate time
@@ -626,8 +626,8 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 					}
 					return;	// CTRL means only delete, no adding
 				}
-				if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {		// SHIFT down
-					// edit annotation to set
+				if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {
+					// LMB + Shift -> edit annotation to set and add it
 					EditEventDialog eed = new EditEventDialog(SignalViewMouseAdapter.eventType, SignalViewMouseAdapter.eventComment);
 					if(eed.show() == true) {
 						// adding new edited annotation
