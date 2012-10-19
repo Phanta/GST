@@ -12,7 +12,7 @@ import gst.ui.StatusBar;
 /**
  * Class that holds information of the selected {@code AnnotationController} and predefined annotations.
  * @author Enrico Grunitz
- * @version 0.1.1 (10.08.2012)
+ * @version 0.1.1.1 (19.10.2012)
  */
 public class AnnotationManager {
 	/**
@@ -87,7 +87,7 @@ public class AnnotationManager {
 	}
 	
 	/**
-	 * Writes an annotation to the slected channel.
+	 * Writes an annotation to the selected channel.
 	 * @param time point in time where the annotation belongs to
 	 * @param type the type
 	 * @param comment the comment
@@ -134,6 +134,56 @@ public class AnnotationManager {
 		AnnotationList al = this.selectedAnnotationChannel.getAnnotation(time, range);
 		this.selectedAnnotationChannel.removeAnnotation(al);
 		return al.size();
+	}
+	
+	/**
+	 * Returns the number of annotations at the specified point in time. Convenience method for
+	 * {@link #getAnnotationCount(double, double)} with {@code range == 0}.
+	 * @param time the time
+	 * @return number of annotations
+	 */
+	public int getAnnotationCount(double time) {
+		return this.getAnnotationCount(time, 0);
+	}
+	
+	/**
+	 * Returns the number of annotations in the range {@code time - range} to {@code time + range}). 
+	 * @param time central point in time
+	 * @param range the range
+	 * @return number of annotations in the specified time range
+	 */
+	public int getAnnotationCount(double time, double range) {
+		return this.selectedAnnotationChannel.getAnnotation(time, range).size();
+	}
+	
+	/**
+	 * Moves all annotations in range ({@code time - range} to {@code time + range}) to the new range ({@code newTime - range}
+	 * to {@code newTime + range}).
+	 * @param time central point in time of starting time-range
+	 * @param range the range
+	 * @param newTime central point in time of the destination time-range
+	 * @return number of annotations moved
+	 */
+	public int moveAnnotations(double time, double range, double newTime) {
+		AnnotationList list = this.selectedAnnotationChannel.getAnnotation(time, range);
+		this.selectedAnnotationChannel.removeAnnotation(list);
+		double timeDiff = newTime - time;
+		for(int i = 0; i < list.size(); i++) {
+			// adding annotations one by one may be slow due to multiple DataChange-notifications
+			this.selectedAnnotationChannel.addAnnotation(list.getTime(i) + timeDiff, list.getType(i), list.getComment(i));
+		}
+		return list.size();
+	}
+	
+	/**
+	 * Moves all annotations from {@code time} to {@code newTime}. Convenience method for
+	 * {@link #moveAnnotations(double, double, double)} with {@code range == 0}.
+	 * @param time time of annotations to move
+	 * @param newTime time of annotations to move to
+	 * @return number of annotations moved
+	 */
+	public int moveAnnotations(double time, double newTime) {
+		return this.moveAnnotations(time, 0, newTime);
 	}
 	
 	/**
