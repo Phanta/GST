@@ -68,7 +68,7 @@ public class Settings {
 	
 	/**
 	 * Wrapper class for settings for the User Interface of the application.
-	 * @version 0.1.4 (01.08.2012)
+	 * @version 0.1.4.1 (19.10.2012)
 	 * @author Enrico Grunitz
 	 */
 	public static class UI {
@@ -89,6 +89,8 @@ public class Settings {
 		/** width in pixel of sidebar */				private int sidebarWidth;
 		
 		/** highlight color for SignalView */			private Color signalViewHighlightColor;
+		/** highlight color for SignalView crosshair */ private Color signalViewHighlightCrosshairColor;
+		/** normal color for SignalView crosshair */	private Color signalViewCrosshairColor;
 		
 		/** width of signaloverview */					private int signalOverviewWidth;
 		/** height of signaloverview */					private int signalOverviewHeight;
@@ -119,6 +121,8 @@ public class Settings {
 			sidebarWidth = 250;
 			
 			signalViewHighlightColor = new Color(183, 208, 176);
+			this.signalViewHighlightCrosshairColor = Color.red;
+			this.signalViewCrosshairColor = Color.black;
 			
 			signalOverviewWidth = sidebarWidth;
 			signalOverviewHeight = 80;
@@ -176,6 +180,14 @@ public class Settings {
 		/** @return {@link #signalViewHighlightColor} */
 		public Color getHighlightColor() {
 			return signalViewHighlightColor;
+		}
+		/** @return {@link #signalViewCrosshairColor} */
+		public Color getCrosshairColor() {
+			return this.signalViewCrosshairColor;
+		}
+		/** @return {@link #signalViewHighlightCrosshairColor} */
+		public Color getHighlightCrosshairColor() {
+			return this.signalViewHighlightCrosshairColor;
 		}
 		/** @return {@link #relativeAxisScrolling} */
 		public double getRelativeAxisScrolling() {

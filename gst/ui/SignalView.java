@@ -146,9 +146,9 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	 */
 	public void highlightDomainCrosshair(boolean on) {
 		if(on == true) {
-			this.getChart().getXYPlot().setDomainCrosshairPaint(Color.red);
+			this.getChart().getXYPlot().setDomainCrosshairPaint(Settings.getInstance().ui.getHighlightCrosshairColor());
 		} else {
-			this.getChart().getXYPlot().setDomainCrosshairPaint(Color.black);
+			this.getChart().getXYPlot().setDomainCrosshairPaint(Settings.getInstance().ui.getCrosshairColor());
 		}
 	}
 	
