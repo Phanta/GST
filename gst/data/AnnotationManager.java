@@ -12,7 +12,7 @@ import gst.ui.StatusBar;
 /**
  * Class that holds information of the selected {@code AnnotationController} and predefined annotations.
  * @author Enrico Grunitz
- * @version 0.1.1.2 (22.10.2012)
+ * @version 0.1.1.3 (22.10.2012)
  */
 public class AnnotationManager {
 	/**
@@ -157,7 +157,10 @@ public class AnnotationManager {
 	 * @return number of annotations in the specified time range
 	 */
 	public int getAnnotationCount(double time, double range) {
-		return this.selectedAnnotationChannel.getAnnotation(time, range).size();
+		if(this.selectedAnnotationChannel != null) {
+			return this.selectedAnnotationChannel.getAnnotation(time, range).size();
+		}
+		return 0;
 	}
 	
 	/**
