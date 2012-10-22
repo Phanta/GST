@@ -5,6 +5,7 @@ package gst.ui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -604,13 +605,15 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	 * MMB						- center view on clicked time
 	 * 
 	 * @author Enrico Grunitz
-	 * @version 0.1.6.2 (18.10.2012)
+	 * @version 0.1.6.4 (22.10.2012)
 	 */
 	protected static class SignalViewMouseAdapter extends NamedMouseAdapter {
 		private static String eventType;
 		private static String eventComment;
 		
 		private boolean isDragging =  false;
+		private int draggingAnnosCount = 0;
+		private double draggingStartTime;
 		
 		private SignalView target;
 		private Rectangle2D dataRect;
@@ -646,6 +649,17 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 			}
 		}
 		
+		/**
+		 * Updates the crosshairs and status-message on mouse movement. {@link #checkEvent(MouseEvent)} has to be called and 
+		 * evaluated before to work as intended.
+		 */
+		private void updateOnMouseMovement() {
+			if(this.isInDataRect) {
+				SignalPanel.getInstance().updateDomainCrosshairs(this.eventTime);
+				Main.getAnnotationManager().updateStatusAnnotationNear(this.eventTime, this.timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap());
+			}
+		}
+		
 		/** @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent) */
 /*		@Override public void mouseClicked(MouseEvent event) {
 			if(this.checkEvent(event) == false) {
@@ -654,12 +668,27 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 			Debug.println(Debug.signalViewMouseAdapter, "mouse click on " + this.getComponentName());
 		}
 */		
-		/** @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent) */
+		/**
+		 * Method for handling mouse button down events. Check if the event was in the lower part of the data rectangle and
+		 * there is an annotation to drag around. 
+		 * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
+		 */
 		@Override public void mousePressed(MouseEvent event) {
 			if(this.checkEvent(event) == false) {
 				return;
 			}
-			Debug.println(Debug.signalViewMouseAdapter, "mouse pressed on " + this.getComponentName());
+			Debug.println(Debug.signalViewMouseAdapter, "mouse button down on " + this.getComponentName());
+			if(this.isInDataRect) {
+				Rectangle lowerRect = new Rectangle(this.dataRect.getBounds());
+				lowerRect.y = lowerRect.y + lowerRect.height - Settings.getInstance().ui.getAnnotationDragAreaHeight();
+				if(lowerRect.contains(event.getPoint())) {
+					// click was in dragging area, let's find some annotations
+					this.draggingAnnosCount = Main.getAnnotationManager().getAnnotationCount(this.eventTime, this.timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap());
+					if(this.draggingAnnosCount > 0) {
+						this.draggingStartTime = this.eventTime;
+					}
+				}
+			}
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent) */
@@ -670,8 +699,12 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 			Debug.println(Debug.signalViewMouseAdapter, "mouse released on " + this.getComponentName());
 			if(this.isDragging == true) {
 				// release mouse ends dragging state
+				Main.getAnnotationManager().moveAnnotations(draggingStartTime,
+															this.timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap(),
+															this.eventTime);
 				this.target.highlightDomainCrosshair(false);
 				this.isDragging = false;
+				this.draggingAnnosCount = 0;
 			} else {
 				switch(event.getButton()) {
 				case MouseEvent.BUTTON1:
@@ -719,13 +752,14 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 				return;
 			}
 			Debug.println(Debug.signalViewMouseAdapter, "mouse dragged on " + this.getComponentName());
-			if(this.isDragging == false) {
+			if(this.isDragging == false && this.draggingAnnosCount > 0) {
 				// show the user the dragging state
 				this.target.highlightDomainCrosshair(true);
 				this.isDragging = true;
+			} else {
+				Debug.println(Debug.signalViewMouseAdapter, "not dragging annotations - no annotations found");
 			}
-			// dirty mouse forward to update domain crosshairs
-			this.mouseMoved(event);
+			this.updateOnMouseMovement();
 			return;
 		}
 		
@@ -759,10 +793,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 				return;
 			}
 			// Debug.println(Debug.signalViewMouseAdapter, "mouseMove");
-			if(this.isInDataRect) {
-				SignalPanel.getInstance().updateDomainCrosshairs(this.eventTime);
-				Main.getAnnotationManager().updateStatusAnnotationNear(this.eventTime, this.timeAxis.getLength() * Settings.getInstance().ui.getSignalViewRelativeSnap());
-			}
+			this.updateOnMouseMovement();
 		}
 		
 		/** @see java.awt.event.MouseAdapter#mouseWheelMoved(java.awt.event.MouseWheelEvent) */

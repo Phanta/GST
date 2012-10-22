@@ -68,7 +68,7 @@ public class Settings {
 	
 	/**
 	 * Wrapper class for settings for the User Interface of the application.
-	 * @version 0.1.4.1 (19.10.2012)
+	 * @version 0.1.4.2 (19.10.2012)
 	 * @author Enrico Grunitz
 	 */
 	public static class UI {
@@ -98,6 +98,7 @@ public class Settings {
 		/** percentage of axis movement on scrollwheel */	private double relativeAxisScrolling;
 		/** percentage of axis zooming on scrollwheel */	private double relativeAxisZooming;
 		/** portion of view to search for annotations */	private double relativeSnapPortion;
+		/** height of area to allow annotation dragging */	private int annotationDragAreaHeight;
 		
 		/**
 		 * Standard Constructor. Initializes UI with default Values.
@@ -130,6 +131,7 @@ public class Settings {
 			relativeAxisScrolling = 15.0;
 			relativeAxisZooming = 15.0;
 			this.relativeSnapPortion = 0.01;
+			this.annotationDragAreaHeight = 20;
 			return;
 		}
 		
@@ -200,6 +202,10 @@ public class Settings {
 		/** @return {@link #relativeSnapPortion} */
 		public double getSignalViewRelativeSnap() {
 			return this.relativeSnapPortion;
+		}
+		/** @return	{@link #annotationDragAreaHeight} */
+		public int getAnnotationDragAreaHeight() {
+			return this.annotationDragAreaHeight;
 		}
 		
 		/** @return {@link #toolbarShowLabels} */
