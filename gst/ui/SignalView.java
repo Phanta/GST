@@ -519,7 +519,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	/**
 	 * Keyboard event handler for {@code SignalView}.
 	 * @author Enrico Grunitz
-	 * @version 0.1.1 (08.08.2012)
+	 * @version 0.1.2 (22.10.2012)
 	 */
 	protected static class SignalViewKeyAdapter extends KeyAdapter {
 		private static final int ALL_MODIFIERS = InputEvent.ALT_DOWN_MASK |
@@ -557,15 +557,19 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 				}
 				break;
 			case KeyEvent.VK_NUMPAD1:
+			case KeyEvent.VK_1:
 				Main.getAnnotationManager().selectPreset(AnnotationManager.Preset.N);
 				break;
 			case KeyEvent.VK_NUMPAD2:
+			case KeyEvent.VK_2:
 				Main.getAnnotationManager().selectPreset(AnnotationManager.Preset.V);
 				break;
 			case KeyEvent.VK_NUMPAD3:
+			case KeyEvent.VK_3:
 				Main.getAnnotationManager().selectPreset(AnnotationManager.Preset.B);
 				break;
 			case KeyEvent.VK_NUMPAD4:
+			case KeyEvent.VK_4:
 				Main.getAnnotationManager().selectPreset(AnnotationManager.Preset.E);
 				break;
 			}
