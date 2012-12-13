@@ -28,6 +28,7 @@ import gst.data.DataChangeListener;
 import gst.data.DataController;
 import gst.test.Debug;
 import gst.ui.dialog.EditEventDialog;
+import gst.ui.dialog.SignalViewPropertyDialog;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -519,7 +520,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	/**
 	 * Keyboard event handler for {@code SignalView}.
 	 * @author Enrico Grunitz
-	 * @version 0.1.2 (22.10.2012)
+	 * @version 0.1.3 (13.12.2012)
 	 */
 	protected static class SignalViewKeyAdapter extends KeyAdapter {
 		private static final int ALL_MODIFIERS = InputEvent.ALT_DOWN_MASK |
@@ -539,6 +540,9 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 			case KeyEvent.VK_E:
 				if(noModifier == true) {
 					target.openDataSelection();
+				} else if((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {
+					// ctrl down
+					(new SignalViewPropertyDialog()).showDialog(target);
 				}
 				break;
 			case KeyEvent.VK_C:
