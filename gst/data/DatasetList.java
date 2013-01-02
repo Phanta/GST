@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ * Singleton collection of all loaded datasets.
  * @author Enrico Grunitz
  * @version 0.0.0.2 (12.10.2012)
  */

@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 /**
+ * Currently not used/disabled.
  * Panel for Information and Signal-Overview at the side of the Main-Window. Implemented as Singleton.
  * @version 0.1.3 (13.06.2012)
  * @author Enrico Grunitz

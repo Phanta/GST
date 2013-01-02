@@ -10,7 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * 
+ * MouseAdapter implementation with debug messages.
  * @author Enrico Grunitz
  * @version 0.1 (31.07.2012)
  */

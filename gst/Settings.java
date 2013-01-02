@@ -72,28 +72,28 @@ public class Settings {
 	 * @author Enrico Grunitz
 	 */
 	public static class UI {
-		/** Value for left aligned Sidebar. */			public static final boolean SIDEBAR_LEFT = true;
-		/** Value for right aligned Sidebar. */			public static final boolean SIDEBAR_RIGHT = false;
+		/** Value for left aligned Sidebar. */				public static final boolean SIDEBAR_LEFT = true;
+		/** Value for right aligned Sidebar. */				public static final boolean SIDEBAR_RIGHT = false;
 		
 //		/** switch for debug messages of SignalView */	public static final boolean showSignalViewDebugMessages = true;
 
 		
-		/** dimension of the main window */				private Dimension dimMainWindow;
-		/** title string of main window */				private String titleMainWindow;
-		
-		/** show text labels in toolbar */				private boolean toolbarShowLabels;
+		/** dimension of the main window */					private Dimension dimMainWindow;
+		/** title string of main window */					private String titleMainWindow;
+
+		/** show text labels in toolbar */					private boolean toolbarShowLabels;
 		/** modifiers needed for for close all views
-		 * @see java.awt.event.ActionEvent */			private int toolbarCloseViewsModifier;
+		 * @see java.awt.event.ActionEvent */				private int toolbarCloseViewsModifier;
 		
-		/** alignment of the sidebar */					private boolean sidebarAlignment;
-		/** width in pixel of sidebar */				private int sidebarWidth;
+		/** alignment of the sidebar */						private boolean sidebarAlignment;
+		/** width in pixel of sidebar */					private int sidebarWidth;
 		
-		/** highlight color for SignalView */			private Color signalViewHighlightColor;
-		/** highlight color for SignalView crosshair */ private Color signalViewHighlightCrosshairColor;
-		/** normal color for SignalView crosshair */	private Color signalViewCrosshairColor;
+		/** highlight color for SignalView */				private Color signalViewHighlightColor;
+		/** highlight color for SignalView crosshair */ 	private Color signalViewHighlightCrosshairColor;
+		/** normal color for SignalView crosshair */		private Color signalViewCrosshairColor;
 		
-		/** width of signaloverview */					private int signalOverviewWidth;
-		/** height of signaloverview */					private int signalOverviewHeight;
+		/** width of signaloverview */						private int signalOverviewWidth;
+		/** height of signaloverview */						private int signalOverviewHeight;
 		
 		/** percentage of axis movement on scrollwheel */	private double relativeAxisScrolling;
 		/** percentage of axis zooming on scrollwheel */	private double relativeAxisZooming;

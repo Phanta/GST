@@ -161,7 +161,7 @@ public class SignalPanel extends JPanel {
 	}
 	
 	/**
-	 * Removes the given {@code ActionListener} from this {@SignalPanel}.
+	 * Removes the given {@code ActionListener} from this {@link gst.ui.SignalPanel}.
 	 * @param al the {@code ActionListener} to remove
 	 */
 	public void removeActionListener(ActionListener al) {
@@ -303,7 +303,7 @@ public class SignalPanel extends JPanel {
 		
 		/**
 		 * Convenience constructor for events at the current point in time.
-		 * @see gst.ui.ScrollToActionEvent#ScrollToActionEvent(object, long, int, double)
+		 * @see gst.ui.SignalPanel.ScrollToActionEvent#SignalPanel.ScrollToActionEvent(Object, long, int, double)
 		 */
 		public ScrollToActionEvent(Object source, int modifiers, double targetTime) {
 			this(source, System.currentTimeMillis(), modifiers, targetTime);
@@ -311,7 +311,7 @@ public class SignalPanel extends JPanel {
 		
 		/**
 		 * Convenience constructor for events at the current point in time and without any modifiers.
-		 * @see gst.ui.ScrollToActionEvent#ScrollToActionEvent(object, long, int, double)
+		 * @see gst.ui.SignalPanel.ScrollToActionEvent#SignalPanel.ScrollToActionEvent(Object, long, int, double)
 		 */
 		public ScrollToActionEvent(Object source, double targetTime) {
 			this(source, System.currentTimeMillis(), 0, targetTime);
@@ -350,7 +350,7 @@ public class SignalPanel extends JPanel {
 		
 		/**
 		 * Convenience constructor for events at the current point in time.
-		 * @see gst.ui.ScrollToActionEvent#ScrollToActionEvent(object, long, int, double)
+		 * @see gst.ui.SignalPanel.ZoomActionEvent#SignalPanel.ZoomActionEvent(Object, long, int, double)
 		 */
 		public ZoomActionEvent(Object source, int modifiers, double targetRange) {
 			this(source, System.currentTimeMillis(), modifiers, targetRange);
@@ -358,7 +358,7 @@ public class SignalPanel extends JPanel {
 		
 		/**
 		 * Convenience constructor for events at the current point in time and without any modifiers.
-		 * @see gst.ui.ScrollToActionEvent#ScrollToActionEvent(object, long, int, double)
+		 * @see gst.ui.SignalPanel.ZoomActionEvent#SignalPanel.ZoomActionEvent(Object, long, int, double)
 		 */
 		public ZoomActionEvent(Object source, double targetRange) {
 			this(source, System.currentTimeMillis(), 0, targetRange);

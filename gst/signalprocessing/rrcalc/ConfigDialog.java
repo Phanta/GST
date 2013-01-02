@@ -25,7 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 /**
- * 
+ * Configuration dialog for {@link gst.signalprocessing.rrcalc.RRCalculator}.
  * @author Enrico Grunitz
  * @version 0.0.0.3 (16.10.2012)
  */
@@ -132,7 +132,7 @@ public class ConfigDialog extends JDialog implements ActionListener {
 	}
 	
 	/**
-	 * Creates the {@link gst.signalProcessingSignalProcessor}.
+	 * Creates the {@link gst.signalprocessing.SignalProcessor}.
 	 * @param source {@link gst.data.DataController} of source signal
 	 * @param target {@link gst.data.BufferedValueController} of the target signal
 	 */

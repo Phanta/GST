@@ -90,7 +90,6 @@ public class AnnotationController extends DataController {
 	 * @return list of found annotations
 	 */
 	public AnnotationList getAnnotation(double time, double range) {
-		// TODO implement
 		ArrayList<Event> events = new ArrayList<Event>();
 		if(this.buffer.size() == 0) {
 			return new AnnotationList(events, this.basetime, ((EventEntry)this.entry).getSampleRate());
@@ -337,6 +336,13 @@ public class AnnotationController extends DataController {
 		return null;
 	}
 
+	/**
+	 * Checks if {@code test} is between {@code low} and {@code high}.
+	 * @param test the variable to check
+	 * @param low lower bound
+	 * @param high upper bound
+	 * @return true if {@code test >= low && test <= high}
+	 */
 	private static boolean isInside(long test, long low, long high) {
 		return (test >= low && test <= high);
 	}

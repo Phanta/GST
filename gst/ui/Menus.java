@@ -32,22 +32,26 @@ import javax.swing.KeyStroke;
 public class Menus extends JMenuBar implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
-	private static final Menus myself = new Menus();
-	private static final String PREFIX_FAIL = "ERROR\tcouldn't register ";
+	/** singleton instance of this class */				private static final Menus myself = new Menus();
+	/** constant string for debug messages */			private static final String PREFIX_FAIL = "ERROR\tcouldn't register ";
 	
-	private JMenuItem miCloseProgram;
+	/** {@code MenuItem} for closing the program */				private JMenuItem miCloseProgram;
 	//private JMenuItem miFileLoad;
-	private JMenuItem miSaveAll;
-	private JMenuItem miDatasetManager;
+	/** {@code MenuItem} for saving all datasets*/				private JMenuItem miSaveAll;
+	/** {@code MenuItem} for opening dataset manager dialog*/	private JMenuItem miDatasetManager;
 	
-	private JMenuItem miCreateNewAnnotation;
-	private JMenuItem miSelectAnnotation;
+	/** {@code MenuItem} for annotation channel creation*/		private JMenuItem miCreateNewAnnotation;
+	/** {@code MenuItem} for slecting annotation channel*/		private JMenuItem miSelectAnnotation;
 	
-	private JMenuItem miFuncRRCalc;
-	private JMenuItem miFuncRRLiveCalc;
+	/** {@code MenuItem} for starting {@link gst.signalprocessing.rrcalc.RRCalculator} */
+																private JMenuItem miFuncRRCalc;
+	/** {@code MenuItem} for starting {@link gst.signalprocessing.rrcalc.RRLiveCalculator} */
+																private JMenuItem miFuncRRLiveCalc;
 	
-	private JMenu mRunningSP;
-	private ArrayList<RunningSignalProcessorMenuItem> runningSPList;
+	/** {@code Menu} for running {@link gst.signalprocessing.LiveSignalProcessor} */
+																private JMenu mRunningSP;
+	/** collection of {@code MenuItem} for running {@link gst.signalprocessing.LiveSignalProcessor} */
+																private ArrayList<RunningSignalProcessorMenuItem> runningSPList;
 	
 	/**
 	 * @return the Instance of the Menubar

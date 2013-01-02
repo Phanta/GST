@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
- * 
+ * Dialog for enabling and disabling coordinated zooming and scrolling for {@link gst.ui.SignalView SignalViews}.
  * @author Enrico Grunitz
  * @version 0.0.0.1 (13.12.2012)
  */
@@ -35,6 +35,10 @@ public class SignalViewPropertyDialog {
 		this.message = msg;
 	}
 	
+	/**
+	 * Shows the {@code SignalViewPropertyDialog} to the user for the given {@link gst.ui.SignalView}.
+	 * @param view the {@code SignalView} to show the dialog for
+	 */
 	public void showDialog(SignalView view) {
 		if(view == null) {
 			throw new NullPointerException("cannot create options-dialog for null SignalView");

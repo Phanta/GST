@@ -20,6 +20,10 @@ public class SignalController extends DataController {
 	
 	/** index of controlled channel */				private int channelIndex;
 
+	/**
+	 * Creates a {@code SignalController} for the given dataset entry.
+	 * @param entry
+	 */
 	public SignalController(SignalEntry entry) {
 		super(entry);
 		this.channelCount = entry.getChannelCount();

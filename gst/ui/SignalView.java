@@ -461,7 +461,7 @@ public class SignalView extends ChartPanel implements DataChangeListener{
 	
 	/**
 	 * Implementation of {@code DataChangeListener}-interface.
-	 * @see gst.data.DataChangeListener#dataChangeReaction(gst.data.DataController)
+	 * @see gst.data.DataChangeListener#dataChangeReaction(DataChangeEvent)
 	 */
 	@Override public void dataChangeReaction(DataChangeEvent event) {
 		DataController source = event.getSource();

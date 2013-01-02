@@ -25,8 +25,8 @@ import javax.swing.UIManager;
 public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static Settings settings = Settings.getInstance();
-	private static final MainWindow myself = new MainWindow();
+	/** instance of settings*/							private static Settings settings = Settings.getInstance();
+	/** singleton instance of this class */				private static final MainWindow myself = new MainWindow();
 	
 	public static enum ID {
 		openFile,
@@ -111,7 +111,7 @@ public class MainWindow extends JFrame {
 	
 	/**
 	 * Registers an {@code ActioinListener} to this window and all it's sub components for the specified action-ID.
-	 * @param ID ID specifying the action to perform
+	 * @param id ID specifying the action to perform
 	 * @param al the {@code ActionListener}
 	 * @return true if registering was successful, else false
 	 */

@@ -18,7 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 /**
- * A basic class that draws a MultiSplitPanel
+ * A basic class that draws a MultiSplitPanel. Not used - testing purpose.
  * @author Enrico Grunitz
  * @version 0.1.1 (07.06.2012)
  */

@@ -32,15 +32,18 @@ import gst.ui.SignalView;
  * @version 3 (24.07.2012)
  */
 public class DataTest {
-	UnisensDataset usds = null;
-	static int test = 0;
-	static String functionName = "";
+	/** dataset */										private UnisensDataset usds = null;
+	/** number of tests to do */						static int test = 0;
+	/** name of the currently running test method */	static String functionName = "";
 	
 	public DataTest() {
 		test = 0;
 		return;
 	}
 	
+	/**
+	 * Testing creation, editing and saving of {@link gst.data.UnisensDataset}.
+	 */
 	public void testGenerate() {
 		testing("testGenerate(void)");
 		// DEBUG absolute path
@@ -50,6 +53,9 @@ public class DataTest {
 		testEnd("testGenerate(void)");
 	}
 	
+	/**
+	 * Testing basic reading of data from {@link gst.data.UnisensDataset}.
+	 */
 	public void testLoad() {
 		testing("testLoad(void)");
 		// DEBUG absolute path
@@ -61,6 +67,9 @@ public class DataTest {
 		testEnd("testLoad(void)");
 	}
 	
+	/**
+	 * Loading dataset and reading all IDs of its entries.
+	 */
 	public void loadAndPrintIds() {
 		testing("loadAndPrintIds(void)", 3);
 		// DEBUG absolute path
@@ -80,6 +89,9 @@ public class DataTest {
 		return;
 	}
 	
+	/**
+	 * Loading dataset and reading all content classes of its entries.
+	 */
 	public void loadAndPrintContentClasses() {
 		testing("loadAndPrintContentClasses(void)", 3);
 		// DEBUG absolute path
@@ -95,6 +107,9 @@ public class DataTest {
 		return;
 	}
 
+	/**
+	 * Loading dataset and reading all entry types of its entries.
+	 */
 	public void loadAndPrintEntryTypes() {
 		testing("loadAndPrintEntryTypes(void)", 3);
 		// DEBUG absolute path
@@ -256,6 +271,9 @@ public class DataTest {
 		usds.close();
 	}
 	
+	/**
+	 * Testing zoom functionality with annotations.
+	 */
 	public void testAnnotationZoom() {
 		testing("testAnnotationZoom(void) -> Example_002", 2);
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_002\\Example_002", true);
@@ -272,6 +290,9 @@ public class DataTest {
 		usds.close();
 	}
 	
+	/**
+	 * Testing {@link gst.data.SignalController} with multiple channels.
+	 */
 	public void testMultiController() {
 		testing("multiple Controllers for one View -> Example_003", 0);
 		usds = new UnisensDataset("D:\\Users\\grunitz\\Documents\\Unisens Examples\\Example_003", true);
@@ -291,6 +312,9 @@ public class DataTest {
 		return;
 	}
 	
+	/**
+	 * Test correct handling of read-only entries in dataset.
+	 */
 	public void testReadOnlyDataController() {
 		testing("read-only Controllers -> KM251170", 10);
 		echo("loading data");
@@ -313,6 +337,9 @@ public class DataTest {
 		return;
 	}
 	
+	/**
+	 * Testing {@link gst.data.BufferedValueController} for correct behavior.
+	 */
 	public void testBufferedValues() {
 		testing("BufferedValueController -> Implementation Test");
 		echo("loading Data");
@@ -333,23 +360,39 @@ public class DataTest {
 		testEnd();
 	}
 	
+	/**
+	 * Standard test begin console output.
+	 * @param testName name of the test method that started
+	 */
 	private static void testing(String testName) {
 		System.out.println("TEST\tRunning '" + testName + "' ...");
 		functionName = testName;
 		return;
 	}
 	
+	/**
+	 * Start of standard test including conole output and initialization of test counter.
+	 * @param testName name of the test method that started
+	 * @param numTests number of test to perform
+	 */
 	private static void testing (String testName, int numTests) {
 		test = numTests;
 		testing(testName);
 		return;
 	}
 	
+	/**
+	 * Ends the previously started test.
+	 */
 	private static void testEnd() {
 		testEnd(functionName);
 		return;
 	}
 	
+	/**
+	 * Console output at test end.
+	 * @param testName name of the test method
+	 */
 	private static void testEnd(String testName) {
 		System.out.println("TEST\t... test '" + testName + "' ended with " + test + " failed tests.\n");
 	}

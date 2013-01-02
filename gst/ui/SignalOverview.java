@@ -26,7 +26,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 
 
 /**
- * This class represents the Signal-Overview-Panel of the GUI. 
+ * This class represents the Signal-Overview-Panel of the GUI. Currently not used.
  * @version 0.2.2 (30.05.2012)
  * @author Enrico Grunitz
  */

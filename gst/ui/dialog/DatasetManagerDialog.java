@@ -145,7 +145,7 @@ public final class DatasetManagerDialog extends JDialog
 	}
 	
 	/**
-	 * Creates a {@code TreeNode) for the dataset. Every entry is a sub note of the root and every channel is a sub-node
+	 * Creates a {@code TreeNode} for the dataset. Every entry is a sub note of the root and every channel is a sub-node
 	 * of the entry-nodes.
 	 * @param ds the dataset to create the tree for
 	 * @return root-node of dataset tree 

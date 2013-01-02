@@ -30,19 +30,18 @@ import gst.ui.dialog.DatasetSelectionDialog;
 import gst.ui.dialog.EnterFileNameDialog;
 
 /**
- * Class for the public static void main(String[] args) function.
+ * Entry Point of the program. Class for the {@code public static void main(String[] args)} method.
  * @author Enrico Grunitz
  * @version 0.1.6.2 (08.10.2012)
  */
 public abstract class Main {
 	
-	private static SignalView[] sv;
-	private static final int MAXSIGNALS = 0;
+	/** old variable for {@link gst.ui.SignalView} handling */			@Deprecated private static SignalView[] sv;
+	/** constant number of random signal {@link gst.ui.SignalView} */	@Deprecated private static final int MAXSIGNALS = 0;
 
-	private static MainWindow main;
-	//private static ArrayList<UnisensDataset> datasets;
-	private static DatasetList datasetList;
-	private static AnnotationManager annotationManager;
+	/** instance of {@link gst.ui.MainWindow} */						private static MainWindow main;
+	/** instance of {@link gst.data.DatasetList} */						private static DatasetList datasetList;
+	/** instance of {@link gst.data.AnnotationManager} */				private static AnnotationManager annotationManager;
 	
 	/**
 	 * I give you three chances to guess the purpose of this function. Hint: !cigam s'tI
@@ -58,6 +57,7 @@ public abstract class Main {
 		Debug.println(Debug.main, "MainWindow content pane :" + main.getContentPane().toString());
 		Debug.println(Debug.main, "SignalPanel parent : " + SignalPanel.getInstance().getParent().toString());
 		
+		// setting up menu ActionListeners
 		main.registerActionListener(MainWindow.ID.closeProgram, new ActionListener() {
 																	public void actionPerformed(ActionEvent ae) {
 																		Main.closeProgram(ae);
@@ -88,14 +88,16 @@ public abstract class Main {
 																			    new DatasetManagerDialog(main);
 																		    }
 																   	    });
+		// init text of status bar
 		StatusBar.getInstance().updateText("keiner");
 		
 		sv = new SignalView[MAXSIGNALS];
 		generateSignalViews(MAXSIGNALS, 2000);
-		
+		// update main window component
 		main.revalidate();
 		main.repaint();
-
+		
+		// running test routines - not necessary for release 
 		DataTest dt = new DataTest();
 		dt.arrayTest();
 		dt.testGenerate();
@@ -117,13 +119,18 @@ public abstract class Main {
 		return;
 	}
 	
+	/**
+	 * Returns the instance of the global {@link gst.data.AnnotationManager}.
+	 * @return instance of {@code AnnotationManager}
+	 */
 	public static AnnotationManager getAnnotationManager() {
 		return annotationManager;
 	}
 	
 	/**
-	 * Asks the user to select data of loaded datasets and creates a new {@link gst.ui.SignalView} to display them.
-	 * @param ae {@code ActionEvent} fired
+	 * Opens a {@link gst.ui.DataSelectionDialog} that ask the user to select previously loaded data. A new
+	 * {@link gst.ui.SignalView} is created for the selected data.
+	 * @param ae {@code ActionEvent} fired the calling UI-element
 	 */
 	private static void openNewSignalView(ActionEvent ae) {
 		DataSelectionDialog dialog = new DataSelectionDialog(null);
@@ -140,12 +147,12 @@ public abstract class Main {
 	}
 	
 	/**
-	 * Asks the user to select an {@code EventEntry} to edit and selects it.
+	 * Opens a {@link gst.ui.dialog.AnnotationSelectionDialog} to select a EventEntry of a dataset to write annotations to.
 	 */
 	private static void uiSelectAnnotation() {
 		AnnotationSelectionDialog dialog = new AnnotationSelectionDialog();
 		AnnotationController selectedAC = dialog.show();
-		if(selectedAC != null) {
+		if(selectedAC != null) {	// annotation selected -> update AnnoationManager selection
 			getAnnotationManager().selectController(selectedAC); 
 			Debug.println(Debug.main, "selected Annotation: " + selectedAC.getFullName());
 		} else {
@@ -154,19 +161,23 @@ public abstract class Main {
 		return;
 	}
 	
+	/**
+	 * Opens a {@link gst.ui.dialog.DatasetSelectionDialog} and creates a new EventEntry for the selected dataset with the
+	 * given name. This method is called by the menu entry "Annotationen -> Kanal hinzufügen...".
+	 */
 	private static void uiCreateNewAnnotationFile() {
 		DatasetSelectionDialog dialog = new DatasetSelectionDialog();
 		UnisensDataset selectedDs = dialog.show();
-		if(selectedDs == null) {
+		if(selectedDs == null) {	// abort operation: no dataset selected
 			Debug.println(Debug.main, "no dataset selected");
 		} else {
 			Debug.println(Debug.main, "dataset '" + selectedDs.getName() + "' selected");
-			EnterFileNameDialog dialog2 = new EnterFileNameDialog();
+			EnterFileNameDialog dialog2 = new EnterFileNameDialog();	// ask user for filename
 			boolean finished = false;
 			while(finished != true) {
 				String fileName = dialog2.show();
 				if(fileName != null) {
-					AnnotationController newAnnoCtrl = selectedDs.createAnnotation(fileName);
+					AnnotationController newAnnoCtrl = selectedDs.createAnnotation(fileName); // creation fails if filename already used in dataset
 					if(newAnnoCtrl != null) {
 						// creation successful
 						getAnnotationManager().selectController(newAnnoCtrl);
@@ -194,6 +205,7 @@ public abstract class Main {
 	 * @param ds {@code UnisensDataset} to use
 	 * @return the list of generated controllers
 	 */
+	@Deprecated
 	private static List<DataController> createSignalViews(UnisensDataset ds) {
 		List<DataController> ctrlList = ds.getControllerList();
 		Iterator<DataController> it = ctrlList.iterator();
@@ -204,7 +216,7 @@ public abstract class Main {
 	}
 	
 	/**
-	 * Exits the program without saving changes to unisens databases.
+	 * Exits the program without saving changes to unisens datasets. Closes all open datasets and exits.
 	 * @param ae {@code ActionEvent} causing this action
 	 */
 	private static void closeProgram(ActionEvent ae) {
@@ -214,6 +226,11 @@ public abstract class Main {
 		System.exit(0);
 	}
 	
+	/**
+	 * Used in early versions to create {@link gst.ui.SignalView SignalViews} with random data.
+	 * @param numSignals number of {@code SignalViews} to create
+	 * @param numDataPoints number of data-points per {@code SignalView}
+	 */
 	@Deprecated
 	private static void generateSignalViews(int numSignals, int numDataPoints) {
 		for(int i = 0; i < numSignals; i++) {
@@ -223,6 +240,12 @@ public abstract class Main {
 		return;
 	}
 	
+	/**
+	 * Used in early versions to set the ranges of time axises of all {@link gst.ui.SignalView SignalViews}.
+	 * @param min lower end for time axis
+	 * @param max upper end for time axis
+	 */
+	@Deprecated
 	private static void rescale(double min, double max) {
 		long tStart, tMid, tEnd, tElapsed;
 		tStart = System.currentTimeMillis();

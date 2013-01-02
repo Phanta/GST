@@ -25,6 +25,10 @@ public class ValueController extends DataController {
 	/** sample number of first entry */				private long firstSampleNumber = 0;
 	/** sample number of last entry */				private long lastSampleNumber = 0;
 
+	/**
+	 * Creates a {@code ValueController} for the given dataset entry.
+	 * @param entry
+	 */
 	public ValueController(ValuesEntry entry) {
 		super(entry);
 		this.channelCount = entry.getChannelCount();

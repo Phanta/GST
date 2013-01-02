@@ -13,7 +13,8 @@ import gst.signalprocessing.SignalProcessor;
 import gst.test.Debug;
 
 /**
- * 
+ * This {@link gst.signalprocessing.SignalProcessor} calculates the RR-times of annotations. In addition to functionality
+ * of {@link gst.signalprocessing.rrcalc.RRCalculator} this class supports the 'live' update of the generated data.
  * @author Enrico Grunitz
  * @version 0.0.0.1 (16.10.2012)
  */

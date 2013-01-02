@@ -3,7 +3,7 @@
 package gst.test;
 
 /**
- * 
+ * Class for standardized debug messages. Allows global enabling and disabling of messages for all classes.
  * @author Enrico Grunitz
  * @version 1.0.4 (04.10.2012)
  */

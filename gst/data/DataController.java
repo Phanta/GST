@@ -109,6 +109,10 @@ public abstract class DataController {
 		}
 	}
 	
+	/**
+	 * Checks existence of a file for the encapsuled entry.
+	 * @return true if this's entry has an existing file
+	 */
 	protected boolean fileExists() {
 		return this.getFile().exists();
 	}
@@ -245,7 +249,7 @@ public abstract class DataController {
 	
 	/**
 	 * Notifies all registered Listeners of changed data. Has to be called by subclasses.
-	 * @param source the {@code DataController} thats data changed
+	 * @param event the event to notify the listeners off
 	 */
 	protected void notifyListeners(DataChangeEvent event) {
 		Iterator<DataChangeListener> it = this.listeners.iterator();

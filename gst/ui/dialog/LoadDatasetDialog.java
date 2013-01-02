@@ -14,7 +14,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- * 
+ * Wrapper class for file chooser dialog. 
  * @author Enrico Grunitz
  * @version 0.0.0.1 (05.10.2012)
  */
@@ -26,6 +26,9 @@ public class LoadDatasetDialog {
 		this.path = System.getProperty("user.home");
 	}
 	
+	/**
+	 * @return singleton instance of this class
+	 */
 	public static LoadDatasetDialog getInstance() {
 		return instance;
 	}

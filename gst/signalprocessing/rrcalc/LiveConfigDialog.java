@@ -10,7 +10,7 @@ import gst.signalprocessing.LiveSignalProcessor;
 import gst.ui.Menus;
 
 /**
- * 
+ * Configuration dialog for {@link gst.signalprocessing.rrcalc.RRLiveCalculator}
  * @author Enrico Grunitz
  * @version 0.0.0.1 (16.10.2012)
  */

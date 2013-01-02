@@ -30,7 +30,7 @@ public class DataSelectionDialog {
 	/** array of selected indices */							private int[] selectedIndices;
 	
 	/**
-	 * Constructs the dialog from all available {@link gst.data.Unisensdataset}.
+	 * Constructs the dialog from all available {@link gst.data.UnisensDataset}.
 	 * @param selectedController List of initially selected {@link gst.data.DataController}
 	 */
 	public DataSelectionDialog(List<DataController> selectedController) {

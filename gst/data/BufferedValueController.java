@@ -443,40 +443,68 @@ public class BufferedValueController extends ValueController {
 	}
 	
 	/**
-	 * 
+	 * Wrapper for a generic data point. Every data point has a samplestamp ({@code long}) and value.
 	 * @author Enrico Grunitz
 	 * @version 0.0.0.2 (12.10.2012)
-	 * @param <T> 
+	 * @param <T> data type of data points value
 	 */
 	private class DataPoint<T> {
-		private long samplestamp;
-		private T data;
+		/** samplestamp */			private long samplestamp;
+		/** data points value */	private T data;
 		
+		/**
+		 * Constructs a {@code DataPoint} with the given samplestamp and value.
+		 * @param sampleStamp samplestamp of the {@code DataPoint}
+		 * @param value value of th {@code DataPoint}
+		 */
 		public DataPoint(long sampleStamp, T value) {
 			this.samplestamp = sampleStamp;
 			this.data = value;
 		}
 		
+		/**
+		 * @return samplestamp of the {@code DataPoint}
+		 */
 		public long getSampleStamp() {
 			return this.samplestamp;
 		}
 		
+		/**
+		 * @return value of the {@code DataPoint}
+		 */
 		public T getData() {
 			return this.data;
 		}
 		
+		/**
+		 * Sets the samplestamp of the {@code DataPoint}.
+		 * @param sampleStamp samplestamp to set
+		 */
 		public void setSampleStamp(long sampleStamp) {
 			this.samplestamp = sampleStamp;
 		}
 		
+		/**
+		 * Sets the value of the {@code DataPoint}.
+		 * @param data value for the {@code DataPoint}
+		 */
 		public void setData(T data) {
 			this.data = data;
 		}
 		
+		/**
+		 * Converts the {@code DataPoint} to a {@code org.unisens.Value}.
+		 * @return the corresponding {@code org.unisens.Value}
+		 */
 		public Value toValue() {
 			return new Value(this.samplestamp, this.data);
 		}
 		
+		/**
+		 * Returns true if the given {@code DataPoint} has the same value and samplestamp.
+		 * @param dp the {@code DataPoint} to compare to
+		 * @return true if samplestamp and values of the given {@code DataPoint} are the same as this
+		 */
 		public boolean equals(DataPoint<T> dp) {
 			if(dp == null) {
 				return false;

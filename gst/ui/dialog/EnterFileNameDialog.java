@@ -11,20 +11,20 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 /**
- * 
+ * Dialog that ask the user for a file name.
  * @author Enrico Grunitz
  * @version 0.1.0 (06.08.2012)
  */
 public class EnterFileNameDialog {
-	private JTextField text;
+	/** text field for filename */		private JTextField text;
 	
 	public EnterFileNameDialog() {
 		this.text = new JTextField();
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * Displays the dialog.
+	 * @return filename entered by the user or null if aborted
 	 */
 	public String show() {
 		int dialogReturn = JOptionPane.showConfirmDialog(MainWindow.getInstance(),		// parent component
