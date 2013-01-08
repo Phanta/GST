@@ -65,10 +65,9 @@ public class RRCalculator extends SignalProcessor {
 			diff = (cur - prev) * 1000;		// save it in miliseconds
 			prev = cur;
 			if(i == aList.size() - 1) {
-				// last calculation cycle
-				bvc.addDataPoint(cur, diff, true);
+				bvc.addDataPoint(cur, diff, true);		// last calculation cycle - fire DataChangeEvent
 			} else {
-				bvc.addDataPoint(cur, diff, false);
+				bvc.addDataPoint(cur, diff, false);		// else suppress DataChangeEvent handling
 			}
 		}
 		return 0;

@@ -371,11 +371,11 @@ public class DataTest {
 	}
 	
 	/**
-	 * Start of standard test including conole output and initialization of test counter.
+	 * Start of standard test including console output and initialization of test counter.
 	 * @param testName name of the test method that started
 	 * @param numTests number of test to perform
 	 */
-	private static void testing (String testName, int numTests) {
+	private static void testing(String testName, int numTests) {
 		test = numTests;
 		testing(testName);
 		return;

@@ -2,11 +2,12 @@
  * DataSelectionDialog.java created on 02.08.2012
  */
 
-package gst.ui;
+package gst.ui.dialog;
 
 import gst.data.DataController;
 import gst.data.DatasetList;
 import gst.test.Debug;
+import gst.ui.MainWindow;
 
 import java.awt.Component;
 import java.util.ArrayList;

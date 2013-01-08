@@ -18,13 +18,13 @@ import gst.data.UnisensDataset;
 import gst.test.DataTest;
 import gst.test.Debug;
 
-import gst.ui.DataSelectionDialog;
 import gst.ui.MainWindow;
 import gst.ui.SignalPanel;
 import gst.ui.SignalView;
 import gst.ui.SignalViewFactory;
 import gst.ui.StatusBar;
 import gst.ui.dialog.AnnotationSelectionDialog;
+import gst.ui.dialog.DataSelectionDialog;
 import gst.ui.dialog.DatasetManagerDialog;
 import gst.ui.dialog.DatasetSelectionDialog;
 import gst.ui.dialog.EnterFileNameDialog;
@@ -128,7 +128,7 @@ public abstract class Main {
 	}
 	
 	/**
-	 * Opens a {@link gst.ui.DataSelectionDialog} that ask the user to select previously loaded data. A new
+	 * Opens a {@link gst.ui.dialog.DataSelectionDialog} that ask the user to select previously loaded data. A new
 	 * {@link gst.ui.SignalView} is created for the selected data.
 	 * @param ae {@code ActionEvent} fired the calling UI-element
 	 */

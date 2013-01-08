@@ -27,6 +27,7 @@ import gst.data.DataChangeEvent;
 import gst.data.DataChangeListener;
 import gst.data.DataController;
 import gst.test.Debug;
+import gst.ui.dialog.DataSelectionDialog;
 import gst.ui.dialog.EditEventDialog;
 import gst.ui.dialog.SignalViewPropertyDialog;
 

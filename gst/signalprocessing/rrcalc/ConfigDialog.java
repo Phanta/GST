@@ -49,7 +49,6 @@ public class ConfigDialog extends JDialog implements ActionListener {
 		this.annoName = new ArrayList<String[]>();
 		this.annoCtrl = new ArrayList<DataController[]>();
 		// create gui elements
-		// TODO
 		this.cbDataset = new JComboBox<String>();
 		this.cbDataset.addActionListener(this);
 		this.cbAnnotation = new JComboBox<String>();
@@ -61,7 +60,7 @@ public class ConfigDialog extends JDialog implements ActionListener {
 		this.btnCancel = new JButton("Abbrechen");
 		this.btnCancel.addActionListener(this);
 		
-		// add elements to the dialog and layout
+		// add elements to the dialog and layout them
 		this.getContentPane().setLayout(new BorderLayout());
 		Box box = Box.createVerticalBox();
 		box.add(new JLabel("Datensatz wählen:"));
@@ -125,7 +124,7 @@ public class ConfigDialog extends JDialog implements ActionListener {
 		} else {
 			// dialog is called
 			Debug.println(Debug.rrConfig, "Dialog called: " + event.toString());
-			this.prepareComboboxes(dsl);
+			this.prepareComboboxes(dsl);		// updateing comboboxes
 			this.setVisible(true);
 			return;
 		}
