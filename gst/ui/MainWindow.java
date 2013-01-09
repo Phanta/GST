@@ -68,33 +68,21 @@ public class MainWindow extends JFrame {
 		// set layout
 		this.getContentPane().setLayout(new BorderLayout());
 		
-		
 		// add Menus
 		this.setJMenuBar(Menus.getInstance());
 		Menus.getInstance().addMouseListener(new NamedMouseAdapter("Menus"));
 		
 		// add Toolbar
 		this.getContentPane().add(Toolbar.getInstance(), BorderLayout.PAGE_START);
-		//Toolbar.getInstance().addMouseListener(new NamedMouseAdapter("Toolbar"));
 		
 		// add Sidebar
-		// DEBUG debugpanel for west (SideBar replacement) 
-		// FIXME Sidebar causes MouseEvent loss on CENTER component
-				JPanel debugPanelWest = new JPanel();
-				debugPanelWest.setBackground(Color.red);
-				debugPanelWest.addMouseListener(new NamedMouseAdapter("DebugPanelWest"));
-				debugPanelWest.setSize(200, 400);
-				this.getContentPane().add(debugPanelWest, BorderLayout.LINE_START);
-		//this.add(Sidebar.getInstance(), BorderLayout.LINE_START);
-		//Sidebar.getInstance().addMouseListener(new NamedMouseAdapter("Sidebar"));
+		JPanel debugPanelWest = new JPanel();
+		debugPanelWest.setBackground(Color.red);
+		debugPanelWest.addMouseListener(new NamedMouseAdapter("DebugPanelWest"));
+		debugPanelWest.setSize(200, 400);
+		this.getContentPane().add(debugPanelWest, BorderLayout.LINE_START);
 		
-		// basic chart of JFreeChart
-		//this.getContentPane().add(SignalPanel.getInstance());
-		// DEBUG debugpanel for center
-//				JPanel debugPanelCent = new JPanel();
-//				debugPanelCent.setBackground(Color.green);
-//				debugPanelCent.addMouseListener(new NamedMouseAdapter("DebugPanelCenter"));
-//				this.add(debugPanelCent, BorderLayout.CENTER);
+		// add SignalPanel
 		Debug.println(Debug.mainWindow, "SignalPanel: " + SignalPanel.getInstance().hashCode());
 		this.getContentPane().add(SignalPanel.getInstance(), BorderLayout.CENTER);
 		SignalPanel.getInstance().addMouseListener(new NamedMouseAdapter("SignalPanel"));
